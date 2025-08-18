@@ -191,7 +191,7 @@ const CTASection = () => {
           ref={buttonsRef}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
         >
-          <CTAButton variant="primary" href="/signup" className="group">
+          <CTAButton variant="primary" href="/SignUp" className="group">
             Sign Up Now
             <svg
               className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1"

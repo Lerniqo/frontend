@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import {
   FaUser,
@@ -127,25 +128,25 @@ export default function TeacherProfileDetailsForm({
   // Input validation
   const validateField = (
     name: keyof TeacherProfileData,
-    value: any
+    value: TeacherProfileData[keyof TeacherProfileData]
   ): string => {
     switch (name) {
       case "fullName":
-        return !value?.trim() ? "Full name is required" : "";
+        return !(value as string)?.trim() ? "Full name is required" : "";
       case "birthday":
         return !value ? "Birthday is required" : "";
       case "address":
-        return !value?.trim() ? "Address is required" : "";
+        return !(value as string)?.trim() ? "Address is required" : "";
       case "phoneNumber":
-        if (!value?.trim()) return "Phone number is required";
+        if (!(value as string)?.trim()) return "Phone number is required";
         const phoneRegex =
           /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
-        if (!phoneRegex.test(value.replace(/[\s\-\(\)]/g, ""))) {
+        if (!phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))) {
           return "Please enter a valid phone number";
         }
         return "";
       case "nationalIdOrPassport":
-        return !value?.trim()
+        return !(value as string)?.trim()
           ? "National ID or Passport number is required"
           : "";
       case "idProofFront":
@@ -153,19 +154,19 @@ export default function TeacherProfileDetailsForm({
       case "idProofBack":
         return !formData.idProofBack ? "Back ID proof is required" : "";
       case "subjectsTaught":
-        return !value || value.length === 0
+        return !value || (value as string[]).length === 0
           ? "At least one subject is required"
           : "";
       case "yearsOfExperience":
-        return value < 0 ? "Years of experience must be 0 or more" : "";
+        return (value as number) < 0 ? "Years of experience must be 0 or more" : "";
       case "educationLevel":
         return !value ? "Education level is required" : "";
       case "bioOrTeachingPhilosophy":
-        if (!value?.trim()) return "Bio/Teaching philosophy is required";
-        if (value.length > 300) return "Bio must be 300 characters or less";
+        if (!(value as string)?.trim()) return "Bio/Teaching philosophy is required";
+        if ((value as string).length > 300) return "Bio must be 300 characters or less";
         return "";
       case "certificates":
-        return !value || value.length === 0
+        return !value || (value as File[]).length === 0
           ? "At least one certificate is required"
           : "";
       default:
@@ -174,7 +175,7 @@ export default function TeacherProfileDetailsForm({
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof TeacherProfileData, value: any) => {
+  const handleInputChange = (name: keyof TeacherProfileData, value: TeacherProfileData[keyof TeacherProfileData]) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -350,10 +351,12 @@ export default function TeacherProfileDetailsForm({
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
               {profilePreview ? (
-                <img
+                <Image
                   src={profilePreview}
                   alt="Profile preview"
                   className="w-full h-full object-cover"
+                  width={96}
+                  height={96}
                 />
               ) : (
                 <FaUser className="text-gray-400 text-2xl" />
@@ -522,10 +525,12 @@ export default function TeacherProfileDetailsForm({
               <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors">
                 {idProofFrontPreview ? (
                   <div className="relative">
-                    <img
+                    <Image
                       src={idProofFrontPreview}
                       alt="ID Front"
                       className="w-full h-32 object-cover rounded-lg"
+                      width={400}
+                      height={128}
                     />
                     <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
                       <FaCheck className="text-xs" />
@@ -566,10 +571,12 @@ export default function TeacherProfileDetailsForm({
               <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-500 transition-colors">
                 {idProofBackPreview ? (
                   <div className="relative">
-                    <img
+                    <Image
                       src={idProofBackPreview}
                       alt="ID Back"
                       className="w-full h-32 object-cover rounded-lg"
+                      width={400}
+                      height={128}
                     />
                     <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1">
                       <FaCheck className="text-xs" />
@@ -798,10 +805,12 @@ export default function TeacherProfileDetailsForm({
                   >
                     <div className="flex items-center space-x-3">
                       {cert.preview ? (
-                        <img
+                        <Image
                           src={cert.preview}
                           alt="Certificate"
                           className="w-12 h-12 object-cover rounded"
+                          width={48}
+                          height={48}
                         />
                       ) : (
                         <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">

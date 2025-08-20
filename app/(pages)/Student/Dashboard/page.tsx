@@ -3,11 +3,9 @@
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { useState } from "react";
-import * as THREE from "three";
 
 import RoomModel from "@/components/StudentDashboard/RoomModel";
 import CameraController from "@/components/StudentDashboard/CameraController";
-import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
 import LoadingComponent from "../../../../components/SignUpPageComponents/Loading";
 
 import StudentDashboardNavigation from "../../../../components/StudentDashboard/StudentDashboardNavigation";
@@ -24,10 +22,7 @@ export default function StudentDashboard() {
   ];
 
   // Optional: Handle camera changes
-  const handleCameraChange = (
-    position: THREE.Vector3,
-    rotation: THREE.Euler
-  ) => {
+  const handleCameraChange = () => {
     // This will be called every frame - use sparingly for performance
     // console.log("Camera moved to:", position, rotation);
   };

@@ -18,7 +18,9 @@ export default function CameraDebugger({
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "c" && event.ctrlKey) {
         // Ctrl+C to log camera position
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         if ((window as any).getCameraPosition) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const cameraData = (window as any).getCameraPosition();
           setPosition(cameraData.position);
           setRotation(cameraData.rotation);

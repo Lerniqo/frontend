@@ -61,7 +61,7 @@ export default function SignUpPage() {
         paddingBottom: 0,
       });
     }
-  }, []);
+  }, [currentStep]);
 
   // Handle progress bar visibility animation
   useEffect(() => {

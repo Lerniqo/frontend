@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { gsap } from "gsap";
 import React from "react";
 
@@ -21,20 +21,20 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1 }) => {
   const labelsRef = useRef<(HTMLDivElement | null)[]>([]);
   const mobileProgressRef = useRef<HTMLDivElement>(null);
 
-  const steps: Step[] = [
+  const steps: Step[] = useMemo(() => [
     { id: 1, label: "User Type", shortLabel: "Type" },
     { id: 2, label: "Account", shortLabel: "Account" },
     { id: 3, label: "Verify Email", shortLabel: "Verify" },
     { id: 4, label: "Profile Details", shortLabel: "Profile" },
     { id: 5, label: "Success", shortLabel: "Success" },
-  ];
+  ], []);
 
   // Initialize refs arrays
   useEffect(() => {
     circlesRef.current = circlesRef.current.slice(0, steps.length);
     linesRef.current = linesRef.current.slice(0, steps.length - 1);
     labelsRef.current = labelsRef.current.slice(0, steps.length);
-  }, []);
+  }, [steps.length]);
 
   // GSAP animations when currentStep changes
   useEffect(() => {
@@ -184,9 +184,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1 }) => {
     return () => {
       tl.kill();
     };
-  }, [currentStep]);
+  }, [currentStep, steps]);
 
-  const getStepContent = (step: Step, index: number): React.ReactElement => {
+  const getStepContent = (step: Step): React.ReactElement => {
     if (step.id < currentStep) {
       return <span className="text-sm font-bold">✓</span>;
     } else {
@@ -209,7 +209,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1 }) => {
                   }}
                   className="w-10 h-10 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center font-bold text-slate-500 transition-all duration-300"
                 >
-                  {getStepContent(step, index)}
+                  {getStepContent(step)}
                 </div>
 
                 {/* Label */}
@@ -266,7 +266,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1 }) => {
 
           {/* Step indicators */}
           <div className="flex justify-between mt-3">
-            {steps.map((step, index) => (
+            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+            {steps.map((step, _index) => (
               <div key={step.id} className="flex flex-col items-center">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${

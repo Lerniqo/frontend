@@ -100,7 +100,8 @@ export default function ValidateEmail({
       } else {
         setError(result.message);
       }
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);
@@ -119,7 +120,8 @@ export default function ValidateEmail({
       } else {
         setError(result.message);
       }
-    } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       setError("Network error. Please try again.");
     } finally {
       setIsResending(false);
@@ -144,7 +146,7 @@ export default function ValidateEmail({
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
               Verify Your Email
             </h2>
-            <p className="text-gray-600">We've sent a 6-digit code to</p>
+            <p className="text-gray-600">We&apos;ve sent a 6-digit code to</p>
             <p className="text-blue-600 font-semibold">{email}</p>
           </div>
 
@@ -239,7 +241,7 @@ export default function ValidateEmail({
           {/* Resend Section */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm mb-3">
-              Didn't receive the code?
+              Didn&apos;t receive the code?
             </p>
 
             {resendTimer > 0 ? (

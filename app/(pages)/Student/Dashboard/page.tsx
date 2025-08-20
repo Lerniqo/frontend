@@ -14,7 +14,7 @@ export default function StudentDashboard() {
       <div className="w-screen h-screen">
         <Canvas>
           {/* 3D content goes here */}
-          <ambientLight intensity={0.5} />
+          <ambientLight intensity={0.7} />
           <directionalLight position={[5, 5, 5]} />
 
           <RoomModel />

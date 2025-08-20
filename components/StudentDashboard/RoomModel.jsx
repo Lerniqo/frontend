@@ -16,6 +16,8 @@ import Radio from "./Radio";
 import PlantOnTheTable from "./PlantOnTheTable";
 import BookOnTable from "./BookOnTable";
 
+import Floor from "./Floor";
+
 export default function RoomModel() {
   const { scene, nodes, materials } = useGLTF("/models/room.glb");
   console.log(nodes.Room.children);
@@ -23,10 +25,10 @@ export default function RoomModel() {
   useEffect(() => {
     // Lamp2 (head/lampshade) - light green for a soft lamp glow
     nodes.Room.children[1].material = new THREE.MeshToonMaterial({
-      color: "#9EFFF6",
+      color: "#91d3cd",
     }); // outline stays black
     nodes.Room.children[0].material = new THREE.MeshToonMaterial({
-      color: "#9EFFF6",
+      color: "#91d3cd",
     }); // light green
   }, [materials]);
 
@@ -47,6 +49,8 @@ export default function RoomModel() {
       <PlantOnTheTable nodes={nodes} />
       <BookOnTable nodes={nodes} />
       <Table nodes={nodes} />
+
+      <Floor nodes={nodes} />
 
       <primitive object={nodes.Room} />
     </group>

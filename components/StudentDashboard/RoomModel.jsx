@@ -1,7 +1,8 @@
 "use client";
 
 import { useGLTF } from "@react-three/drei";
-import { useState, useEffect } from "react";
+import { useFrame } from "@react-three/fiber";
+import { useState, useEffect, useRef } from "react";
 
 import * as THREE from "three";
 
@@ -18,9 +19,12 @@ import BookOnTable from "./BookOnTable";
 
 import Floor from "./Floor";
 
-export default function RoomModel() {
+export default function RoomModel({ onReady }) {
+  const [ready, setReady] = useState(false);
+  const frameCount = useRef(0);
+
   const { scene, nodes, materials } = useGLTF("/models/room.glb");
-  console.log(nodes.Room.children);
+  // console.log(nodes.Room.children);
 
   useEffect(() => {
     // Lamp2 (head/lampshade) - light green for a soft lamp glow
@@ -31,6 +35,17 @@ export default function RoomModel() {
       color: "#91d3cd",
     }); // light green
   }, [materials]);
+
+  // 🎥 Detect first render frame
+  useFrame(() => {
+    if (!ready) {
+      frameCount.current++;
+      if (frameCount.current > 1) {
+        setReady(true);
+        if (onReady) onReady(); // notify parent
+      }
+    }
+  });
 
   // console.log("RoomModel nodes:", nodes);
 

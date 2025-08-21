@@ -27,13 +27,13 @@ export default function TrophyRack(props) {
   useEffect(() => {
     const { Trophy_Rack } = props.nodes;
     Trophy_Rack.children[0].material = new THREE.MeshToonMaterial({
-      color: "#FFCE71",
+      color: "#0891b2", // cyan-600 to match your palette
     });
     Trophy_Rack.children[1].material = new THREE.MeshToonMaterial({
       color: "black",
     });
 
-    // Create gold shining material with mixed colors
+    // Create gold shining material with mixed colors - keeping this as is since gold complements your palette
     Trophy_Rack.children[2].material = new THREE.MeshStandardMaterial({
       color: new THREE.Color("#FFD700"), // Base gold color
       metalness: 0.9, // High metalness for shiny effect
@@ -42,7 +42,7 @@ export default function TrophyRack(props) {
       emissiveIntensity: 0.2,
     });
     Trophy_Rack.children[3].material = new THREE.MeshToonMaterial({
-      color: "#434343",
+      color: "#374151", // gray-700 for better contrast
     });
   }, [props.nodes]);
 

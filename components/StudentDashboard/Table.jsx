@@ -29,7 +29,7 @@ export default function Table(props) {
   useEffect(() => {
     const { Table } = props.nodes;
     Table.children[0].material = new THREE.MeshToonMaterial({
-      color: "#3690FF",
+      color: "#10b981", // emerald-500 to match navigation
     });
     Table.children[1].material = new THREE.MeshToonMaterial({ color: "black" }); // outline
     Table.children[2].material = new THREE.MeshToonMaterial({

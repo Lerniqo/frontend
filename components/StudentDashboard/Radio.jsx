@@ -27,17 +27,17 @@ export default function Radio(props) {
   useEffect(() => {
     const { Radio } = props.nodes;
     Radio.children[0].material = new THREE.MeshToonMaterial({
-      color: "#C88046",
+      color: "#0891b2", // cyan-600 for the main radio body
     });
     Radio.children[1].material = new THREE.MeshToonMaterial({ color: "black" });
     Radio.children[2].material = new THREE.MeshToonMaterial({
-      color: "#2D2D2D",
+      color: "#374151", // gray-700 for radio details
     });
     Radio.children[3].material = new THREE.MeshToonMaterial({
-      color: "#2F2C2D",
+      color: "#4b5563", // gray-600 for radio details
     });
     Radio.children[4].material = new THREE.MeshToonMaterial({
-      color: "#66655F",
+      color: "#6b7280", // gray-500 for radio details
     });
   }, [props.nodes]);
 

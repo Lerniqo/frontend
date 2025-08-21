@@ -19,11 +19,11 @@ export default function TableLamp(props) {
   useEffect(() => {
     const { Lamp } = props.nodes;
     Lamp.children[0].material = new THREE.MeshToonMaterial({
-      color: "#144796",
+      color: "#0d9488", // teal-600 to match navigation
     });
     Lamp.children[1].material = new THREE.MeshToonMaterial({ color: "black" }); // outline
     Lamp.children[2].material = new THREE.MeshToonMaterial({
-      color: "#2278FF",
+      color: "#06b6d4", // cyan-500 for lamp shade, complementing teal
     }); // outline
   }, [props.nodes]);
 

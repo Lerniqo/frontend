@@ -19,7 +19,7 @@ export default function Clock(props) {
   useEffect(() => {
     const { Clock } = props.nodes;
     Clock.children[0].material = new THREE.MeshToonMaterial({
-      color: "#00FF7B",
+      color: "#10b981", // emerald-500 to match your palette
     });
     Clock.children[1].material = new THREE.MeshToonMaterial({
       color: "black",

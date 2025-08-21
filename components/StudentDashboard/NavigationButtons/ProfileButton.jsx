@@ -29,7 +29,7 @@ const ProfileButton = ({ onClick, className = "" }) => {
       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg scale-110" />
 
       {/* Gradient border wrapper */}
-      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 via-teal-500 to-blue-600 p-1 shadow-lg shadow-teal-500/25">
+      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400/40 via-teal-500/40 to-blue-600/40 p-1 shadow-lg shadow-teal-500/25">
         {/* Main circular container with white background */}
         <div
           className={`

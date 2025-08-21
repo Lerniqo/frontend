@@ -74,31 +74,31 @@ export default function BookRack(props) {
   useEffect(() => {
     const { Book_rack } = props.nodes;
     Book_rack.children[0].material = new THREE.MeshToonMaterial({
-      color: "#00810C",
+      color: "#059669", // emerald-600 - keeping bookshelf green but matching palette
     });
     Book_rack.children[1].material = new THREE.MeshToonMaterial({
       color: "black",
     });
     Book_rack.children[2].material = new THREE.MeshToonMaterial({
-      color: "#986135",
+      color: "#0891b2", // cyan-600 for book spine variation
     });
     Book_rack.children[3].material = new THREE.MeshToonMaterial({
-      color: "#FFCE71",
+      color: "#fbbf24", // amber-400 for book spine variation
     });
     Book_rack.children[4].material = new THREE.MeshToonMaterial({
-      color: "#00A00F",
+      color: "#10b981", // emerald-500 for book spine
     });
     Book_rack.children[5].material = new THREE.MeshToonMaterial({
-      color: "#FFFFFF",
+      color: "#FFFFFF", // keeping white for book pages
     });
     Book_rack.children[6].material = new THREE.MeshToonMaterial({
-      color: "#444143",
+      color: "#6b7280", // gray-500 for neutral book spine
     });
     Book_rack.children[7].material = new THREE.MeshToonMaterial({
-      color: "#05005A",
+      color: "#1e40af", // blue-700 for book spine variation
     });
     Book_rack.children[8].material = new THREE.MeshToonMaterial({
-      color: "#96000E",
+      color: "#dc2626", // red-600 for book spine accent
     });
   }, [props.nodes]);
 

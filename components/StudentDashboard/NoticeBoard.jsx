@@ -20,10 +20,10 @@ export default function NoticeBoard(props) {
   useEffect(() => {
     const { Notice_Board } = props.nodes;
     Notice_Board.children[0].material = new THREE.MeshToonMaterial({
-      color: "#214B6E",
+      color: "#1e40af", // blue-700 to match your blue palette
     });
     Notice_Board.children[1].material = new THREE.MeshToonMaterial({
-      color: "#FFCE71",
+      color: "#10b981", // emerald-500 for the frame accent
     });
     Notice_Board.children[2].material = new THREE.MeshToonMaterial({
       color: "black",

@@ -20,13 +20,13 @@ export default function PlantOnTheTable(props) {
   useEffect(() => {
     const { book_on_table } = props.nodes;
     book_on_table.children[0].material = new THREE.MeshToonMaterial({
-      color: "#FFFFFF",
+      color: "#FFFFFF", // keeping white for book pages as requested
     });
     book_on_table.children[1].material = new THREE.MeshToonMaterial({
-      color: "#A04134",
+      color: "#0891b2", // cyan-600 for book cover to match palette
     });
     book_on_table.children[2].material = new THREE.MeshToonMaterial({
-      color: "#000000",
+      color: "#000000", // keeping black outline as requested
     });
   }, [props.nodes]);
 

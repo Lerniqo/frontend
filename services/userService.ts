@@ -70,6 +70,12 @@ interface UpdateUserDataResponse {
   user?: any;
 }
 
+interface GetProfileImageResponse {
+  success: boolean;
+  message: string;
+  imageUrl?: string;
+}
+
 class UserService {
   private baseURL: string;
 
@@ -392,6 +398,53 @@ class UserService {
       };
     } catch (error) {
       console.error("Update teacher data error:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    }
+  }
+
+  /**
+   * Get user profile image
+   * @param userId - User ID (optional, for now returns default from public folder)
+   * @returns Promise with profile image URL
+   */
+  async getProfileImage(userId?: string): Promise<GetProfileImageResponse> {
+    try {
+      // TODO: Uncomment when API endpoints are ready
+      // const response = await fetch(`${this.baseURL}/user/profile-image/${userId}`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     // Add authorization header when authentication is implemented
+      //     // 'Authorization': `Bearer ${token}`,
+      //   },
+      // });
+
+      // const data = await response.json();
+
+      // if (!response.ok) {
+      //   throw new Error(data.message || 'Failed to fetch profile image');
+      // }
+
+      // return {
+      //   success: true,
+      //   message: 'Profile image fetched successfully',
+      //   imageUrl: data.imageUrl,
+      // };
+
+      // Mock functionality: Return default profile image from public folder
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      return {
+        success: true,
+        message: "Profile image fetched successfully",
+        imageUrl: "/Profile.jpg", // Assuming you'll add a default profile image to public folder
+      };
+    } catch (error) {
+      console.error("Get profile image error:", error);
       return {
         success: false,
         message:

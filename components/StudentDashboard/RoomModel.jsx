@@ -10,6 +10,7 @@ import Clock from "./Clock";
 import BookRack from "./BookRack";
 import NoticeBoard from "./NoticeBoard";
 import TrophyRack from "./TrophyRack";
+import Robot from "./Robot";
 
 import TableLamp from "./TableLamp";
 import Table from "./Table";
@@ -52,21 +53,16 @@ export default function RoomModel({ onReady }) {
   return (
     <group>
       <NoticeBoard nodes={nodes} />
-
       <Clock nodes={nodes} />
-
       <BookRack nodes={nodes} />
-
       <TrophyRack nodes={nodes} />
-
+      <Robot nodes={nodes} />
       <TableLamp nodes={nodes} />
       <Radio nodes={nodes} />
       <PlantOnTheTable nodes={nodes} />
       <BookOnTable nodes={nodes} />
       <Table nodes={nodes} />
-
       <Floor nodes={nodes} />
-
       <primitive object={nodes.Room} />
     </group>
   );

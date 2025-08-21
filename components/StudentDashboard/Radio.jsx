@@ -1,29 +1,27 @@
+import { Html } from "@react-three/drei";
 import { useState, useEffect, useRef } from "react";
+import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import gsap from "gsap";
 
+import RadioCard from "../StudentDashboardHoverCards/radioCard";
+
 export default function Radio(props) {
-  const [hovered, setHovered] = useState(null);
+  const [hovered, setHovered] = useState(false);
+  const [hoveredToCard, setHoveredToCard] = useState(false);
 
   const radioRef = useRef();
-  // const lamp2Ref = useRef();
-  // const lamp3Ref = useRef();
-  // const originalScaleOflamp1Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp2Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp3Ref = useRef([1, 1, 1]);
+  const originalScaleOfradioRef = useRef([1, 1, 1]);
 
-  // // Save original scale after mount
-  // useEffect(() => {
-  //   if (lamp1Ref.current) {
-  //     originalScaleOflamp1Ref.current = lamp1Ref.current.scale.toArray();
-  //   }
-  //   if (lamp2Ref.current) {
-  //     originalScaleOflamp2Ref.current = lamp2Ref.current.scale.toArray();
-  //   }
-  //   if (lamp3Ref.current) {
-  //     originalScaleOflamp3Ref.current = lamp3Ref.current.scale.toArray();
-  //   }
-  // }, []);
+  // Get canvas size from Three.js context
+  const { size } = useThree();
+
+  // Save original scale after mount
+  useEffect(() => {
+    if (radioRef.current) {
+      originalScaleOfradioRef.current = radioRef.current.scale.toArray();
+    }
+  }, []);
 
   // Assign materials
   useEffect(() => {
@@ -31,9 +29,7 @@ export default function Radio(props) {
     Radio.children[0].material = new THREE.MeshToonMaterial({
       color: "#C88046",
     });
-    Radio.children[1].material = new THREE.MeshToonMaterial({
-      color: "black",
-    });
+    Radio.children[1].material = new THREE.MeshToonMaterial({ color: "black" });
     Radio.children[2].material = new THREE.MeshToonMaterial({
       color: "#2D2D2D",
     });
@@ -47,54 +43,62 @@ export default function Radio(props) {
 
   return (
     <group
-    // onPointerOver={(e) => {
-    //   e.stopPropagation();
-    //   if (!hovered) {
-    //     setHovered("Study Materials");
-    //     gsap.to(lamp1Ref.current.scale, {
-    //       x: originalScaleOflamp1Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp1Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp1Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp2Ref.current.scale, {
-    //       x: originalScaleOflamp2Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp2Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp2Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp3Ref.current.scale, {
-    //       x: originalScaleOflamp3Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp3Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp3Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //   }
-    // }}
-    // onPointerOut={(e) => {
-    //   e.stopPropagation();
-    //   setHovered(null);
-    //   gsap.to(lamp1Ref.current.scale, {
-    //     x: originalScaleOflamp1Ref.current[0],
-    //     y: originalScaleOflamp1Ref.current[1],
-    //     z: originalScaleOflamp1Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp2Ref.current.scale, {
-    //     x: originalScaleOflamp2Ref.current[0],
-    //     y: originalScaleOflamp2Ref.current[1],
-    //     z: originalScaleOflamp2Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp3Ref.current.scale, {
-    //     x: originalScaleOflamp3Ref.current[0],
-    //     y: originalScaleOflamp3Ref.current[1],
-    //     z: originalScaleOflamp3Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    // }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+        gsap.to(radioRef.current.scale, {
+          x: originalScaleOfradioRef.current[0] * 1.05,
+          y: originalScaleOfradioRef.current[1] * 1.05,
+          z: originalScaleOfradioRef.current[2] * 1.05,
+          duration: 0.3,
+        });
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+
+        setHovered(false);
+
+        gsap.to(radioRef.current.scale, {
+          x: originalScaleOfradioRef.current[0],
+          y: originalScaleOfradioRef.current[1],
+          z: originalScaleOfradioRef.current[2],
+          duration: 0.3,
+        });
+      }}
+      onClick={() => {
+        setHoveredToCard(!hoveredToCard);
+      }}
     >
-      <primitive ref={radioRef} object={props.nodes.Radio} />
+      <mesh
+        position={[2.8, 2.4, -1]} // x, y, z
+        rotation={[0, 0.6, 0]} // rotation in radians: [xRot, yRot, zRot]
+        scale={[0.7, 0.6, 1]} // xScale, yScale, zScale
+      >
+        <boxGeometry />
+        <meshStandardMaterial color="orange" transparent opacity={0} />
+      </mesh>
+      <primitive ref={radioRef} object={props.nodes.Radio}>
+        {/* Banner using HTML */}
+        {(hovered || hoveredToCard) && (
+          <Html
+            position={[0, -3, 0]} // adjust Y to appear below the radio
+            center
+            style={{
+              background: "rgba(0,0,0,0)",
+              padding: "4px 8px",
+              borderRadius: "4px",
+              color: "white",
+              fontSize: "12px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <RadioCard
+              onClose={() => setHoveredToCard(false)}
+              canvasSize={size}
+            />
+          </Html>
+        )}
+      </primitive>
     </group>
   );
 }

@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as THREE from "three";
 
 import RoomModel from "@/components/StudentDashboard/RoomModel";
@@ -10,7 +10,7 @@ import CameraController from "@/components/StudentDashboard/CameraController";
 import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
 import LoadingComponent from "../../../../components/SignUpPageComponents/Loading";
 
-import StudentDashboardNavigation from "../../../../components/StudentDashboard/StudentDashboardNavigation";
+import StudentDashboardNavigation from "../../../../components/StudentDashboard/NavigationButtons/StudentDashboardNavigation";
 
 export default function StudentDashboard() {
   const [loaded, setLoaded] = useState(false);
@@ -53,6 +53,7 @@ export default function StudentDashboard() {
             powerPreference: "high-performance",
           }}
           dpr={[1, 2]} // Device pixel ratio for crisp rendering
+          resize={{ scroll: false, debounce: { scroll: 50, resize: 50 } }}
         >
           <ambientLight intensity={0.6} />
           <directionalLight

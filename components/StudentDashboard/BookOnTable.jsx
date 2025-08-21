@@ -6,24 +6,15 @@ export default function PlantOnTheTable(props) {
   const [hovered, setHovered] = useState(null);
 
   const book_on_tableRef = useRef();
-  // const lamp2Ref = useRef();
-  // const lamp3Ref = useRef();
-  // const originalScaleOflamp1Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp2Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp3Ref = useRef([1, 1, 1]);
+  const originalScaleOfbook_on_tableRef = useRef([1, 1, 1]);
 
-  // // Save original scale after mount
-  // useEffect(() => {
-  //   if (lamp1Ref.current) {
-  //     originalScaleOflamp1Ref.current = lamp1Ref.current.scale.toArray();
-  //   }
-  //   if (lamp2Ref.current) {
-  //     originalScaleOflamp2Ref.current = lamp2Ref.current.scale.toArray();
-  //   }
-  //   if (lamp3Ref.current) {
-  //     originalScaleOflamp3Ref.current = lamp3Ref.current.scale.toArray();
-  //   }
-  // }, []);
+  // Save original scale after mount
+  useEffect(() => {
+    if (book_on_tableRef.current) {
+      originalScaleOfbook_on_tableRef.current =
+        book_on_tableRef.current.scale.toArray();
+    }
+  }, []);
 
   // Assign materials
   useEffect(() => {
@@ -41,52 +32,25 @@ export default function PlantOnTheTable(props) {
 
   return (
     <group
-    // onPointerOver={(e) => {
-    //   e.stopPropagation();
-    //   if (!hovered) {
-    //     setHovered("Study Materials");
-    //     gsap.to(lamp1Ref.current.scale, {
-    //       x: originalScaleOflamp1Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp1Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp1Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp2Ref.current.scale, {
-    //       x: originalScaleOflamp2Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp2Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp2Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp3Ref.current.scale, {
-    //       x: originalScaleOflamp3Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp3Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp3Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //   }
-    // }}
-    // onPointerOut={(e) => {
-    //   e.stopPropagation();
-    //   setHovered(null);
-    //   gsap.to(lamp1Ref.current.scale, {
-    //     x: originalScaleOflamp1Ref.current[0],
-    //     y: originalScaleOflamp1Ref.current[1],
-    //     z: originalScaleOflamp1Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp2Ref.current.scale, {
-    //     x: originalScaleOflamp2Ref.current[0],
-    //     y: originalScaleOflamp2Ref.current[1],
-    //     z: originalScaleOflamp2Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp3Ref.current.scale, {
-    //     x: originalScaleOflamp3Ref.current[0],
-    //     y: originalScaleOflamp3Ref.current[1],
-    //     z: originalScaleOflamp3Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    // }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        gsap.to(book_on_tableRef.current.scale, {
+          x: originalScaleOfbook_on_tableRef.current[0] * 1.04,
+          y: originalScaleOfbook_on_tableRef.current[1] * 1.04,
+          z: originalScaleOfbook_on_tableRef.current[2] * 1.04,
+          duration: 0.3,
+        });
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHovered(null);
+        gsap.to(book_on_tableRef.current.scale, {
+          x: originalScaleOfbook_on_tableRef.current[0],
+          y: originalScaleOfbook_on_tableRef.current[1],
+          z: originalScaleOfbook_on_tableRef.current[2],
+          duration: 0.3,
+        });
+      }}
     >
       <primitive ref={book_on_tableRef} object={props.nodes.book_on_table} />
     </group>

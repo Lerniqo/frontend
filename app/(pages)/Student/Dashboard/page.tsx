@@ -8,7 +8,7 @@ import * as THREE from "three";
 import RoomModel from "@/components/StudentDashboard/RoomModel";
 import CameraController from "@/components/StudentDashboard/CameraController";
 import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
-import LoadingComponent from "../../../../components/SignUpPageComponents/Loading";
+import LoadingComponent from "../../../../components/CommonComponents/Loading";
 
 import StudentDashboardNavigation from "../../../../components/StudentDashboard/NavigationButtons/StudentDashboardNavigation";
 

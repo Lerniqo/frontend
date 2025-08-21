@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import ProgressBar from "@/components/SignUpPageComponents/ProgressBar";
 import NavigationSection from "@/components/SignUpPageComponents/NavigationSection";
-import Loading from "@/components/SignUpPageComponents/Loading";
+import Loading from "@/components/CommonComponents/Loading";
 
 // Sign Up Steps Components
 import SignUpOrInSelect from "@/components/SignUpPageComponents/SignUpSteps/SignUpOrInSelect";
@@ -189,7 +189,13 @@ export default function SignUpPage() {
           />
         );
       case 3:
-        return <ValidateEmail email={step2Data.email} onSuccess={() => setCurrentStep(4)} setLoading={setLoading} />;
+        return (
+          <ValidateEmail
+            email={step2Data.email}
+            onSuccess={() => setCurrentStep(4)}
+            setLoading={setLoading}
+          />
+        );
       case 4:
         return (
           <ProfileDetailsForm

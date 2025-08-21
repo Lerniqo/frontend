@@ -1,14 +1,21 @@
 import React, { useState } from "react";
 import { TrendingUp, Target } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const LearningPathButton = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/Student/LearningPath");
+  };
 
   return (
     <button
       className="relative group transition-all duration-300 ease-in-out"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
       aria-label="Learning Path"
     >
       {/* Outer glow ring */}

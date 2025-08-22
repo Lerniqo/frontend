@@ -70,6 +70,50 @@ interface UpdateUserDataResponse {
   user?: any;
 }
 
+interface GetProfileImageResponse {
+  success: boolean;
+  message: string;
+  imageUrl?: string;
+}
+
+interface UserProfile {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  fullName: string;
+  profilePictureUrl: string;
+  gradeLevel: number | null;
+  learningGoals: string | null;
+  qualifications: string | null;
+  experienceYears: number | null;
+  bio: string | null;
+  isVerified: boolean | null;
+}
+
+interface GetMyProfileResponse {
+  success: boolean;
+  message: string;
+  user?: UserProfile;
+}
+
+interface UpdateMyProfileData {
+  fullName?: string;
+  email?: string;
+  gradeLevel?: number | null;
+  learningGoals?: string | null;
+  qualifications?: string | null;
+  experienceYears?: number | null;
+  bio?: string | null;
+  profilePictureUrl?: string;
+}
+
+interface UpdateMyProfileResponse {
+  success: boolean;
+  message: string;
+  user?: UserProfile;
+}
+
 class UserService {
   private baseURL: string;
 
@@ -392,6 +436,189 @@ class UserService {
       };
     } catch (error) {
       console.error("Update teacher data error:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    }
+  }
+
+  /**
+   * Update the profile of the currently authenticated user
+   * @param data - Profile data to update
+   * @returns Promise with update response
+   */
+  async updateMyProfile(
+    data: UpdateMyProfileData
+  ): Promise<UpdateMyProfileResponse> {
+    try {
+      // TODO: Uncomment when API endpoints are ready and authentication is implemented
+      // const response = await fetch(`${this.baseURL}/users/me`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     // Add authorization header when authentication is implemented
+      //     // 'Authorization': `Bearer ${token}`,
+      //   },
+      //   body: JSON.stringify(data),
+      // });
+
+      // const responseData = await response.json();
+
+      // if (!response.ok) {
+      //   throw new Error(responseData.message || 'Failed to update profile');
+      // }
+
+      // return {
+      //   success: true,
+      //   message: responseData.message || 'Profile updated successfully',
+      //   user: responseData.user,
+      // };
+
+      // Mock functionality: Wait for 2 seconds and return success
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Mock updated user profile data
+      const updatedUserProfile: UserProfile = {
+        id: "uuid-123-456-789",
+        email: data.email || "john.doe@example.com",
+        role: "student",
+        status: "active",
+        fullName: data.fullName || "John Doe",
+        profilePictureUrl: data.profilePictureUrl || "/Profile.jpg",
+        gradeLevel: data.gradeLevel !== undefined ? data.gradeLevel : 10,
+        learningGoals:
+          data.learningGoals !== undefined
+            ? data.learningGoals
+            : "Improve mathematics and science skills",
+        qualifications:
+          data.qualifications !== undefined ? data.qualifications : null,
+        experienceYears:
+          data.experienceYears !== undefined ? data.experienceYears : null,
+        bio:
+          data.bio !== undefined
+            ? data.bio
+            : "Enthusiastic learner passionate about STEM subjects",
+        isVerified: true,
+      };
+
+      return {
+        success: true,
+        message: "Profile updated successfully",
+        user: updatedUserProfile,
+      };
+    } catch (error) {
+      console.error("Update my profile error:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    }
+  }
+
+  /**
+   * Get the full profile of the currently authenticated user
+   * @returns Promise with user profile response
+   */
+  async getMyProfile(): Promise<GetMyProfileResponse> {
+    try {
+      // TODO: Uncomment when API endpoints are ready and authentication is implemented
+      // const response = await fetch(`${this.baseURL}/users/me`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     // Add authorization header when authentication is implemented
+      //     // 'Authorization': `Bearer ${token}`,
+      //   },
+      // });
+
+      // const data = await response.json();
+
+      // if (!response.ok) {
+      //   throw new Error(data.message || 'Failed to fetch user profile');
+      // }
+
+      // return {
+      //   success: true,
+      //   message: 'User profile fetched successfully',
+      //   user: data,
+      // };
+
+      // Mock functionality: Return mock user profile data
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Mock user profile data - you can customize this based on different user types
+      const mockUserProfile: UserProfile = {
+        id: "uuid-123-456-789",
+        email: "john.doe@example.com",
+        role: "student",
+        status: "active",
+        fullName: "John Doe",
+        profilePictureUrl: "/Profile.jpg",
+        gradeLevel: 10,
+        learningGoals: "Improve mathematics and science skills",
+        qualifications: null, // For students, this might be null
+        experienceYears: null, // For students, this might be null
+        bio: "Enthusiastic learner passionate about STEM subjects",
+        isVerified: true,
+      };
+
+      return {
+        success: true,
+        message: "User profile fetched successfully",
+        user: mockUserProfile,
+      };
+    } catch (error) {
+      console.error("Get my profile error:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    }
+  }
+
+  /**
+   * Get user profile image
+   * @param userId - User ID (optional, for now returns default from public folder)
+   * @returns Promise with profile image URL
+   */
+  async getProfileImage(userId?: string): Promise<GetProfileImageResponse> {
+    try {
+      // TODO: Uncomment when API endpoints are ready
+      // const response = await fetch(`${this.baseURL}/user/profile-image/${userId}`, {
+      //   method: 'GET',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     // Add authorization header when authentication is implemented
+      //     // 'Authorization': `Bearer ${token}`,
+      //   },
+      // });
+
+      // const data = await response.json();
+
+      // if (!response.ok) {
+      //   throw new Error(data.message || 'Failed to fetch profile image');
+      // }
+
+      // return {
+      //   success: true,
+      //   message: 'Profile image fetched successfully',
+      //   imageUrl: data.imageUrl,
+      // };
+
+      // Mock functionality: Return default profile image from public folder
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      return {
+        success: true,
+        message: "Profile image fetched successfully",
+        imageUrl: "/Profile.jpg", // Assuming you'll add a default profile image to public folder
+      };
+    } catch (error) {
+      console.error("Get profile image error:", error);
       return {
         success: false,
         message:

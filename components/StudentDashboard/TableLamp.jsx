@@ -6,86 +6,57 @@ export default function TableLamp(props) {
   const [hovered, setHovered] = useState(null);
 
   const lampRef = useRef();
-  // const lamp2Ref = useRef();
-  // const lamp3Ref = useRef();
-  // const originalScaleOflamp1Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp2Ref = useRef([1, 1, 1]);
-  // const originalScaleOflamp3Ref = useRef([1, 1, 1]);
+  const originalScaleOfLampRef = useRef([1, 1, 1]);
 
-  // // Save original scale after mount
-  // useEffect(() => {
-  //   if (lamp1Ref.current) {
-  //     originalScaleOflamp1Ref.current = lamp1Ref.current.scale.toArray();
-  //   }
-  //   if (lamp2Ref.current) {
-  //     originalScaleOflamp2Ref.current = lamp2Ref.current.scale.toArray();
-  //   }
-  //   if (lamp3Ref.current) {
-  //     originalScaleOflamp3Ref.current = lamp3Ref.current.scale.toArray();
-  //   }
-  // }, []);
+  // Save original scale after mount
+  useEffect(() => {
+    if (lampRef.current) {
+      originalScaleOfLampRef.current = lampRef.current.scale.toArray();
+    }
+  }, []);
 
   // Assign materials
   useEffect(() => {
     const { Lamp } = props.nodes;
     Lamp.children[0].material = new THREE.MeshToonMaterial({
-      color: "#144796",
+      color: "#0d9488", // teal-600 to match navigation
     });
     Lamp.children[1].material = new THREE.MeshToonMaterial({ color: "black" }); // outline
     Lamp.children[2].material = new THREE.MeshToonMaterial({
-      color: "#2278FF",
+      color: "#06b6d4", // cyan-500 for lamp shade, complementing teal
     }); // outline
   }, [props.nodes]);
 
   return (
     <group
-    // onPointerOver={(e) => {
-    //   e.stopPropagation();
-    //   if (!hovered) {
-    //     setHovered("Study Materials");
-    //     gsap.to(lamp1Ref.current.scale, {
-    //       x: originalScaleOflamp1Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp1Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp1Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp2Ref.current.scale, {
-    //       x: originalScaleOflamp2Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp2Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp2Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //     gsap.to(lamp3Ref.current.scale, {
-    //       x: originalScaleOflamp3Ref.current[0] * 1.1,
-    //       y: originalScaleOflamp3Ref.current[1] * 1.1,
-    //       z: originalScaleOflamp3Ref.current[2] * 1.1,
-    //       duration: 0.3,
-    //     });
-    //   }
-    // }}
-    // onPointerOut={(e) => {
-    //   e.stopPropagation();
-    //   setHovered(null);
-    //   gsap.to(lamp1Ref.current.scale, {
-    //     x: originalScaleOflamp1Ref.current[0],
-    //     y: originalScaleOflamp1Ref.current[1],
-    //     z: originalScaleOflamp1Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp2Ref.current.scale, {
-    //     x: originalScaleOflamp2Ref.current[0],
-    //     y: originalScaleOflamp2Ref.current[1],
-    //     z: originalScaleOflamp2Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    //   gsap.to(lamp3Ref.current.scale, {
-    //     x: originalScaleOflamp3Ref.current[0],
-    //     y: originalScaleOflamp3Ref.current[1],
-    //     z: originalScaleOflamp3Ref.current[2],
-    //     duration: 0.3,
-    //   });
-    // }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        gsap.to(lampRef.current.scale, {
+          x: originalScaleOfLampRef.current[0] * 1.04,
+          y: originalScaleOfLampRef.current[1] * 1.04,
+          z: originalScaleOfLampRef.current[2] * 1.04,
+          duration: 0.3,
+        });
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHovered(null);
+        gsap.to(lampRef.current.scale, {
+          x: originalScaleOfLampRef.current[0],
+          y: originalScaleOfLampRef.current[1],
+          z: originalScaleOfLampRef.current[2],
+          duration: 0.3,
+        });
+      }}
     >
+      <mesh
+        position={[1.6, 2.7, -1.5]} // x, y, z
+        rotation={[0, 0, 0]} // rotation in radians: [xRot, yRot, zRot]
+        scale={[0.8, 1.35, 0.5]} // xScale, yScale, zScale
+      >
+        <boxGeometry />
+        <meshStandardMaterial color="orange" transparent opacity={0} />
+      </mesh>
       <primitive ref={lampRef} object={props.nodes.Lamp} />
     </group>
   );

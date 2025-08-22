@@ -10,6 +10,7 @@ import Clock from "./Clock";
 import BookRack from "./BookRack";
 import NoticeBoard from "./NoticeBoard";
 import TrophyRack from "./TrophyRack";
+import Robot from "./Robot";
 
 import TableLamp from "./TableLamp";
 import Table from "./Table";
@@ -27,13 +28,13 @@ export default function RoomModel({ onReady }) {
   // console.log(nodes.Room.children);
 
   useEffect(() => {
-    // Lamp2 (head/lampshade) - light green for a soft lamp glow
+    // Room walls/structure - using teal/emerald tones to match navigation
     nodes.Room.children[1].material = new THREE.MeshToonMaterial({
-      color: "#91d3cd",
+      color: "#14b8a6", // teal-500 for better harmony with navigation
     }); // outline stays black
     nodes.Room.children[0].material = new THREE.MeshToonMaterial({
-      color: "#91d3cd",
-    }); // light green
+      color: "#0d9488", // teal-600 for depth variation
+    }); // complementary teal shade
   }, [materials]);
 
   // 🎥 Detect first render frame
@@ -52,21 +53,16 @@ export default function RoomModel({ onReady }) {
   return (
     <group>
       <NoticeBoard nodes={nodes} />
-
       <Clock nodes={nodes} />
-
       <BookRack nodes={nodes} />
-
       <TrophyRack nodes={nodes} />
-
+      <Robot nodes={nodes} />
       <TableLamp nodes={nodes} />
       <Radio nodes={nodes} />
       <PlantOnTheTable nodes={nodes} />
       <BookOnTable nodes={nodes} />
       <Table nodes={nodes} />
-
       <Floor nodes={nodes} />
-
       <primitive object={nodes.Room} />
     </group>
   );

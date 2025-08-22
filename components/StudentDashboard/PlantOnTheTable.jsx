@@ -29,13 +29,13 @@ export default function PlantOnTheTable(props) {
   useEffect(() => {
     const { Plant_on_the_table } = props.nodes;
     Plant_on_the_table.children[0].material = new THREE.MeshToonMaterial({
-      color: "#00940E",
+      color: "#059669", // emerald-600 for plant leaves to match your green palette
     });
     Plant_on_the_table.children[1].material = new THREE.MeshToonMaterial({
       color: "black",
     });
     Plant_on_the_table.children[2].material = new THREE.MeshToonMaterial({
-      color: "#FAFFFC",
+      color: "#FFFFFF", // keeping white for the pot
     });
   }, [props.nodes]);
 

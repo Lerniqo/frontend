@@ -10,6 +10,7 @@ import CameraController from "@/components/StudentDashboard/CameraController";
 import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
 import LoadingComponent from "../../../../components/CommonComponents/Loading";
 
+
 import StudentDashboardNavigation from "../../../../components/StudentDashboard/NavigationButtons/StudentDashboardNavigation";
 
 export default function StudentDashboard() {
@@ -24,10 +25,7 @@ export default function StudentDashboard() {
   ];
 
   // Optional: Handle camera changes
-  const handleCameraChange = (
-    position: THREE.Vector3,
-    rotation: THREE.Euler
-  ) => {
+  const handleCameraChange = () => {
     // This will be called every frame - use sparingly for performance
     // console.log("Camera moved to:", position, rotation);
   };

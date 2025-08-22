@@ -21,6 +21,7 @@ export default function CameraController({
   onCameraChange,
 }: CameraControllerProps) {
   const { camera, gl, size } = useThree();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const controlsRef = useRef<any>(null);
 
   // Calculate target point based on camera position and rotation
@@ -55,6 +56,7 @@ export default function CameraController({
   // Function to get current camera state (you can call this from browser console)
   useEffect(() => {
     // Make camera position accessible globally for debugging
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).getCameraPosition = () => {
       console.log("Camera Position:", camera.position);
       console.log("Camera Rotation:", camera.rotation);
@@ -104,12 +106,16 @@ export default function CameraController({
       gl.render = () => {};
     } else {
       // Ensure perspective camera has proper settings
-      if (camera instanceof THREE.PerspectiveCamera) {
-        camera.fov = 45;
+      if ('fov' in camera) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (camera as any).fov = 45;
         camera.position.set(...initialPosition);
-        camera.near = 0.1;
-        camera.far = 1000;
-        camera.updateProjectionMatrix();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (camera as any).near = 0.1;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (camera as any).far = 1000;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (camera as any).updateProjectionMatrix();
         camera.lookAt(...calculatedTarget);
       }
     }

@@ -3,6 +3,35 @@ import TeacherProfileDetailsForm from "../TeacherProfileDetailsForm";
 
 import { userService } from "../../../services/userService";
 
+interface StudentProfileData {
+  fullName: string;
+  school: string;
+  birthday: string;
+  grade: string;
+  gender?: string;
+  parentGuardianName: string;
+  parentGuardianRelationship: string;
+  parentContact: string;
+  address?: string;
+  profilePicture?: File;
+}
+
+interface TeacherProfileData {
+  fullName: string;
+  birthday: string;
+  address: string;
+  phoneNumber: string;
+  nationalIdOrPassport: string;
+  idProofFront?: File;
+  idProofBack?: File;
+  subjectsTaught: string[];
+  yearsOfExperience: number;
+  educationLevel: string;
+  bioOrTeachingPhilosophy: string;
+  profilePicture?: File;
+  certificates: File[];
+}
+
 export default function ProfileDetailsForm({
   setLoading,
   setCurrentStep,
@@ -12,7 +41,7 @@ export default function ProfileDetailsForm({
   setCurrentStep: (step: number) => void;
   userType: string;
 }) {
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: StudentProfileData | TeacherProfileData) => {
     try {
       // Handle form submission logic here
       setLoading(true);
@@ -20,9 +49,9 @@ export default function ProfileDetailsForm({
       let response;
 
       if (userType === "student") {
-        response = await userService.updateStudentProfileData(data);
+        response = await userService.updateStudentProfileData(data as StudentProfileData);
       } else if (userType === "teacher") {
-        response = await userService.updateTeacherProfileData(data);
+        response = await userService.updateTeacherProfileData(data as TeacherProfileData);
       } else {
         throw new Error("Invalid user type");
       }

@@ -29,7 +29,6 @@ type PasswordStrength = "weak" | "medium" | "strong";
 export default function RegisterEmail({
   onValidationChange,
   onDataChange,
-  onNext,
 }: RegisterEmailProps) {
   const [formData, setFormData] = useState({
     email: "",

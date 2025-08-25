@@ -35,15 +35,35 @@ export default function NavigationSection({
   };
 
   const handleNextStep = async () => {
-    // For step 2 (Register Email), check if form is valid
+    // For step 2 (Register Email), check if form is valid and register user
     if (currentStep === 2) {
       if (!isStep2Valid) {
         return;
       }
       setLoading(true);
-      //Handle Register
-      await userService.register(userType, step2Data.email, step2Data.password);
-      setLoading(false);
+      
+      try {
+        // Step 1: Basic registration with email, password, and role
+        const response = await userService.basicRegister({
+          email: step2Data.email,
+          password: step2Data.password,
+          role: userType as 'student' | 'teacher'
+        });
+        
+        if (response.success) {
+          // Registration successful, proceed to next step
+          setLoading(false);
+        } else {
+          // Handle registration error
+          setLoading(false);
+          alert(`Registration failed: ${response.message}`);
+          return;
+        }
+      } catch (error) {
+        setLoading(false);
+        alert(`Registration error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        return;
+      }
     }
 
     if (currentStep < totalSteps) {

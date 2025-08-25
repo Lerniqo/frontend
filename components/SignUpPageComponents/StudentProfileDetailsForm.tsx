@@ -1,21 +1,21 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
 import { gsap } from "gsap";
-import { FaUser, FaCamera, FaSpinner } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 
 interface StudentProfileData {
   fullName: string;
-  school: string;
-  birthday: string;
-  grade: string;
+  school?: string;
+  birthday?: string;
+  grade?: string;
   gender?: string;
-  parentGuardianName: string;
-  parentGuardianRelationship: string;
-  parentContact: string;
+  parentGuardianName?: string;
+  parentGuardianRelationship?: string;
+  parentContact?: string;
   address?: string;
-  profilePicture?: File;
+  gradeLevel?: number;
+  learningGoals?: string;
 }
 
 interface StudentProfileDetailsFormProps {
@@ -40,14 +40,14 @@ export default function StudentProfileDetailsForm({
     parentGuardianRelationship: initialData.parentGuardianRelationship || "",
     parentContact: initialData.parentContact || "",
     address: initialData.address || "",
-    profilePicture: undefined,
+    gradeLevel: initialData.gradeLevel || undefined,
+    learningGoals: initialData.learningGoals || "",
   });
 
   // Error state
   const [errors, setErrors] = useState<
     Partial<Record<keyof StudentProfileData, string>>
   >({});
-  const [profilePreview, setProfilePreview] = useState<string>("");
 
   // Refs for animations
   const formRef = useRef<HTMLDivElement>(null);
@@ -55,7 +55,7 @@ export default function StudentProfileDetailsForm({
 
   // Grade options
   const gradeOptions = [
-    { value: "", label: "Select Grade" },
+    { value: "", label: "Select Grade (Optional)" },
     { value: "kindergarten", label: "Kindergarten" },
     { value: "1", label: "1st Grade" },
     { value: "2", label: "2nd Grade" },
@@ -80,7 +80,7 @@ export default function StudentProfileDetailsForm({
   ];
 
   const relationshipOptions = [
-    { value: "", label: "Select Relationship" },
+    { value: "", label: "Select Relationship (Optional)" },
     { value: "father", label: "Father" },
     { value: "mother", label: "Mother" },
     { value: "guardian", label: "Guardian" },
@@ -108,7 +108,7 @@ export default function StudentProfileDetailsForm({
     }
   }, []);
 
-  // Input validation
+  // Input validation - only fullName is required
   const validateField = (
     name: keyof StudentProfileData,
     value: StudentProfileData[keyof StudentProfileData]
@@ -116,29 +116,17 @@ export default function StudentProfileDetailsForm({
     switch (name) {
       case "fullName":
         return !(value as string)?.trim() ? "Full name is required" : "";
-      case "school":
-        return !(value as string)?.trim() ? "School is required" : "";
-      case "grade":
-        return !value ? "Grade selection is required" : "";
-      case "parentGuardianName":
-        return !(value as string)?.trim() ? "Parent/Guardian name is required" : "";
-      case "parentGuardianRelationship":
-        return !value ? "Parent/Guardian relationship is required" : "";
       case "parentContact":
-        if (!(value as string)?.trim()) return "Parent contact is required";
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex =
-          /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
-        if (
-          !emailRegex.test(value as string) &&
-          !phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))
-        ) {
-          return "Please enter a valid email or phone number";
-        }
-        return "";
-      case "birthday":
-        if (!value) {
-          return "Birthday is required";
+        if (value && (value as string).trim()) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const phoneRegex =
+            /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
+          if (
+            !emailRegex.test(value as string) &&
+            !phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))
+          ) {
+            return "Please enter a valid email or phone number";
+          }
         }
         return "";
       default:
@@ -165,31 +153,6 @@ export default function StudentProfileDetailsForm({
           duration: 0.3,
           ease: "power2.out",
         });
-      }
-    }
-  };
-
-  // Handle profile picture upload
-  const handleProfilePictureChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.type.startsWith("image/")) {
-        setFormData((prev) => ({ ...prev, profilePicture: file }));
-
-        // Create preview
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          setProfilePreview(e.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        // Show error for invalid file type
-        setErrors((prev) => ({
-          ...prev,
-          profilePicture: "Please select a valid image file",
-        }));
       }
     }
   };
@@ -225,7 +188,7 @@ export default function StudentProfileDetailsForm({
 
     const newErrors: Partial<Record<keyof StudentProfileData, string>> = {};
 
-    // Validate all required fields
+    // Validate only required fields
     (Object.keys(formData) as (keyof StudentProfileData)[]).forEach((key) => {
       const error = validateField(key, formData[key]);
       if (error) {
@@ -272,32 +235,12 @@ export default function StudentProfileDetailsForm({
   return (
     <div ref={formRef}>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Profile Picture Upload */}
-        <div className="flex justify-center mb-6">
-          <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-              {profilePreview ? (
-                <Image
-                  src={profilePreview}
-                  alt="Profile preview"
-                  className="w-full h-full object-cover"
-                  width={96}
-                  height={96}
-                />
-              ) : (
-                <FaUser className="text-gray-400 text-2xl" />
-              )}
-            </div>
-            <label className="absolute -bottom-2 -right-2 bg-gradient-to-r from-blue-500 to-green-500 text-white p-2 rounded-full cursor-pointer hover:shadow-lg transition-shadow duration-200">
-              <FaCamera className="text-sm" />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleProfilePictureChange}
-                className="hidden"
-              />
-            </label>
-          </div>
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+            Complete Your Student Profile
+          </h2>
+          <p className="text-gray-600">Tell us more about yourself to personalize your learning experience</p>
         </div>
 
         {/* Full Name */}
@@ -327,31 +270,21 @@ export default function StudentProfileDetailsForm({
         {/* School */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            School *
+            School
           </label>
           <input
             type="text"
             value={formData.school}
             onChange={(e) => handleInputChange("school", e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-            placeholder="Enter school name"
+            placeholder="Enter school name (optional)"
           />
-          {errors.school && (
-            <div
-              ref={(el) => {
-                errorRefs.current.school = el;
-              }}
-              className="text-red-500 text-sm mt-1"
-            >
-              {errors.school}
-            </div>
-          )}
         </div>
 
         {/* Birthday */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Birthday *
+            Birthday
           </label>
           <input
             type="date"
@@ -359,23 +292,13 @@ export default function StudentProfileDetailsForm({
             onChange={(e) => handleInputChange("birthday", e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
           />
-          {errors.birthday && (
-            <div
-              ref={(el) => {
-                errorRefs.current.birthday = el;
-              }}
-              className="text-red-500 text-sm mt-1"
-            >
-              {errors.birthday}
-            </div>
-          )}
         </div>
 
         {/* Grade and Gender Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Grade *
+              Grade
             </label>
             <select
               value={formData.grade}
@@ -388,16 +311,6 @@ export default function StudentProfileDetailsForm({
                 </option>
               ))}
             </select>
-            {errors.grade && (
-              <div
-                ref={(el) => {
-                  errorRefs.current.grade = el;
-                }}
-                className="text-red-500 text-sm mt-1"
-              >
-                {errors.grade}
-              </div>
-            )}
           </div>
 
           <div>
@@ -418,10 +331,24 @@ export default function StudentProfileDetailsForm({
           </div>
         </div>
 
+        {/* Learning Goals */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Learning Goals
+          </label>
+          <textarea
+            value={formData.learningGoals}
+            onChange={(e) => handleInputChange("learningGoals", e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            placeholder="What are your learning goals? (optional)"
+            rows={3}
+          />
+        </div>
+
         {/* Parent/Guardian Information */}
         <div className="border-t pt-6 mt-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Parent/Guardian Information
+            Parent/Guardian Information (Optional)
           </h3>
 
           <div className="space-y-4">
@@ -429,7 +356,7 @@ export default function StudentProfileDetailsForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Parent/Guardian Name *
+                  Parent/Guardian Name
                 </label>
                 <input
                   type="text"
@@ -438,23 +365,13 @@ export default function StudentProfileDetailsForm({
                     handleInputChange("parentGuardianName", e.target.value)
                   }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                  placeholder="Enter parent/guardian name"
+                  placeholder="Enter parent/guardian name (optional)"
                 />
-                {errors.parentGuardianName && (
-                  <div
-                    ref={(el) => {
-                      errorRefs.current.parentGuardianName = el;
-                    }}
-                    className="text-red-500 text-sm mt-1"
-                  >
-                    {errors.parentGuardianName}
-                  </div>
-                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Relationship *
+                  Relationship
                 </label>
                 <select
                   value={formData.parentGuardianRelationship}
@@ -472,23 +389,13 @@ export default function StudentProfileDetailsForm({
                     </option>
                   ))}
                 </select>
-                {errors.parentGuardianRelationship && (
-                  <div
-                    ref={(el) => {
-                      errorRefs.current.parentGuardianRelationship = el;
-                    }}
-                    className="text-red-500 text-sm mt-1"
-                  >
-                    {errors.parentGuardianRelationship}
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Parent Contact */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Parent Contact (Phone or Email) *
+                Parent Contact (Phone or Email)
               </label>
               <input
                 type="text"
@@ -497,7 +404,7 @@ export default function StudentProfileDetailsForm({
                   handleInputChange("parentContact", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="Enter phone number or email"
+                placeholder="Enter phone number or email (optional)"
               />
               {errors.parentContact && (
                 <div
@@ -542,10 +449,10 @@ export default function StudentProfileDetailsForm({
           {isLoading ? (
             <>
               <FaSpinner className="animate-spin mr-2" />
-              Processing...
+              Completing Profile...
             </>
           ) : (
-            "Submit"
+            "Complete Profile"
           )}
         </button>
       </form>

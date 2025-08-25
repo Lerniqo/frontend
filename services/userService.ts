@@ -1,630 +1,593 @@
+import Cookies from 'js-cookie';
+
 // User service for handling authentication and user-related API calls
 
-interface RegisterData {
-  role: string;
+// Base API configuration
+const API_BASE_URL = 'https://xzx0dtp51i.execute-api.us-east-1.amazonaws.com/dev/api';
+
+// Type definitions
+interface User {
+  id: string;
+  email: string;
+  role: 'student' | 'teacher' | 'admin';
+  fullName: string;
+  profilePictureUrl?: string;
+  isVerified: boolean;
+  profileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface StudentProfile extends User {
+  role: 'student';
+  school?: string;
+  birthday?: string;
+  grade?: string;
+  gender?: string;
+  parentGuardianName?: string;
+  parentGuardianRelationship?: string;
+  parentContact?: string;
+  address?: string;
+  gradeLevel?: number;
+  learningGoals?: string;
+}
+
+interface TeacherProfile extends User {
+  role: 'teacher';
+  birthday?: string;
+  address?: string;
+  phoneNumber?: string;
+  nationalIdOrPassport?: string;
+  subjectsTaught?: string[];
+  yearsOfExperience?: number;
+  educationLevel?: string;
+  bioOrTeachingPhilosophy?: string;
+  qualifications?: string;
+  experienceYears?: number;
+  bio?: string;
+}
+
+// Step 1: Basic registration data (email, password, role only)
+interface BasicRegisterData {
   email: string;
   password: string;
+  role: 'student' | 'teacher';
 }
 
-interface RegisterResponse {
-  success: boolean;
-  message: string;
-  user?: {
-    id: string;
-    email: string;
-    role: string;
-  };
-}
-
-interface VerifyEmailData {
-  email: string;
-  code: string;
-}
-
-interface VerifyEmailResponse {
-  success: boolean;
-  message: string;
-}
-
-interface ResendCodeData {
-  email: string;
-}
-
-interface ResendCodeResponse {
-  success: boolean;
-  message: string;
-}
-
+// Step 2: Profile completion data
 interface StudentProfileData {
   fullName: string;
-  school: string;
-  birthday: string;
-  grade: string;
+  school?: string;
+  birthday?: string;
+  grade?: string;
   gender?: string;
-  parentGuardianName: string;
-  parentGuardianRelationship: string;
-  parentContact: string;
+  parentGuardianName?: string;
+  parentGuardianRelationship?: string;
+  parentContact?: string;
   address?: string;
-  profilePicture?: File;
+  gradeLevel?: number;
+  learningGoals?: string;
 }
 
 interface TeacherProfileData {
   fullName: string;
-  birthday: string;
-  address: string;
-  phoneNumber: string;
-  nationalIdOrPassport: string;
-  idProofFront?: File;
-  idProofBack?: File;
-  subjectsTaught: string[];
-  yearsOfExperience: number;
-  educationLevel: string;
-  bioOrTeachingPhilosophy: string;
-  profilePicture?: File;
-  certificates: File[];
+  birthday?: string;
+  address?: string;
+  phoneNumber?: string;
+  nationalIdOrPassport?: string;
+  subjectsTaught?: string[];
+  yearsOfExperience?: number;
+  educationLevel?: string;
+  bioOrTeachingPhilosophy?: string;
+  qualifications?: string;
+  experienceYears?: number;
+  bio?: string;
 }
 
-interface UpdateUserDataResponse {
-  success: boolean;
-  message: string;
-  user?: any;
-}
-
-interface GetProfileImageResponse {
-  success: boolean;
-  message: string;
-  imageUrl?: string;
-}
-
-interface UserProfile {
-  id: string;
+interface LoginData {
   email: string;
-  role: string;
-  status: string;
-  fullName: string;
-  profilePictureUrl: string;
-  gradeLevel: number | null;
-  learningGoals: string | null;
-  qualifications: string | null;
-  experienceYears: number | null;
-  bio: string | null;
-  isVerified: boolean | null;
+  password: string;
 }
 
-interface GetMyProfileResponse {
-  success: boolean;
-  message: string;
-  user?: UserProfile;
+interface VerifyEmailData {
+  code: string;
 }
 
-interface UpdateMyProfileData {
+interface UpdateProfileData {
   fullName?: string;
   email?: string;
-  gradeLevel?: number | null;
-  learningGoals?: string | null;
-  qualifications?: string | null;
-  experienceYears?: number | null;
-  bio?: string | null;
+  gradeLevel?: number;
+  learningGoals?: string;
+  qualifications?: string;
+  experienceYears?: number;
+  bio?: string;
   profilePictureUrl?: string;
 }
 
-interface UpdateMyProfileResponse {
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+interface UploadPhotoData {
+  photo: File;
+}
+
+// API Response interfaces
+interface ApiResponse<T = any> {
   success: boolean;
   message: string;
-  user?: UserProfile;
+  data?: T;
+  error?: string;
+}
+
+interface BasicRegisterResponse {
+  user: {
+    id: string;
+    email: string;
+    role: 'student' | 'teacher';
+    isVerified: boolean;
+    profileCompleted: boolean;
+  };
+  message: string;
+}
+
+interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken?: string;
+}
+
+interface TeachersListResponse {
+  teachers: TeacherProfile[];
+  total: number;
+  page: number;
+  limit: number;
 }
 
 class UserService {
   private baseURL: string;
+  private tempUserId: string | null = null;
 
   constructor() {
-    // You can set your API base URL here
-    this.baseURL =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
+    this.baseURL = API_BASE_URL;
   }
 
-  /**
-   * Register a new user
-   * @param role - User role (e.g., 'student', 'teacher', 'admin')
-   * @param email - User email address
-   * @param password - User password
-   * @returns Promise with registration response
-   */
-  async register(
-    role: string,
-    email: string,
-    password: string
-  ): Promise<RegisterResponse> {
-    try {
-      const registerData: RegisterData = {
-        role,
-        email,
-        password,
-      };
-
-      // TODO: Uncomment when API endpoints are ready
-      // const response = await fetch(`${this.baseURL}/auth/register`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(registerData),
-      // });
-
-      // const data = await response.json();
-
-      // if (!response.ok) {
-      //   throw new Error(data.message || 'Registration failed');
-      // }
-
-      // Mock functionality: Wait for 2 seconds and return success
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock successful response
-      const mockUser = {
-        id: `user_${Date.now()}`,
-        email: registerData.email,
-        role: registerData.role,
-      };
-
-      return {
-        success: true,
-        message: "Registration successful",
-        user: mockUser,
-      };
-    } catch (error) {
-      console.error("Registration error:", error);
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      };
+  // Token management
+  private getStoredToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return Cookies.get('accessToken') || null;
     }
+    return null;
   }
 
-  /**
-   * Verify email with verification code
-   * @param email - User email address
-   * @param code - 6-digit verification code
-   * @returns Promise with verification response
-   */
-  async verifyEmail(email: string, code: string): Promise<VerifyEmailResponse> {
-    try {
-      const verifyData: VerifyEmailData = {
-        email,
-        code,
-      };
-
-      // TODO: Uncomment when API endpoints are ready
-      // const response = await fetch("/api/verify-email", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(verifyData),
-      // });
-
-      // const data = await response.json();
-
-      // if (response.ok) {
-      //   return {
-      //     success: true,
-      //     message: data.message || "Email verified successfully",
-      //   };
-      // } else {
-      //   return {
-      //     success: false,
-      //     message: data.message || "Invalid verification code",
-      //   };
-      // }
-
-      // Mock functionality: Wait for 2 seconds and return success
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      return {
-        success: true,
-        message: "Email verified successfully",
-      };
-    } catch (error) {
-      console.error("Email verification error:", error);
-      return {
-        success: false,
-        message: "Network error. Please try again.",
-      };
-    }
-  }
-
-  /**
-   * Resend verification code to email
-   * @param email - User email address
-   * @returns Promise with resend response
-   */
-  async resendVerificationCode(email: string): Promise<ResendCodeResponse> {
-    try {
-      const resendData: ResendCodeData = {
-        email,
-      };
-
-      const response = await fetch("/api/resend-code", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(resendData),
+  private setStoredToken(token: string): void {
+    if (typeof window !== 'undefined') {
+      Cookies.set('accessToken', token, { 
+        expires: 1, // 1 day
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
       });
-
-      if (response.ok) {
-        return {
-          success: true,
-          message: "Verification code sent successfully",
-        };
-      } else {
-        const data = await response.json();
-        return {
-          success: false,
-          message: data.message || "Failed to resend code",
-        };
-      }
-    } catch (error) {
-      console.error("Resend code error:", error);
-      return {
-        success: false,
-        message: "Network error. Please try again.",
-      };
     }
   }
 
-  /**
-   * Update user profile data
-   * @param data - Student profile data
-   * @returns Promise with update response
-   */
-  async updateStudentProfileData(
-    data: StudentProfileData
-  ): Promise<UpdateUserDataResponse> {
-    try {
-      // Create FormData to handle file upload if profilePicture is provided
-      const formData = new FormData();
+  private removeStoredToken(): void {
+    if (typeof window !== 'undefined') {
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
+    }
+  }
 
-      // Add all fields to FormData
-      formData.append("fullName", data.fullName);
-      formData.append("school", data.school);
-      formData.append("birthday", data.birthday);
-      formData.append("grade", data.grade);
-      formData.append("parentGuardianName", data.parentGuardianName);
-      formData.append(
-        "parentGuardianRelationship",
-        data.parentGuardianRelationship
+  // Store temporary user ID for profile completion
+  private setTempUserId(userId: string): void {
+    this.tempUserId = userId;
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('tempUserId', userId);
+    }
+  }
+
+  private getTempUserId(): string | null {
+    if (this.tempUserId) return this.tempUserId;
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('tempUserId');
+    }
+    return null;
+  }
+
+  private clearTempUserId(): void {
+    this.tempUserId = null;
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('tempUserId');
+    }
+  }
+
+  // Helper method for making authenticated requests
+  private async makeAuthenticatedRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const token = this.getStoredToken();
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...options.headers,
+      },
+    });
+
+    if (response.status === 401) {
+      // Token expired or invalid
+      this.removeStoredToken();
+      throw new Error('Authentication expired. Please login again.');
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || `HTTP error! status: ${response.status}`);
+    }
+
+    return data;
+  }
+
+  // Helper method for making public requests
+  private async makePublicRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || `HTTP error! status: ${response.status}`);
+    }
+
+    return data;
+  }
+
+  /**
+   * Step 1: Basic registration (email, password, role only)
+   */
+  async basicRegister(data: BasicRegisterData): Promise<ApiResponse<BasicRegisterResponse>> {
+    try {
+      const response = await this.makePublicRequest<ApiResponse<BasicRegisterResponse>>(
+        '/user-service/users/register',
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }
       );
-      formData.append("parentContact", data.parentContact);
 
-      // Add optional fields if they exist
-      if (data.gender) {
-        formData.append("gender", data.gender);
-      }
-      if (data.address) {
-        formData.append("address", data.address);
-      }
-      if (data.profilePicture) {
-        formData.append("profilePicture", data.profilePicture);
+      if (response.success && response.data?.user?.id) {
+        // Store temporary user ID for profile completion
+        this.setTempUserId(response.data.user.id);
       }
 
-      // TODO: Uncomment when API endpoints are ready
-      // const response = await fetch(`${this.baseURL}/user/profile`, {
-      //   method: 'PUT',
-      //   body: formData,
-      //   // Note: Don't set Content-Type header when using FormData
-      //   // The browser will set it automatically with the correct boundary
-      // });
-
-      // const responseData = await response.json();
-
-      // if (!response.ok) {
-      //   throw new Error(responseData.message || 'Failed to update user data');
-      // }
-
-      // return {
-      //   success: true,
-      //   message: responseData.message || 'Profile updated successfully',
-      //   user: responseData.user,
-      // };
-
-      // Mock functionality: Wait for 2 seconds and return success
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock successful response
-      return {
-        success: true,
-        message: "Profile updated successfully",
-        user: {
-          id: `user_${Date.now()}`,
-          ...data,
-          profilePicture: data.profilePicture ? "uploaded_file_url" : undefined,
-        },
-      };
+      return response;
     } catch (error) {
-      console.error("Update user data error:", error);
       return {
         success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        message: error instanceof Error ? error.message : 'Registration failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
   /**
-   * Update teacher profile data
-   * @param data - Teacher profile data
-   * @returns Promise with update response
+   * Step 2: Email verification
    */
-  async updateTeacherProfileData(
-    data: TeacherProfileData
-  ): Promise<UpdateUserDataResponse> {
+  async verifyEmail(code: string): Promise<ApiResponse> {
     try {
-      // Create FormData to handle file uploads
+      const response = await this.makePublicRequest<ApiResponse>(
+        '/user-service/users/verify-email',
+        {
+          method: 'POST',
+          body: JSON.stringify({ code }),
+        }
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Email verification failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Step 3: Complete profile with personal information
+   */
+  async completeProfile(profileData: StudentProfileData | TeacherProfileData): Promise<ApiResponse<AuthResponse>> {
+    try {
+      const userId = this.getTempUserId();
+      if (!userId) {
+        throw new Error('No user ID found. Please restart the registration process.');
+      }
+
+      const response = await this.makePublicRequest<ApiResponse<AuthResponse>>(
+        `/user-service/users/complete-profile/${userId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify(profileData),
+        }
+      );
+
+      if (response.success && response.data?.token) {
+        // Profile completed successfully, set token and clear temp ID
+        this.setStoredToken(response.data.token);
+        this.clearTempUserId();
+      }
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Profile completion failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * User login (requires completed profile)
+   */
+  async login(data: LoginData): Promise<ApiResponse<AuthResponse>> {
+    try {
+      const response = await this.makePublicRequest<ApiResponse<AuthResponse>>(
+        '/user-service/users/login',
+        {
+          method: 'POST',
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (response.success && response.data?.token) {
+        this.setStoredToken(response.data.token);
+      }
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Login failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Get current user profile
+   */
+  async getCurrentUser(): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.makeAuthenticatedRequest<ApiResponse<User>>(
+        '/user-service/users/me'
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to get user profile',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Update current user profile
+   */
+  async updateProfile(data: UpdateProfileData): Promise<ApiResponse<User>> {
+    try {
+      const response = await this.makeAuthenticatedRequest<ApiResponse<User>>(
+        '/user-service/users/me',
+        {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to update profile',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * User logout
+   */
+  async logout(): Promise<ApiResponse> {
+    try {
+      const response = await this.makeAuthenticatedRequest<ApiResponse>(
+        '/user-service/users/logout',
+        {
+          method: 'POST',
+        }
+      );
+
+      // Remove token on successful logout
+      this.removeStoredToken();
+
+      return response;
+    } catch (error) {
+      // Even if the API call fails, remove the local token
+      this.removeStoredToken();
+      
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Logout failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Get list of all teachers (public)
+   */
+  async getTeachers(page: number = 1, limit: number = 10): Promise<ApiResponse<TeachersListResponse>> {
+    try {
+      const response = await this.makePublicRequest<ApiResponse<TeachersListResponse>>(
+        `/user-service/users/teachers?page=${page}&limit=${limit}`
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to get teachers list',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Get specific teacher profile (public)
+   */
+  async getTeacherProfile(teacherId: string): Promise<ApiResponse<TeacherProfile>> {
+    try {
+      const response = await this.makePublicRequest<ApiResponse<TeacherProfile>>(
+        `/user-service/users/teachers/${teacherId}`
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to get teacher profile',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Change password
+   */
+  async changePassword(data: ChangePasswordData): Promise<ApiResponse> {
+    try {
+      const response = await this.makeAuthenticatedRequest<ApiResponse>(
+        '/user-service/user/change-password',
+        {
+          method: 'PUT',
+          body: JSON.stringify(data),
+        }
+      );
+
+      return response;
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to change password',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  /**
+   * Upload profile photo
+   */
+  async uploadPhoto(data: UploadPhotoData): Promise<ApiResponse<{ photoUrl: string }>> {
+    try {
       const formData = new FormData();
+      formData.append('photo', data.photo);
 
-      // Add all text fields to FormData
-      formData.append("fullName", data.fullName);
-      formData.append("birthday", data.birthday);
-      formData.append("address", data.address);
-      formData.append("phoneNumber", data.phoneNumber);
-      formData.append("nationalIdOrPassport", data.nationalIdOrPassport);
-      formData.append("yearsOfExperience", data.yearsOfExperience.toString());
-      formData.append("educationLevel", data.educationLevel);
-      formData.append("bioOrTeachingPhilosophy", data.bioOrTeachingPhilosophy);
+      const response = await this.makeAuthenticatedRequest<ApiResponse<{ photoUrl: string }>>(
+        '/user-service/user/upload-photo',
+        {
+          method: 'POST',
+          body: formData,
+          headers: {
+            // Don't set Content-Type for FormData, let browser set it
+          },
+        }
+      );
 
-      // Add subjects taught as JSON string
-      formData.append("subjectsTaught", JSON.stringify(data.subjectsTaught));
-
-      // Add optional file uploads
-      if (data.profilePicture) {
-        formData.append("profilePicture", data.profilePicture);
-      }
-      if (data.idProofFront) {
-        formData.append("idProofFront", data.idProofFront);
-      }
-      if (data.idProofBack) {
-        formData.append("idProofBack", data.idProofBack);
-      }
-
-      // Add certificates
-      data.certificates.forEach((certificate, index) => {
-        formData.append(`certificate_${index}`, certificate);
-      });
-
-      // TODO: Uncomment when API endpoints are ready
-      // const response = await fetch(`${this.baseURL}/teacher/profile`, {
-      //   method: 'PUT',
-      //   body: formData,
-      //   // Note: Don't set Content-Type header when using FormData
-      //   // The browser will set it automatically with the correct boundary
-      // });
-
-      // const responseData = await response.json();
-
-      // if (!response.ok) {
-      //   throw new Error(responseData.message || 'Failed to update teacher data');
-      // }
-
-      // return {
-      //   success: true,
-      //   message: responseData.message || 'Teacher profile updated successfully',
-      //   user: responseData.user,
-      // };
-
-      // Mock functionality: Wait for 2 seconds and return success
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock successful response
-      return {
-        success: true,
-        message: "Teacher profile updated successfully",
-        user: {
-          id: `teacher_${Date.now()}`,
-          ...data,
-          subjectsTaught: data.subjectsTaught,
-          profilePicture: data.profilePicture
-            ? "uploaded_profile_url"
-            : undefined,
-          idProofFront: data.idProofFront ? "uploaded_id_front_url" : undefined,
-          idProofBack: data.idProofBack ? "uploaded_id_back_url" : undefined,
-          certificates: data.certificates.map(
-            (_, index) => `uploaded_cert_${index}_url`
-          ),
-        },
-      };
+      return response;
     } catch (error) {
-      console.error("Update teacher data error:", error);
       return {
         success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        message: error instanceof Error ? error.message : 'Failed to upload photo',
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
   /**
-   * Update the profile of the currently authenticated user
-   * @param data - Profile data to update
-   * @returns Promise with update response
+   * Check if user is authenticated
    */
-  async updateMyProfile(
-    data: UpdateMyProfileData
-  ): Promise<UpdateMyProfileResponse> {
+  isAuthenticated(): boolean {
+    return !!this.getStoredToken();
+  }
+
+  /**
+   * Get current token
+   */
+  getToken(): string | null {
+    return this.getStoredToken();
+  }
+
+  /**
+   * Check if user has a temporary ID (for profile completion)
+   */
+  hasTempUserId(): boolean {
+    return !!this.getTempUserId();
+  }
+
+  /**
+   * Refresh access token using refresh token
+   */
+  async refreshAccessToken(): Promise<ApiResponse<{ token: string }>> {
     try {
-      // TODO: Uncomment when API endpoints are ready and authentication is implemented
-      // const response = await fetch(`${this.baseURL}/users/me`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     // Add authorization header when authentication is implemented
-      //     // 'Authorization': `Bearer ${token}`,
-      //   },
-      //   body: JSON.stringify(data),
-      // });
+      const refreshToken = Cookies.get('refreshToken');
+      if (!refreshToken) {
+        throw new Error('No refresh token found');
+      }
 
-      // const responseData = await response.json();
+      const response = await this.makePublicRequest<ApiResponse<{ token: string }>>(
+        '/user-service/auth/refresh',
+        {
+          method: 'POST',
+          body: JSON.stringify({ refreshToken }),
+        }
+      );
 
-      // if (!response.ok) {
-      //   throw new Error(responseData.message || 'Failed to update profile');
-      // }
+      if (response.success && response.data?.token) {
+        this.setStoredToken(response.data.token);
+      }
 
-      // return {
-      //   success: true,
-      //   message: responseData.message || 'Profile updated successfully',
-      //   user: responseData.user,
-      // };
-
-      // Mock functionality: Wait for 2 seconds and return success
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock updated user profile data
-      const updatedUserProfile: UserProfile = {
-        id: "uuid-123-456-789",
-        email: data.email || "john.doe@example.com",
-        role: "student",
-        status: "active",
-        fullName: data.fullName || "John Doe",
-        profilePictureUrl: data.profilePictureUrl || "/Profile.jpg",
-        gradeLevel: data.gradeLevel !== undefined ? data.gradeLevel : 10,
-        learningGoals:
-          data.learningGoals !== undefined
-            ? data.learningGoals
-            : "Improve mathematics and science skills",
-        qualifications:
-          data.qualifications !== undefined ? data.qualifications : null,
-        experienceYears:
-          data.experienceYears !== undefined ? data.experienceYears : null,
-        bio:
-          data.bio !== undefined
-            ? data.bio
-            : "Enthusiastic learner passionate about STEM subjects",
-        isVerified: true,
-      };
-
-      return {
-        success: true,
-        message: "Profile updated successfully",
-        user: updatedUserProfile,
-      };
+      return response;
     } catch (error) {
-      console.error("Update my profile error:", error);
       return {
         success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
+        message: error instanceof Error ? error.message : 'Token refresh failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
   /**
-   * Get the full profile of the currently authenticated user
-   * @returns Promise with user profile response
+   * Clear authentication state
    */
-  async getMyProfile(): Promise<GetMyProfileResponse> {
-    try {
-      // TODO: Uncomment when API endpoints are ready and authentication is implemented
-      // const response = await fetch(`${this.baseURL}/users/me`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     // Add authorization header when authentication is implemented
-      //     // 'Authorization': `Bearer ${token}`,
-      //   },
-      // });
-
-      // const data = await response.json();
-
-      // if (!response.ok) {
-      //   throw new Error(data.message || 'Failed to fetch user profile');
-      // }
-
-      // return {
-      //   success: true,
-      //   message: 'User profile fetched successfully',
-      //   user: data,
-      // };
-
-      // Mock functionality: Return mock user profile data
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock user profile data - you can customize this based on different user types
-      const mockUserProfile: UserProfile = {
-        id: "uuid-123-456-789",
-        email: "john.doe@example.com",
-        role: "student",
-        status: "active",
-        fullName: "John Doe",
-        profilePictureUrl: "/Profile.jpg",
-        gradeLevel: 10,
-        learningGoals: "Improve mathematics and science skills",
-        qualifications: null, // For students, this might be null
-        experienceYears: null, // For students, this might be null
-        bio: "Enthusiastic learner passionate about STEM subjects",
-        isVerified: true,
-      };
-
-      return {
-        success: true,
-        message: "User profile fetched successfully",
-        user: mockUserProfile,
-      };
-    } catch (error) {
-      console.error("Get my profile error:", error);
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      };
-    }
-  }
-
-  /**
-   * Get user profile image
-   * @param userId - User ID (optional, for now returns default from public folder)
-   * @returns Promise with profile image URL
-   */
-  async getProfileImage(userId?: string): Promise<GetProfileImageResponse> {
-    try {
-      // TODO: Uncomment when API endpoints are ready
-      // const response = await fetch(`${this.baseURL}/user/profile-image/${userId}`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     // Add authorization header when authentication is implemented
-      //     // 'Authorization': `Bearer ${token}`,
-      //   },
-      // });
-
-      // const data = await response.json();
-
-      // if (!response.ok) {
-      //   throw new Error(data.message || 'Failed to fetch profile image');
-      // }
-
-      // return {
-      //   success: true,
-      //   message: 'Profile image fetched successfully',
-      //   imageUrl: data.imageUrl,
-      // };
-
-      // Mock functionality: Return default profile image from public folder
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      return {
-        success: true,
-        message: "Profile image fetched successfully",
-        imageUrl: "/Profile.jpg", // Assuming you'll add a default profile image to public folder
-      };
-    } catch (error) {
-      console.error("Get profile image error:", error);
-      return {
-        success: false,
-        message:
-          error instanceof Error ? error.message : "An unknown error occurred",
-      };
-    }
+  clearAuth(): void {
+    this.removeStoredToken();
+    this.clearTempUserId();
   }
 }
 
@@ -633,3 +596,22 @@ export const userService = new UserService();
 
 // Export the class for testing or multiple instances if needed
 export default UserService;
+
+// Export types for use in components
+export type {
+  User,
+  StudentProfile,
+  TeacherProfile,
+  BasicRegisterData,
+  StudentProfileData,
+  TeacherProfileData,
+  LoginData,
+  VerifyEmailData,
+  UpdateProfileData,
+  ChangePasswordData,
+  UploadPhotoData,
+  ApiResponse,
+  BasicRegisterResponse,
+  AuthResponse,
+  TeachersListResponse,
+};

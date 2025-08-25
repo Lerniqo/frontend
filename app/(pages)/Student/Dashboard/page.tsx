@@ -9,7 +9,7 @@ import RoomModel from "@/components/StudentDashboard/RoomModel";
 import CameraController from "@/components/StudentDashboard/CameraController";
 import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
 import LoadingComponent from "../../../../components/CommonComponents/Loading";
-
+import ProtectedRoute from "@/components/CommonComponents/ProtectedRoute";
 
 import StudentDashboardNavigation from "../../../../components/StudentDashboard/NavigationButtons/StudentDashboardNavigation";
 
@@ -31,51 +31,53 @@ export default function StudentDashboard() {
   };
 
   return (
-    <>
-      {!loaded && <LoadingComponent />}
+    <ProtectedRoute requiredRole="student">
+      <>
+        {!loaded && <LoadingComponent />}
 
-      {/* Camera Debug UI - outside of Canvas */}
-      {/* <CameraDebugger showUI={true} logToConsole={true} /> */}
+        {/* Camera Debug UI - outside of Canvas */}
+        {/* <CameraDebugger showUI={true} logToConsole={true} /> */}
 
-      <div className="w-screen h-screen bg-black">
-        <Canvas
-          camera={{
-            position: initialCameraPosition,
-            fov: 35, // Smaller FOV for less perspective distortion
-            near: 0.1,
-            far: 1000,
-          }}
-          gl={{
-            antialias: true,
-            alpha: false,
-            powerPreference: "high-performance",
-          }}
-          dpr={[1, 2]} // Device pixel ratio for crisp rendering
-          resize={{ scroll: false, debounce: { scroll: 50, resize: 50 } }}
-        >
-          <ambientLight intensity={0.6} />
-          <directionalLight
-            position={[8, 10, 5]}
-            intensity={1.2}
-            castShadow={false}
-          />
-          {/* Add fill light to reduce harsh shadows */}
-          <directionalLight position={[-3, 2, -2]} intensity={0.3} />
+        <div className="w-screen h-screen bg-black">
+          <Canvas
+            camera={{
+              position: initialCameraPosition,
+              fov: 35, // Smaller FOV for less perspective distortion
+              near: 0.1,
+              far: 1000,
+            }}
+            gl={{
+              antialias: true,
+              alpha: false,
+              powerPreference: "high-performance",
+            }}
+            dpr={[1, 2]} // Device pixel ratio for crisp rendering
+            resize={{ scroll: false, debounce: { scroll: 50, resize: 50 } }}
+          >
+            <ambientLight intensity={0.6} />
+            <directionalLight
+              position={[8, 10, 5]}
+              intensity={1.2}
+              castShadow={false}
+            />
+            {/* Add fill light to reduce harsh shadows */}
+            <directionalLight position={[-3, 2, -2]} intensity={0.3} />
 
-          <RoomModel onReady={() => setLoaded(true)} />
+            <RoomModel onReady={() => setLoaded(true)} />
 
-          <Environment preset="sunset" />
-          <CameraController
-            cameraType="perspective"
-            initialPosition={initialCameraPosition}
-            initialRotation={initialCameraRotation}
-            onCameraChange={handleCameraChange}
-          />
-        </Canvas>
-      </div>
+            <Environment preset="sunset" />
+            <CameraController
+              cameraType="perspective"
+              initialPosition={initialCameraPosition}
+              initialRotation={initialCameraRotation}
+              onCameraChange={handleCameraChange}
+            />
+          </Canvas>
+        </div>
 
-      {/* Navigation buttons */}
-      <StudentDashboardNavigation />
-    </>
+        {/* Navigation buttons */}
+        <StudentDashboardNavigation />
+      </>
+    </ProtectedRoute>
   );
 }

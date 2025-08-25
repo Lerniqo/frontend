@@ -165,10 +165,10 @@ class UserService {
     role: string,
     email: string,
     password: string
-  ): Promise<RegisterResponse> {
+  ): Promise<ApiResponse<BasicRegisterResponse>> {
     try {
-      const registerData: RegisterData = {
-        role,
+      const registerData: BasicRegisterData = {
+        role: role as 'student' | 'teacher',
         email,
         password,
       };
@@ -196,12 +196,17 @@ class UserService {
         id: `user_${Date.now()}`,
         email: registerData.email,
         role: registerData.role,
+        isVerified: false,
+        profileCompleted: false,
       };
 
       return {
         success: true,
         message: "Registration successful",
-        user: mockUser,
+        data: {
+          user: mockUser,
+          message: "Registration successful"
+        },
       };
     } catch (error) {
       console.error("Registration error:", error);
@@ -211,7 +216,6 @@ class UserService {
           error instanceof Error ? error.message : "An unknown error occurred",
       };
     }
-    return null;
   }
 
   private setStoredToken(token: string): void {
@@ -222,6 +226,13 @@ class UserService {
         sameSite: 'strict'
       });
     }
+  }
+
+  private getStoredToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return Cookies.get('accessToken') || null;
+    }
+    return null;
   }
 
   private removeStoredToken(): void {

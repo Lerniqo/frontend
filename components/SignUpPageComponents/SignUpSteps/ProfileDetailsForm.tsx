@@ -49,9 +49,9 @@ export default function ProfileDetailsForm({
       let response;
 
       if (userType === "Student") {
-        response = await userService.updateStudentProfileData(data as StudentProfileData);
+        response = await userService.completeProfile(data as StudentProfileData);
       } else if (userType === "Teacher") {
-        response = await userService.updateTeacherProfileData(data as TeacherProfileData);
+        response = await userService.completeProfile(data as TeacherProfileData);
       } else {
         throw new Error("Invalid user type");
       }

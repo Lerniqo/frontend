@@ -12,22 +12,35 @@ interface Step {
 
 interface ProgressBarProps {
   currentStep?: number;
+  stepDescriptions?: string[];
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1 }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescriptions = [] }) => {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const circlesRef = useRef<(HTMLDivElement | null)[]>([]);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
   const labelsRef = useRef<(HTMLDivElement | null)[]>([]);
   const mobileProgressRef = useRef<HTMLDivElement>(null);
 
-  const steps: Step[] = useMemo(() => [
-    { id: 1, label: "User Type", shortLabel: "Type" },
-    { id: 2, label: "Account", shortLabel: "Account" },
-    { id: 3, label: "Verify Email", shortLabel: "Verify" },
-    { id: 4, label: "Profile Details", shortLabel: "Profile" },
-    { id: 5, label: "Success", shortLabel: "Success" },
-  ], []);
+  // Generate steps from stepDescriptions or use default
+  const steps: Step[] = useMemo(() => {
+    if (stepDescriptions.length > 0) {
+      return stepDescriptions.map((description, index) => ({
+        id: index + 1,
+        label: description,
+        shortLabel: description.length > 8 ? description.substring(0, 8) + "..." : description
+      }));
+    }
+    
+    // Default steps if no descriptions provided
+    return [
+      { id: 1, label: "User Type", shortLabel: "Type" },
+      { id: 2, label: "Account", shortLabel: "Account" },
+      { id: 3, label: "Verify Email", shortLabel: "Verify" },
+      { id: 4, label: "Profile Details", shortLabel: "Profile" },
+      { id: 5, label: "Success", shortLabel: "Success" },
+    ];
+  }, [stepDescriptions]);
 
   // Initialize refs arrays
   useEffect(() => {

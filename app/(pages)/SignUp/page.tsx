@@ -237,7 +237,7 @@ export default function SignUpPage() {
                   Registration Complete!
                 </h3>
                 <p className="text-green-700">
-                  You're all set to start your learning adventure as a <span className="font-semibold capitalize">{userType}</span>.
+                  You&apos;re all set to start your learning adventure as a <span className="font-semibold capitalize">{userType}</span>.
                 </p>
               </div>
               <div className="mt-6">

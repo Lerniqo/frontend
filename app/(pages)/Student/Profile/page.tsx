@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
+import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary
 import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjust the import path as necessary
@@ -11,16 +12,18 @@ import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjus
 interface UserProfile {
   id: string;
   email: string;
-  role: string;
-  status: string;
+  role: 'student' | 'teacher' | 'admin';
   fullName: string;
-  profilePictureUrl: string;
-  gradeLevel: number | null;
-  learningGoals: string | null;
-  qualifications: string | null;
-  experienceYears: number | null;
-  bio: string | null;
-  isVerified: boolean | null;
+  profilePictureUrl?: string;
+  isVerified: boolean;
+  profileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  gradeLevel?: number;
+  learningGoals?: string;
+  qualifications?: string;
+  experienceYears?: number;
+  bio?: string;
 }
 
 export default function StudentProfile() {
@@ -47,10 +50,10 @@ export default function StudentProfile() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const response = await userService.getMyProfile();
-      if (response.success && response.user) {
-        setProfile(response.user);
-        setFormData(response.user);
+      const response = await userService.getCurrentUser();
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setFormData(response.data);
       }
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -101,11 +104,11 @@ export default function StudentProfile() {
         profilePictureUrl: formData.profilePictureUrl,
       };
 
-      const response = await userService.updateMyProfile(updateData);
+      const response = await userService.updateProfile(updateData);
 
-      if (response.success && response.user) {
-        setProfile(response.user);
-        setFormData(response.user);
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setFormData(response.data);
         setIsEditing(false);
         alert("Profile updated successfully!");
       } else {
@@ -206,12 +209,12 @@ export default function StudentProfile() {
               )}
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  profile.status === "active"
+                  profile.isVerified
                     ? "bg-green-100 text-green-800"
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {profile.status}
+                {profile.isVerified ? "Verified" : "Pending"}
               </span>
             </div>
           </div>
@@ -223,9 +226,11 @@ export default function StudentProfile() {
             {/* Profile Picture Section */}
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <img
-                  src={formData.profilePictureUrl}
+                <Image
+                  src={formData.profilePictureUrl || "/Profile.jpg"}
                   alt="Profile"
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                 />
               </div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MessageSquare, Users } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 const ForumButton = () => {
   const [isHovered, setIsHovered] = useState(false);

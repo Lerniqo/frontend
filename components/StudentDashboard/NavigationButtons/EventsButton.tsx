@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 const EventsButton = () => {
   const [isHovered, setIsHovered] = useState(false);

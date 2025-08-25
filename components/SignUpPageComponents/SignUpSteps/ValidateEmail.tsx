@@ -117,7 +117,7 @@ export default function ValidateEmail({
       // In a real implementation, you might want to handle this differently
       setError("Please check your email for the verification code. If you don't see it, check your spam folder.");
       setResendTimer(30);
-    } catch (error) {
+    } catch {
       setError("Unable to resend code. Please check your email or contact support.");
     } finally {
       setIsResending(false);

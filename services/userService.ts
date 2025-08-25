@@ -168,7 +168,7 @@ class UserService {
   ): Promise<ApiResponse<BasicRegisterResponse>> {
     try {
       const registerData: BasicRegisterData = {
-        role: role as 'student' | 'teacher',
+        role: role.toLowerCase() as 'student' | 'teacher',
         email,
         password,
       };
@@ -326,11 +326,17 @@ class UserService {
    */
   async basicRegister(data: BasicRegisterData): Promise<ApiResponse<BasicRegisterResponse>> {
     try {
+      // Convert role to proper case for API (student -> Student, teacher -> Teacher)
+      const apiData = {
+        ...data,
+        role: data.role.charAt(0).toUpperCase() + data.role.slice(1)
+      };
+
       const response = await this.makePublicRequest<ApiResponse<BasicRegisterResponse>>(
         '/user-service/users/register',
         {
           method: 'POST',
-          body: JSON.stringify(data),
+          body: JSON.stringify(apiData),
         }
       );
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TrendingUp, Target } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const LearningPathButton = () => {

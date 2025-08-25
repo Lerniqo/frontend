@@ -106,29 +106,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (data: any) => {
     try {
       setIsLoading(true);
-      const response = await userService.register(data);
+      const response = await userService.basicRegister(data);
       
       if (response.success && response.data) {
-        const { user: userData, token, refreshToken } = response.data;
-        
-        // Store tokens in cookies
-        Cookies.set('accessToken', token, { 
-          expires: 1,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict'
-        });
-        
-        if (refreshToken) {
-          Cookies.set('refreshToken', refreshToken, { 
-            expires: 7,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict'
-          });
-        }
-        
-        setUser(userData);
-        setIsAuthenticated(true);
-        return { success: true, message: 'Registration successful' };
+        // For basic registration, we don't set authentication yet
+        // User needs to complete profile and verify email first
+        return { success: true, message: 'Registration successful. Please check your email and complete your profile.' };
       } else {
         return { success: false, message: response.message || 'Registration failed' };
       }

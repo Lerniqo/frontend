@@ -2,12 +2,10 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
-import { useState, useEffect } from "react";
-import * as THREE from "three";
+import { useState } from "react";
 
 import RoomModel from "@/components/StudentDashboard/RoomModel";
 import CameraController from "@/components/StudentDashboard/CameraController";
-import CameraDebugger from "@/components/StudentDashboard/CameraDebugger";
 import LoadingComponent from "../../../../components/CommonComponents/Loading";
 import ProtectedRoute from "@/components/CommonComponents/ProtectedRoute";
 

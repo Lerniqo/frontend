@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import PublicRoute from '../../components/CommonComponents/PublicRoute';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const LoginPage = () => {
@@ -12,7 +11,6 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +25,7 @@ const LoginPage = () => {
       } else {
         setError(result.message);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred');
     } finally {
       setIsLoading(false);

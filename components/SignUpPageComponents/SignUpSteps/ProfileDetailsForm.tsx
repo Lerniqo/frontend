@@ -46,7 +46,15 @@ export default function ProfileDetailsForm({
       // Handle form submission logic here
       setLoading(true);
 
-      const response = await userService.completeProfile(data);
+      let response;
+
+      if (userType === "Student") {
+        response = await userService.updateStudentProfileData(data as StudentProfileData);
+      } else if (userType === "Teacher") {
+        response = await userService.updateTeacherProfileData(data as TeacherProfileData);
+      } else {
+        throw new Error("Invalid user type");
+      }
 
       if (response.success) {
         // Success - proceed to next step
@@ -66,10 +74,9 @@ export default function ProfileDetailsForm({
       setLoading(false);
     }
   };
-
-  if (userType === "student") {
+  if (userType === "Student") {
     return <StudentProfileDetailsForm onSubmit={handleSubmit} />;
-  } else if (userType === "teacher") {
+  } else if (userType === "Teacher") {
     return <TeacherProfileDetailsForm onSubmit={handleSubmit} />;
   }
 }

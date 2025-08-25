@@ -153,10 +153,63 @@ class UserService {
     this.baseURL = API_BASE_URL;
   }
 
-  // Token management
-  private getStoredToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return Cookies.get('accessToken') || null;
+
+  /**
+   * Register a new user
+   * @param role - User role (e.g., 'Student', 'Teacher', 'Admin')
+   * @param email - User email address
+   * @param password - User password
+   * @returns Promise with registration response
+   */
+  async register(
+    role: string,
+    email: string,
+    password: string
+  ): Promise<RegisterResponse> {
+    try {
+      const registerData: RegisterData = {
+        role,
+        email,
+        password,
+      };
+
+      // TODO: Uncomment when API endpoints are ready
+      // const response = await fetch(`${this.baseURL}/auth/register`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(registerData),
+      // });
+
+      // const data = await response.json();
+
+      // if (!response.ok) {
+      //   throw new Error(data.message || 'Registration failed');
+      // }
+
+      // Mock functionality: Wait for 2 seconds and return success
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Mock successful response
+      const mockUser = {
+        id: `user_${Date.now()}`,
+        email: registerData.email,
+        role: registerData.role,
+      };
+
+      return {
+        success: true,
+        message: "Registration successful",
+        user: mockUser,
+      };
+    } catch (error) {
+      console.error("Registration error:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
     }
     return null;
   }

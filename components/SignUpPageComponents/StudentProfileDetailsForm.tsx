@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
-import { FaUser, FaSchool, FaCamera, FaSpinner } from "react-icons/fa";
+import { FaUser, FaCamera, FaSpinner } from "react-icons/fa";
 
 interface StudentProfileData {
   fullName: string;
@@ -110,27 +111,27 @@ export default function StudentProfileDetailsForm({
   // Input validation
   const validateField = (
     name: keyof StudentProfileData,
-    value: any
+    value: StudentProfileData[keyof StudentProfileData]
   ): string => {
     switch (name) {
       case "fullName":
-        return !value?.trim() ? "Full name is required" : "";
+        return !(value as string)?.trim() ? "Full name is required" : "";
       case "school":
-        return !value?.trim() ? "School is required" : "";
+        return !(value as string)?.trim() ? "School is required" : "";
       case "grade":
         return !value ? "Grade selection is required" : "";
       case "parentGuardianName":
-        return !value?.trim() ? "Parent/Guardian name is required" : "";
+        return !(value as string)?.trim() ? "Parent/Guardian name is required" : "";
       case "parentGuardianRelationship":
         return !value ? "Parent/Guardian relationship is required" : "";
       case "parentContact":
-        if (!value?.trim()) return "Parent contact is required";
+        if (!(value as string)?.trim()) return "Parent contact is required";
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex =
           /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
         if (
-          !emailRegex.test(value) &&
-          !phoneRegex.test(value.replace(/[\s\-\(\)]/g, ""))
+          !emailRegex.test(value as string) &&
+          !phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))
         ) {
           return "Please enter a valid email or phone number";
         }
@@ -146,7 +147,7 @@ export default function StudentProfileDetailsForm({
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof StudentProfileData, value: any) => {
+  const handleInputChange = (name: keyof StudentProfileData, value: StudentProfileData[keyof StudentProfileData]) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -276,10 +277,12 @@ export default function StudentProfileDetailsForm({
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
               {profilePreview ? (
-                <img
+                <Image
                   src={profilePreview}
                   alt="Profile preview"
                   className="w-full h-full object-cover"
+                  width={96}
+                  height={96}
                 />
               ) : (
                 <FaUser className="text-gray-400 text-2xl" />

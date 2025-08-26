@@ -6,7 +6,7 @@ This document outlines the changes made to implement the new two-step registrati
 ## New Registration Flow
 
 ### Step 1: Basic Registration
-- User selects role (student/teacher)
+- User selects role (Student/Teacher)
 - User provides email and password
 - System calls `/user-service/users/register` with basic info only
 - User receives verification instructions
@@ -111,7 +111,7 @@ This document outlines the changes made to implement the new two-step registrati
 
 ## Data Flow
 
-1. **Role Selection** → User chooses student/teacher role
+1. **Role Selection** → User chooses Student/Teacher role
 2. **Basic Registration** → Email/password sent to `/user-service/users/register`
 3. **Temporary Storage** → User ID stored in sessionStorage
 4. **Email Verification** → Code sent to `/user-service/users/verify-email`

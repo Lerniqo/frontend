@@ -5,7 +5,7 @@ import ProtectedRoute from '@/components/CommonComponents/ProtectedRoute';
 
 const AdminDashboard = () => {
   return (
-    <ProtectedRoute requiredRole="admin">
+  <ProtectedRoute requiredRole="Admin">
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
         <div className="container mx-auto px-6 py-8">
           <div className="mb-8">

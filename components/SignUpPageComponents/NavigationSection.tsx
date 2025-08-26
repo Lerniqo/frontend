@@ -42,28 +42,34 @@ export default function NavigationSection({
       }
       setLoading(true);
       
-      try {
-        // Step 1: Basic registration with email, password, and role
-        const response = await userService.basicRegister({
+      return userService
+        .basicRegister({
           email: step2Data.email,
           password: step2Data.password,
-          role: userType as 'student' | 'teacher'
+          role: (userType.charAt(0).toUpperCase() + userType.slice(1)) as
+            | "Student"
+            | "Teacher",
+        })
+        .then((response) => {
+          if (response.success) {
+            // Registration successful, proceed to next step
+            animateStepTransition("forward");
+            setTimeout(() => {
+              setCurrentStep(currentStep + 1);
+            }, 300);
+          } else {
+            // Handle registration error
+            alert(`Registration failed: ${response.message}`);
+          }
+        })
+        .catch((error) => {
+          alert(
+            `Registration error: ${error instanceof Error ? error.message : "Unknown error"}`
+          );
+        })
+        .finally(() => {
+          setLoading(false);
         });
-        
-        if (response.success) {
-          // Registration successful, proceed to next step
-          setLoading(false);
-        } else {
-          // Handle registration error
-          setLoading(false);
-          alert(`Registration failed: ${response.message}`);
-          return;
-        }
-      } catch (error) {
-        setLoading(false);
-        alert(`Registration error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        return;
-      }
     }
 
     if (currentStep < totalSteps) {

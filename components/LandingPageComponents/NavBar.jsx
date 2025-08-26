@@ -190,7 +190,7 @@ const NavBar = () => {
                     Welcome, {user?.fullName}
                   </span>
                   <Link
-                    href={user?.role === 'student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
+                    href={user?.role === 'Student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
                     className="group relative px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:shadow-purple-500/25"
                   >
                     <span className="relative z-10">Dashboard</span>
@@ -266,7 +266,7 @@ const NavBar = () => {
                         Welcome, {user?.fullName}
                       </div>
                       <Link
-                        href={user?.role === 'student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
+                        href={user?.role === 'Student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
                         className="block w-full px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:scale-105 text-center"
                       >
                         Dashboard

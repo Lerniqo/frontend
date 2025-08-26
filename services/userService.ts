@@ -91,6 +91,7 @@ interface LoginData {
 
 interface VerifyEmailData {
   code: string;
+  email: string;
 }
 
 interface UpdateProfileData {
@@ -358,13 +359,15 @@ class UserService {
   /**
    * Step 2: Email verification
    */
-  async verifyEmail(code: string): Promise<ApiResponse> {
+  async verifyEmail(code: string, email: string): Promise<ApiResponse> {
     try {
+      const payload: VerifyEmailData = { code, email };
+
       const response = await this.makePublicRequest<ApiResponse>(
         '/user-service/users/verify-email',
         {
           method: 'POST',
-          body: JSON.stringify({ code }),
+          body: JSON.stringify(payload),
         }
       );
 

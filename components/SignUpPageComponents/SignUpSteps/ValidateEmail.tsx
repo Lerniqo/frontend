@@ -82,7 +82,7 @@ export default function ValidateEmail({
 
     try {
       setLoading(true);
-      const result = await userService.verifyEmail(code);
+  const result = await userService.verifyEmail(code, email);
       setLoading(false);
       if (result.success) {
         // Success animation

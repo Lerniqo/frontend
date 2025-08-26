@@ -29,7 +29,7 @@ export default function StudentDashboard() {
   };
 
   return (
-    <ProtectedRoute requiredRole="student">
+  <ProtectedRoute requiredRole="Student">
       <>
         {!loaded && <LoadingComponent />}
 

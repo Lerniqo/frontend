@@ -5,7 +5,7 @@ import ProtectedRoute from '@/components/CommonComponents/ProtectedRoute';
 
 const TeacherDashboard = () => {
   return (
-    <ProtectedRoute requiredRole="teacher">
+  <ProtectedRoute requiredRole="Teacher">
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
         <div className="container mx-auto px-6 py-8">
           <div className="mb-8">

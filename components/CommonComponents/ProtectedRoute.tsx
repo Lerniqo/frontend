@@ -7,7 +7,7 @@ import Loading from './Loading';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'student' | 'teacher' | 'admin';
+  requiredRole?: 'Student' | 'Teacher' | 'Admin';
   redirectTo?: string;
 }
 
@@ -29,13 +29,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       if (requiredRole && user && user.role !== requiredRole) {
         // Redirect to appropriate dashboard based on user role
         switch (user.role) {
-          case 'student':
+          case 'Student':
             router.push('/Student/Dashboard');
             break;
-          case 'teacher':
+          case 'Teacher':
             router.push('/Teacher/Dashboard');
             break;
-          case 'admin':
+          case 'Admin':
             router.push('/Admin/Dashboard');
             break;
           default:

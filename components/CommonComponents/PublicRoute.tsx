@@ -24,13 +24,13 @@ const PublicRoute: React.FC<PublicRouteProps> = ({
         router.push(redirectTo);
       } else {
         switch (user.role) {
-          case 'student':
+          case 'Student':
             router.push('/Student/Dashboard');
             break;
-          case 'teacher':
+          case 'Teacher':
             router.push('/Teacher/Dashboard');
             break;
-          case 'admin':
+          case 'Admin':
             router.push('/Admin/Dashboard');
             break;
           default:

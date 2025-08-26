@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface UseAuthRedirectOptions {
   requireAuth?: boolean;
-  requireRole?: 'student' | 'teacher' | 'admin';
+  requireRole?: 'Student' | 'Teacher' | 'Admin';
   redirectTo?: string;
 }
 
@@ -33,13 +33,13 @@ export const useAuthRedirect = ({
       if (!redirectPath) {
         // Redirect to appropriate dashboard based on user role
         switch (user?.role) {
-          case 'student':
+          case 'Student':
             redirectPath = '/Student/Dashboard';
             break;
-          case 'teacher':
+          case 'Teacher':
             redirectPath = '/Teacher/Dashboard';
             break;
-          case 'admin':
+          case 'Admin':
             redirectPath = '/Admin/Dashboard';
             break;
           default:
@@ -52,19 +52,19 @@ export const useAuthRedirect = ({
     }
 
     // If specific role is required but user doesn't have it
-    if (requireRole && user && user.role !== requireRole) {
+  if (requireRole && user && user.role !== requireRole) {
       let redirectPath = redirectTo;
       
       if (!redirectPath) {
         // Redirect to appropriate dashboard based on user role
         switch (user.role) {
-          case 'student':
+          case 'Student':
             redirectPath = '/Student/Dashboard';
             break;
-          case 'teacher':
+          case 'Teacher':
             redirectPath = '/Teacher/Dashboard';
             break;
-          case 'admin':
+          case 'Admin':
             redirectPath = '/Admin/Dashboard';
             break;
           default:

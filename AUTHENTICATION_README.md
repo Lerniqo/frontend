@@ -92,9 +92,9 @@ New access token received → Token updated in cookies → Request continues
 - `/SignUp` - User registration page
 
 ### Protected Routes (Authentication Required)
-- `/Student/*` - Student-specific routes (requires student role)
-- `/Teacher/*` - Teacher-specific routes (requires teacher role)
-- `/Admin/*` - Admin-specific routes (requires admin role)
+- `/Student/*` - Student-specific routes (requires Student role)
+- `/Teacher/*` - Teacher-specific routes (requires Teacher role)
+- `/Admin/*` - Admin-specific routes (requires Admin role)
 
 ### Role-Based Access Control
 - **Students**: Access to student dashboard, learning paths, profile, store
@@ -133,7 +133,7 @@ Cookies.set('accessToken', token, {
 
 ### 2. Protected Route Usage
 ```typescript
-<ProtectedRoute requiredRole="student">
+<ProtectedRoute requiredRole="Student">
   <StudentDashboard />
 </ProtectedRoute>
 ```
@@ -217,7 +217,7 @@ import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 const MyPage = () => {
   const { shouldRender, user } = useAuthRedirect({
     requireAuth: true,
-    requireRole: 'teacher'
+    requireRole: 'Teacher'
   });
 
   if (!shouldRender) {

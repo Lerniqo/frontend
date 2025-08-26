@@ -12,7 +12,7 @@ import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjus
 interface UserProfile {
   id: string;
   email: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: 'Student' | 'Teacher' | 'Admin';
   fullName: string;
   profilePictureUrl?: string;
   isVerified: boolean;
@@ -238,7 +238,7 @@ export default function StudentProfile() {
                 <h2 className="text-xl font-semibold text-gray-800">
                   {formData.fullName}
                 </h2>
-                <p className="text-gray-600 capitalize">{formData.role}</p>
+                <p className="text-gray-600">{formData.role}</p>
                 <p className="text-sm text-gray-500">ID: {formData.id}</p>
               </div>
             </div>

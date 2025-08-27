@@ -17,6 +17,7 @@ import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/Pr
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState("");
+  const [userId, setUserId] = useState("");
   const [step2Valid, setStep2Valid] = useState(false);
   const [step2Data, setStep2Data] = useState({
     email: "",
@@ -213,6 +214,7 @@ export default function SignUpPage() {
             setLoading={setLoading}
             setCurrentStep={setCurrentStep}
             userType={userType}
+            userId={userId}
           />
         );
       case 5:
@@ -293,6 +295,7 @@ export default function SignUpPage() {
             setLoading={setLoading}
             step2Data={step2Data}
             userType={userType}
+            setUserId={setUserId}
           />
         </div>
       </div>

@@ -4,34 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
+import { User } from "@/types/auth.types";
 import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary
 import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjust the import path as necessary
 
-interface UserProfile {
-  id: string;
-  email: string;
-  role: 'Student' | 'Teacher' | 'Admin';
-  fullName: string;
-  profilePictureUrl?: string;
-  isVerified: boolean;
-  profileCompleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  gradeLevel?: number;
-  learningGoals?: string;
-  qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
-}
-
 export default function StudentProfile() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserProfile | null>(null);
+  const [formData, setFormData] = useState<User | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 

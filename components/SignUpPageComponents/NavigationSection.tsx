@@ -10,6 +10,7 @@ export default function NavigationSection({
   setLoading,
   step2Data,
   userType,
+  setUserId,
 }: {
   ref: React.Ref<HTMLDivElement>;
   currentStep: number;
@@ -24,6 +25,7 @@ export default function NavigationSection({
     confirmPassword: string;
   };
   userType: string;
+  setUserId: (userId: string) => void;
 }) {
   const handlePrevStep = () => {
     if (currentStep > 0) {
@@ -50,22 +52,14 @@ export default function NavigationSection({
             | "Student"
             | "Teacher",
         })
-        .then((response) => {
-          if (response.success) {
-            // Registration successful, proceed to next step
-            animateStepTransition("forward");
-            setTimeout(() => {
-              setCurrentStep(currentStep + 1);
-            }, 300);
-          } else {
-            // Handle registration error
-            alert(`Registration failed: ${response.message}`);
-          }
+        .then((res) => {
+          // Registration successful
+          setCurrentStep(3);
         })
         .catch((error) => {
-          alert(
-            `Registration error: ${error instanceof Error ? error.message : "Unknown error"}`
-          );
+          console.error("Registration error:", error);
+          // Error is already displayed by the userService alert
+          // No need to show additional alert here
         })
         .finally(() => {
           setLoading(false);

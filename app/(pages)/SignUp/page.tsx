@@ -198,7 +198,7 @@ export default function SignUpPage() {
       // Update userType to match verified role for consistency
       setUserType(userData.role);
     } else {
-      console.log(`Role verification successful: ${userData.role}`);
+      console.warn(`Role verification successful: ${userData.role}`);
     }
     
     // Proceed to profile completion step

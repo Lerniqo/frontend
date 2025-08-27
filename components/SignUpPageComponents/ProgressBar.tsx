@@ -279,7 +279,6 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
 
           {/* Step indicators */}
           <div className="flex justify-between mt-3">
-            {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
             {steps.map((step, _index) => (
               <div key={step.id} className="flex flex-col items-center">
                 <div

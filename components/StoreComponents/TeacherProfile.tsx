@@ -5,21 +5,16 @@ import Image from "next/image";
 import { gsap } from "gsap";
 import { userService } from "../../services/userService";
 import Loading from "../CommonComponents/Loading";
+import type { TeacherProfile } from "@/types/auth.types";
 
-interface DetailedTeacherProfile {
-  userId: string;
-  fullName: string;
-  address: string;
-  phoneNumber: string;
-  qualifications: string;
-  experienceSummary: string;
-  yearsOfExperience: number;
-  level: number; // 0, 1, 2, 3
-  educationLevel: string;
-  bioOrTeachingPhilosophy: string;
-  subjectsTaught: string[];
-  profilePictureUrl?: string;
-  isVerified: boolean;
+// Extended interface for detailed teacher profile display
+interface DetailedTeacherProfile extends TeacherProfile {
+  userId: string; // Required for compatibility with teachers.tsx
+  level?: number; // 0, 1, 2, 3 - for experience level display
+  subjectsTaught?: string[];
+  experienceSummary?: string;
+  educationLevel?: string;
+  bioOrTeachingPhilosophy?: string;
 }
 
 interface TeacherProfileProps {
@@ -44,8 +39,13 @@ export default function TeacherProfile({
       setError("");
       const response = await userService.getTeacherProfile(teacherId);
 
-      if (response.success && response.teacher) {
-        setTeacher(response.teacher);
+      if (response.success && response.data) {
+        // Transform TeacherProfile to DetailedTeacherProfile by adding userId
+        const detailedProfile: DetailedTeacherProfile = {
+          ...response.data,
+          userId: response.data.id, // Map the id field to userId
+        };
+        setTeacher(detailedProfile);
       } else {
         setError(response.message || "Failed to load teacher profile");
       }
@@ -200,10 +200,10 @@ export default function TeacherProfile({
               )}
               <span
                 className={`px-3 py-2 rounded-full text-xs font-medium border-2 ${getLevelColor(
-                  teacher.level
+                  teacher.level ?? 0
                 )}`}
               >
-                Level {teacher.level} - {getLevelLabel(teacher.level)}
+                Level {teacher.level ?? 0} - {getLevelLabel(teacher.level ?? 0)}
               </span>
             </div>
           </div>
@@ -309,20 +309,21 @@ export default function TeacherProfile({
                 </label>
                 <span
                   className={`inline-block px-4 py-2 rounded-lg font-medium border-2 ${getLevelColor(
-                    teacher.level
+                    teacher.level ?? 0
                   )}`}
                 >
-                  Level {teacher.level} - {getLevelLabel(teacher.level)}
+                  Level {teacher.level ?? 0} - {getLevelLabel(teacher.level ?? 0)}
                 </span>
               </div>
 
               {/* Subjects Taught */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subjects Taught
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {teacher.subjectsTaught.map((subject, index) => (
+              {teacher.subjectsTaught && teacher.subjectsTaught.length > 0 && (
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Subjects Taught
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {teacher.subjectsTaught.map((subject, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-200"
@@ -332,6 +333,7 @@ export default function TeacherProfile({
                   ))}
                 </div>
               </div>
+              )}
 
               {/* Experience Summary */}
               <div className="md:col-span-2">

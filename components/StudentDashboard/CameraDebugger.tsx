@@ -34,15 +34,15 @@ export default function CameraDebugger({
 
   useEffect(() => {
     if (logToConsole) {
-      console.log("=== CAMERA DEBUGGER LOADED ===");
-      console.log("Available global functions (after scene loads):");
-      console.log(
+      console.warn("=== CAMERA DEBUGGER LOADED ===");
+      console.warn("Available global functions (after scene loads):");
+      console.warn(
         "- getCameraPosition() - Get current camera position and rotation"
       );
-      console.log("- setCameraPosition(x, y, z) - Set camera position");
-      console.log("- setCameraRotation(x, y, z) - Set camera rotation");
-      console.log("- Press Ctrl+C to log current camera state");
-      console.log("================================");
+      console.warn("- setCameraPosition(x, y, z) - Set camera position");
+      console.warn("- setCameraRotation(x, y, z) - Set camera rotation");
+      console.warn("- Press Ctrl+C to log current camera state");
+      console.warn("================================");
     }
   }, [logToConsole]);
 

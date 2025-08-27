@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import { userService } from "../../services/userService";
 import TeacherStoreCard from "./TeacherStoreCard";
 import TeacherProfile from "./TeacherProfile";
+import type { TeacherProfile as APITeacherProfile } from "@/types/auth.types";
 
-interface TeacherProfile {
+// Local interface for teacher list display
+interface TeacherListItem {
   userId: string;
   fullName: string;
   qualifications: string;
@@ -16,24 +18,35 @@ interface TeacherProfile {
 }
 
 interface DetailedTeacherProfile {
+  id: string;
   userId: string;
   fullName: string;
-  address: string;
-  phoneNumber: string;
-  qualifications: string;
-  experienceSummary: string;
-  yearsOfExperience: number;
-  level: number; // 0, 1, 2, 3
-  educationLevel: string;
-  bioOrTeachingPhilosophy: string;
-  subjectsTaught: string[];
+  address?: string;
+  phoneNumber?: string;
+  qualifications?: string;
+  experienceSummary?: string;
+  yearsOfExperience?: number;
+  level?: number; // 0, 1, 2, 3
+  educationLevel?: string;
+  bioOrTeachingPhilosophy?: string;
+  subjectsTaught?: string[];
   profilePictureUrl?: string;
   isVerified: boolean;
+  role: 'Teacher';
+  email: string;
+  profileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  // Optional fields from TeacherProfile type
+  birthday?: string;
+  nationalIdPassport?: string;
+  highestEducationLevel?: string;
+  shortBio?: string;
 }
 
 export default function TeachersStore() {
-  const [teachers, setTeachers] = useState<TeacherProfile[]>([]);
-  const [filteredTeachers, setFilteredTeachers] = useState<TeacherProfile[]>(
+  const [teachers, setTeachers] = useState<TeacherListItem[]>([]);
+  const [filteredTeachers, setFilteredTeachers] = useState<TeacherListItem[]>(
     []
   );
   const [loading, setLoading] = useState(true);
@@ -59,9 +72,18 @@ export default function TeachersStore() {
         setLoading(true);
         const response = await userService.getTeachers();
 
-        if (response.success && response.teachers) {
-          setTeachers(response.teachers);
-          setFilteredTeachers(response.teachers);
+        if (response.success && response.data) {
+          // Convert API TeacherProfile to TeacherListItem format
+          const teacherListItems: TeacherListItem[] = response.data.teachers.map((teacher: APITeacherProfile) => ({
+            userId: teacher.id, // Map id to userId
+            fullName: teacher.fullName,
+            qualifications: teacher.qualifications || 'Not specified',
+            experienceSummary: teacher.shortBio || 'No summary available',
+            level: teacher.yearsOfExperience ? Math.min(Math.floor((teacher.yearsOfExperience || 0) / 3), 3) : 0, // Convert years to level
+          }));
+          
+          setTeachers(teacherListItems);
+          setFilteredTeachers(teacherListItems);
         } else {
           setError(response.message || "Failed to fetch teachers");
         }
@@ -138,7 +160,7 @@ export default function TeachersStore() {
     }
   }, [teachers, searchTerm, selectedLevel]);
 
-  const handleViewProfile = (teacher: TeacherProfile) => {
+  const handleViewProfile = (teacher: TeacherListItem) => {
     // Navigate to teacher profile view
     setSelectedTeacherId(teacher.userId);
     setCurrentView("profile");
@@ -155,7 +177,7 @@ export default function TeachersStore() {
 
   const handleHireTeacher = (teacher: DetailedTeacherProfile) => {
     // Handle hiring logic here
-    console.log("Hiring teacher:", teacher.fullName);
+    console.warn("Hiring teacher:", teacher.fullName);
     alert(`Have to Complete this teacher name ${teacher.fullName}'s profile.`);
     // You can add more hiring logic here, such as:
     // - Navigate to a booking/payment page

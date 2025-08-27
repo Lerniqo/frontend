@@ -102,7 +102,6 @@ export default function ValidateEmail({
       } else {
         setError(result.message);
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_error) {
       setError("Network error. Please try again.");
     } finally {

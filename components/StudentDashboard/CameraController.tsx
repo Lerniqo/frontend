@@ -58,14 +58,14 @@ export default function CameraController({
     // Make camera position accessible globally for debugging
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (window as any).getCameraPosition = () => {
-      console.log("Camera Position:", camera.position);
-      console.log("Camera Rotation:", camera.rotation);
-      console.log("Camera Position Array:", [
+      console.warn("Camera Position:", camera.position);
+      console.warn("Camera Rotation:", camera.rotation);
+      console.warn("Camera Position Array:", [
         camera.position.x,
         camera.position.y,
         camera.position.z,
       ]);
-      console.log("Camera Rotation Array:", [
+      console.warn("Camera Rotation Array:", [
         camera.rotation.x,
         camera.rotation.y,
         camera.rotation.z,

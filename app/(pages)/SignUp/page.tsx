@@ -6,6 +6,7 @@ import ProgressBar from "@/components/SignUpPageComponents/ProgressBar";
 import NavigationSection from "@/components/SignUpPageComponents/NavigationSection";
 import Loading from "@/components/CommonComponents/Loading";
 import PublicRoute from "@/components/CommonComponents/PublicRoute";
+import { VerifyEmailSuccessData } from "@/types/auth.types";
 
 // Sign Up Steps Components
 import SignUpOrInSelect from "@/components/SignUpPageComponents/SignUpSteps/SignUpOrInSelect";
@@ -18,6 +19,8 @@ export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState("");
   const [userId, setUserId] = useState("");
+  const [verifiedUserId, setVerifiedUserId] = useState("");
+  const [verifiedRole, setVerifiedRole] = useState("");
   const [step2Valid, setStep2Valid] = useState(false);
   const [step2Data, setStep2Data] = useState({
     email: "",
@@ -180,6 +183,30 @@ export default function SignUpPage() {
     setStep2Data(data);
   };
 
+  const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
+    // Store the verification data
+    setVerifiedUserId(userData.userId);
+    setVerifiedRole(userData.role);
+    setUserId(userData.userId); // For backward compatibility
+    
+    // Validate role consistency
+    const normalizedVerifiedRole = userData.role.toLowerCase();
+    const normalizedSelectedRole = userType.toLowerCase();
+    
+    if (normalizedVerifiedRole !== normalizedSelectedRole) {
+      console.warn(
+        `Role mismatch: Selected '${userType}' but verified as '${userData.role}'. Using verified role.`
+      );
+      // Update userType to match verified role for consistency
+      setUserType(userData.role);
+    } else {
+      console.log(`Role verification successful: ${userData.role}`);
+    }
+    
+    // Proceed to profile completion step
+    setCurrentStep(4);
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -204,7 +231,7 @@ export default function SignUpPage() {
         return (
           <ValidateEmail
             email={step2Data.email}
-            onSuccess={() => setCurrentStep(4)}
+            onSuccess={handleEmailVerificationSuccess}
             setLoading={setLoading}
           />
         );
@@ -214,7 +241,7 @@ export default function SignUpPage() {
             setLoading={setLoading}
             setCurrentStep={setCurrentStep}
             userType={userType}
-            userId={userId}
+            userId={verifiedUserId || userId} // Use verifiedUserId with fallback
           />
         );
       case 5:

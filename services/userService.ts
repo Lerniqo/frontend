@@ -8,6 +8,9 @@ import {
   TeacherProfileData,
   LoginData,
   VerifyEmailData,
+  VerifyEmailResponse,
+  VerifyEmailSuccessData,
+  CompleteProfileResponse,
   UpdateProfileData,
   ChangePasswordData,
   UploadPhotoData,
@@ -47,32 +50,58 @@ const basicRegister = async (data: BasicRegisterData): Promise<ApiResponse<Basic
       role: data.role.charAt(0).toUpperCase() + data.role.slice(1),
     };
 
-    const response = await apiClient.post<ApiResponse<BasicRegisterResponse>>(
+    // Backend returns direct BasicRegisterResponse, not wrapped in ApiResponse
+    const response = await apiClient.post<BasicRegisterResponse>(
       '/user-service/users/register',
       apiData
     );
 
-    return response.data;
+    // Transform to standardized ApiResponse format
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data
+    };
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
     alert(`Registration Error: ${errorMessage}`);
-    throw error; // Re-throw the error so it can be caught by the calling code
+    
+    return {
+      success: false,
+      message: errorMessage,
+      error: error.response?.data?.error || error.message || 'Unknown error',
+    };
   }
 };
 
 /**
  * Step 2: Email verification
  */
-const verifyEmail = async (code: string, email: string): Promise<ApiResponse> => {
+const verifyEmail = async (code: string, email: string): Promise<ApiResponse<VerifyEmailSuccessData>> => {
   try {
     const payload: VerifyEmailData = { code, email };
 
-    const response = await apiClient.post<ApiResponse>(
+    // The API returns a direct response format: {message, userId, role}
+    const response = await apiClient.post<VerifyEmailResponse>(
       '/user-service/users/verify-email',
       payload
     );
 
-    return response.data;
+    // Validate the response structure
+    if (!response.data.userId || !response.data.role || !response.data.message) {
+      throw new Error('Invalid verification response format');
+    }
+
+    // Return standardized format with extracted data
+    return {
+      success: true,
+      message: response.data.message,
+      data: {
+        userId: response.data.userId,
+        role: response.data.role,
+        message: response.data.message
+      }
+    };
   } catch (error: any) {
     return {
       success: false,
@@ -83,6 +112,62 @@ const verifyEmail = async (code: string, email: string): Promise<ApiResponse> =>
 };
 
 /**
+ * Format student profile data for backend submission
+ */
+const formatStudentProfileData = (data: StudentProfileData): StudentProfileData => {
+  const formatOptionalString = (value: string | undefined): string | undefined => {
+    if (!value || value.trim() === '') return undefined;
+    return value.trim();
+  };
+
+  const formatGender = (gender: string | undefined): string | undefined => {
+    if (!gender || gender.trim() === '') return undefined;
+    const genderMap: Record<string, string> = {
+      'male': 'Male',
+      'female': 'Female',
+      'other': 'Other',
+      'prefer-not-to-say': 'Prefer not to say'
+    };
+    return genderMap[gender.toLowerCase()] || gender;
+  };
+
+  return {
+    fullName: data.fullName.trim(),
+    school: formatOptionalString(data.school),
+    birthday: formatOptionalString(data.birthday),
+    gradeLevel: data.gradeLevel,
+    gender: formatGender(data.gender),
+    parentGuardianName: formatOptionalString(data.parentGuardianName),
+    relationship: formatOptionalString(data.relationship),
+    parentContact: formatOptionalString(data.parentContact),
+    addressCity: formatOptionalString(data.addressCity),
+    learningGoals: formatOptionalString(data.learningGoals)
+  };
+};
+
+/**
+ * Format teacher profile data for backend submission
+ */
+const formatTeacherProfileData = (data: TeacherProfileData): TeacherProfileData => {
+  const formatOptionalString = (value: string | undefined): string | undefined => {
+    if (!value || value.trim() === '') return undefined;
+    return value.trim();
+  };
+
+  return {
+    fullName: data.fullName.trim(),
+    birthday: formatOptionalString(data.birthday),
+    address: formatOptionalString(data.address),
+    phoneNumber: formatOptionalString(data.phoneNumber),
+    nationalIdPassport: formatOptionalString(data.nationalIdPassport),
+    yearsOfExperience: data.yearsOfExperience,
+    highestEducationLevel: formatOptionalString(data.highestEducationLevel),
+    qualifications: formatOptionalString(data.qualifications),
+    shortBio: formatOptionalString(data.shortBio)
+  };
+};
+
+/**
  * Step 3: Complete profile with personal information
  */
 const completeProfile = async (
@@ -90,17 +175,72 @@ const completeProfile = async (
   userId: string
 ): Promise<ApiResponse<AuthResponse>> => {
   try {
-    const response = await apiClient.post<ApiResponse<AuthResponse>>(
-      `/user-service/users/complete-profile/${userId}`,
-      profileData
-    );
+    console.log('🔄 Starting profile completion for userId:', userId);
+    console.log('📝 Raw profile data:', profileData);
 
-    if (response.data.success && response.data.data?.token) {
-      setStoredToken(response.data.data.token);
+    // Format data based on the profile type
+    let formattedData: StudentProfileData | TeacherProfileData;
+    
+    // Check if the data has student-specific fields to determine type
+    if ('gradeLevel' in profileData || 'parentGuardianName' in profileData) {
+      formattedData = formatStudentProfileData(profileData as StudentProfileData);
+      console.log('👨‍🎓 Formatted as Student profile:', formattedData);
+    } else {
+      formattedData = formatTeacherProfileData(profileData as TeacherProfileData);
+      console.log('👨‍🏫 Formatted as Teacher profile:', formattedData);
     }
 
-    return response.data;
+    const endpoint = `/user-service/users/complete-profile/${userId}`;
+    console.log('🎯 API Endpoint:', `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`);
+
+    // Backend returns CompleteProfileResponse directly, not wrapped
+    const response = await apiClient.post<CompleteProfileResponse>(
+      endpoint,
+      formattedData
+    );
+
+    console.log('✅ Profile completion response:', response.data);
+
+    // Handle the actual backend response format
+    const responseData = response.data;
+    
+    // The backend returns: { message, userId, email, role, fullName }
+    // It does NOT return a token - user needs to login after profile completion
+    if (responseData.message && responseData.userId) {
+      console.log('🔐 Profile completed successfully - user will need to login');
+      
+      // Return standardized format indicating success but no token
+      return {
+        success: true,
+        message: responseData.message,
+        data: {
+          user: {
+            id: responseData.userId,
+            email: responseData.email,
+            role: responseData.role as 'Student' | 'Teacher' | 'Admin',
+            fullName: responseData.fullName,
+            isVerified: true,
+            profileCompleted: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          },
+          token: '', // Empty token - user needs to login separately
+          refreshToken: undefined
+        }
+      };
+    } else {
+      throw new Error('Invalid response format from complete-profile API');
+    }
   } catch (error: any) {
+    console.error('❌ Profile completion failed:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+      userId,
+      profileData
+    });
+    
     return {
       success: false,
       message: error.response?.data?.message || error.message || 'Profile completion failed',

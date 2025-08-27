@@ -13,22 +13,19 @@ export interface User {
   gradeLevel?: number;
   learningGoals?: string;
   qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
   school?: string;
   birthday?: string;
-  grade?: string;
   gender?: string;
   parentGuardianName?: string;
-  parentGuardianRelationship?: string;
+  relationship?: string; // Updated field name
   parentContact?: string;
-  address?: string;
+  addressCity?: string; // Updated field name for students
+  address?: string; // For teachers
   phoneNumber?: string;
-  nationalIdOrPassport?: string;
-  subjectsTaught?: string[];
+  nationalIdPassport?: string; // Updated field name
   yearsOfExperience?: number;
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
+  highestEducationLevel?: string; // Updated field name
+  shortBio?: string; // Updated field name
 }
 
 // Extended user profiles for specific roles
@@ -36,13 +33,12 @@ export interface StudentProfile extends User {
   role: 'Student';
   school?: string;
   birthday?: string;
-  grade?: string;
+  gradeLevel?: number;
   gender?: string;
   parentGuardianName?: string;
-  parentGuardianRelationship?: string;
+  relationship?: string; // Updated field name
   parentContact?: string;
-  address?: string;
-  gradeLevel?: number;
+  addressCity?: string; // Updated field name
   learningGoals?: string;
 }
 
@@ -51,14 +47,11 @@ export interface TeacherProfile extends User {
   birthday?: string;
   address?: string;
   phoneNumber?: string;
-  nationalIdOrPassport?: string;
-  subjectsTaught?: string[];
+  nationalIdPassport?: string; // Updated field name
   yearsOfExperience?: number;
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
+  highestEducationLevel?: string; // Updated field name
   qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
+  shortBio?: string; // Updated field name
 }
 
 // Registration and profile data interfaces
@@ -72,13 +65,12 @@ export interface StudentProfileData {
   fullName: string;
   school?: string;
   birthday?: string;
-  grade?: string;
+  gradeLevel?: number; // Changed from 'grade' string to number
   gender?: string;
   parentGuardianName?: string;
-  parentGuardianRelationship?: string;
+  relationship?: string; // Changed from 'parentGuardianRelationship'
   parentContact?: string;
-  address?: string;
-  gradeLevel?: number;
+  addressCity?: string; // Changed from 'address'
   learningGoals?: string;
 }
 
@@ -87,14 +79,11 @@ export interface TeacherProfileData {
   birthday?: string;
   address?: string;
   phoneNumber?: string;
-  nationalIdOrPassport?: string;
-  subjectsTaught?: string[];
+  nationalIdPassport?: string; // Changed from 'nationalIdOrPassport'
   yearsOfExperience?: number;
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
+  highestEducationLevel?: string; // Changed from 'educationLevel'
   qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
+  shortBio?: string; // Changed from 'bioOrTeachingPhilosophy'
 }
 
 // Authentication and API related interfaces
@@ -106,6 +95,29 @@ export interface LoginData {
 export interface VerifyEmailData {
   code: string;
   email: string;
+}
+
+// Verify email API response (direct format from backend)
+export interface VerifyEmailResponse {
+  message: string;
+  userId: string;
+  role: string;
+}
+
+// Complete profile API response (direct format from backend)
+export interface CompleteProfileResponse {
+  message: string;
+  userId: string;
+  email: string;
+  role: string;
+  fullName: string;
+}
+
+// Processed verification data for frontend components
+export interface VerifyEmailSuccessData {
+  userId: string;
+  role: string;
+  message: string;
 }
 
 export interface UpdateProfileData {

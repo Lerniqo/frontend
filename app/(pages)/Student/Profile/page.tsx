@@ -82,9 +82,6 @@ export default function StudentProfile() {
         email: formData.email,
         gradeLevel: formData.gradeLevel,
         learningGoals: formData.learningGoals,
-        qualifications: formData.qualifications,
-        experienceYears: formData.experienceYears,
-        bio: formData.bio,
         profilePictureUrl: formData.profilePictureUrl,
       };
 
@@ -307,26 +304,6 @@ export default function StudentProfile() {
                 ) : (
                   <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[80px]">
                     {formData.learningGoals || "No learning goals specified"}
-                  </p>
-                )}
-              </div>
-
-              {/* Bio */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bio
-                </label>
-                {isEditing ? (
-                  <textarea
-                    name="bio"
-                    value={formData.bio || ""}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                ) : (
-                  <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[100px]">
-                    {formData.bio || "No bio available"}
                   </p>
                 )}
               </div>

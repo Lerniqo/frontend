@@ -14,9 +14,19 @@ apiClient.interceptors.request.use(
     if (accessToken) {
       config.headers.set('Authorization', `Bearer ${accessToken}`);
     }
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 API Request:', {
+        method: config.method?.toUpperCase(),
+        url: config.url,
+        baseURL: config.baseURL,
+        data: config.data
+      });
+    }
     return config;
   },
   (error) => {
+    console.error('❌ Request Error:', error);
     return Promise.reject(error);
   }
 );
@@ -30,9 +40,26 @@ let failedRequestsQueue: Array<{
 
 apiClient.interceptors.response.use(
   (response: AxiosResponse<AuthResponse>) => {
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ API Response:', {
+        status: response.status,
+        url: response.config.url,
+        data: response.data
+      });
+    }
     return response;
   },
   async (error) => {
+    // Debug logging for development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ API Error:', {
+        status: error.response?.status,
+        url: error.config?.url,
+        message: error.response?.data?.message || error.message,
+        data: error.response?.data
+      });
+    }
     const originalRequest = error.config;
 
     // If error is 401 and we haven't already tried to refresh the token

@@ -4,31 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
+import { User } from "@/types/auth.types";
+import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary
 import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjust the import path as necessary
 
-interface UserProfile {
-  id: string;
-  email: string;
-  role: string;
-  status: string;
-  fullName: string;
-  profilePictureUrl: string;
-  gradeLevel: number | null;
-  learningGoals: string | null;
-  qualifications: string | null;
-  experienceYears: number | null;
-  bio: string | null;
-  isVerified: boolean | null;
-}
-
 export default function StudentProfile() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserProfile | null>(null);
+  const [formData, setFormData] = useState<User | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -47,10 +34,10 @@ export default function StudentProfile() {
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const response = await userService.getMyProfile();
-      if (response.success && response.user) {
-        setProfile(response.user);
-        setFormData(response.user);
+      const response = await userService.getCurrentUser();
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setFormData(response.data);
       }
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -95,17 +82,14 @@ export default function StudentProfile() {
         email: formData.email,
         gradeLevel: formData.gradeLevel,
         learningGoals: formData.learningGoals,
-        qualifications: formData.qualifications,
-        experienceYears: formData.experienceYears,
-        bio: formData.bio,
         profilePictureUrl: formData.profilePictureUrl,
       };
 
-      const response = await userService.updateMyProfile(updateData);
+      const response = await userService.updateProfile(updateData);
 
-      if (response.success && response.user) {
-        setProfile(response.user);
-        setFormData(response.user);
+      if (response.success && response.data) {
+        setProfile(response.data);
+        setFormData(response.data);
         setIsEditing(false);
         alert("Profile updated successfully!");
       } else {
@@ -206,12 +190,12 @@ export default function StudentProfile() {
               )}
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  profile.status === "active"
+                  profile.isVerified
                     ? "bg-green-100 text-green-800"
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {profile.status}
+                {profile.isVerified ? "Verified" : "Pending"}
               </span>
             </div>
           </div>
@@ -223,9 +207,11 @@ export default function StudentProfile() {
             {/* Profile Picture Section */}
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <img
-                  src={formData.profilePictureUrl}
+                <Image
+                  src={formData.profilePictureUrl || "/Profile.jpg"}
                   alt="Profile"
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                 />
               </div>
@@ -233,7 +219,7 @@ export default function StudentProfile() {
                 <h2 className="text-xl font-semibold text-gray-800">
                   {formData.fullName}
                 </h2>
-                <p className="text-gray-600 capitalize">{formData.role}</p>
+                <p className="text-gray-600">{formData.role}</p>
                 <p className="text-sm text-gray-500">ID: {formData.id}</p>
               </div>
             </div>
@@ -318,26 +304,6 @@ export default function StudentProfile() {
                 ) : (
                   <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[80px]">
                     {formData.learningGoals || "No learning goals specified"}
-                  </p>
-                )}
-              </div>
-
-              {/* Bio */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bio
-                </label>
-                {isEditing ? (
-                  <textarea
-                    name="bio"
-                    value={formData.bio || ""}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                ) : (
-                  <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[100px]">
-                    {formData.bio || "No bio available"}
                   </p>
                 )}
               </div>

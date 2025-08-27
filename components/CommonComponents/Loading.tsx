@@ -1,3 +1,15 @@
+'use client';
+
+import React from 'react';
+
+export const Loading: React.FC = () => {
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+  );
+};
+
 export default function LoadingComponent() {
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-blue-100/80 via-green-50/80 to-white/80 backdrop-blur-sm z-50 flex items-center justify-center">

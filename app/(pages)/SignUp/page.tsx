@@ -5,6 +5,8 @@ import { gsap } from "gsap";
 import ProgressBar from "@/components/SignUpPageComponents/ProgressBar";
 import NavigationSection from "@/components/SignUpPageComponents/NavigationSection";
 import Loading from "@/components/CommonComponents/Loading";
+import PublicRoute from "@/components/CommonComponents/PublicRoute";
+import { VerifyEmailSuccessData } from "@/types/auth.types";
 
 // Sign Up Steps Components
 import SignUpOrInSelect from "@/components/SignUpPageComponents/SignUpSteps/SignUpOrInSelect";
@@ -16,6 +18,9 @@ import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/Pr
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState("");
+  const [userId, setUserId] = useState("");
+  const [verifiedUserId, setVerifiedUserId] = useState("");
+  const [verifiedRole, setVerifiedRole] = useState("");
   const [step2Valid, setStep2Valid] = useState(false);
   const [step2Data, setStep2Data] = useState({
     email: "",
@@ -28,6 +33,16 @@ export default function SignUpPage() {
   const navigationRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(false);
+
+  // Updated step descriptions for the new two-step flow
+  const stepDescriptions = [
+    "Welcome",           // Step 0: Welcome/Selection
+    "Choose Role",       // Step 1: User type selection
+    "Basic Info",        // Step 2: Email & password registration
+    "Verify Email",      // Step 3: Email verification
+    "Complete Profile",  // Step 4: Profile completion
+    "Welcome!"           // Step 5: Success
+  ];
 
   const totalSteps = 5;
 
@@ -168,6 +183,30 @@ export default function SignUpPage() {
     setStep2Data(data);
   };
 
+  const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
+    // Store the verification data
+    setVerifiedUserId(userData.userId);
+    setVerifiedRole(userData.role);
+    setUserId(userData.userId); // For backward compatibility
+    
+    // Validate role consistency
+    const normalizedVerifiedRole = userData.role.toLowerCase();
+    const normalizedSelectedRole = userType.toLowerCase();
+    
+    if (normalizedVerifiedRole !== normalizedSelectedRole) {
+      console.warn(
+        `Role mismatch: Selected '${userType}' but verified as '${userData.role}'. Using verified role.`
+      );
+      // Update userType to match verified role for consistency
+      setUserType(userData.role);
+    } else {
+      console.log(`Role verification successful: ${userData.role}`);
+    }
+    
+    // Proceed to profile completion step
+    setCurrentStep(4);
+  };
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -192,7 +231,7 @@ export default function SignUpPage() {
         return (
           <ValidateEmail
             email={step2Data.email}
-            onSuccess={() => setCurrentStep(4)}
+            onSuccess={handleEmailVerificationSuccess}
             setLoading={setLoading}
           />
         );
@@ -202,6 +241,7 @@ export default function SignUpPage() {
             setLoading={setLoading}
             setCurrentStep={setCurrentStep}
             userType={userType}
+            userId={verifiedUserId || userId} // Use verifiedUserId with fallback
           />
         );
       case 5:
@@ -209,21 +249,34 @@ export default function SignUpPage() {
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                Review & Confirm
+                🎉 Welcome to Your Learning Journey!
               </h2>
               <p className="text-gray-600 text-lg">
-                Please review your information
+                Your profile has been completed successfully. You can now access all the features of our platform.
               </p>
             </div>
-            <div className="bg-gray-100 p-8 rounded-lg text-center">
-              <p className="text-gray-600">Review & Confirmation Placeholder</p>
-              {userType && (
-                <div className="mt-4 p-3 bg-white rounded border">
-                  <p className="text-sm text-gray-600">
-                    Role: <span className="font-medium">{userType}</span>
-                  </p>
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg text-center border border-green-200">
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
-              )}
+                <h3 className="text-xl font-semibold text-green-800 mb-2">
+                  Registration Complete!
+                </h3>
+                <p className="text-green-700">
+                  You&apos;re all set to start your learning adventure as a <span className="font-semibold capitalize">{userType}</span>.
+                </p>
+              </div>
+              <div className="mt-6">
+                <button
+                  onClick={() => window.location.href = '/Login'}
+                  className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  Continue to Login
+                </button>
+              </div>
             </div>
           </div>
         );
@@ -233,40 +286,46 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-green-50 to-white flex items-center justify-center p-4">
-      {loading && <Loading />}
-      <div
-        ref={cardRef}
-        className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden"
-      >
-        {/* Progress Bar Section */}
+    <PublicRoute>
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-green-50 to-white flex items-center justify-center p-4">
+        {loading && <Loading />}
         <div
-          ref={progressBarRef}
-          className="bg-gradient-to-r from-blue-50 to-green-50 p-6 border-b border-gray-100"
+          ref={cardRef}
+          className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          <ProgressBar currentStep={currentStep} />
-        </div>
-
-        {/* Content Section */}
-        <div className="p-10">
-          <div ref={contentRef} className="min-h-[400px]">
-            {renderStepContent()}
+          {/* Progress Bar Section */}
+          <div
+            ref={progressBarRef}
+            className="bg-gradient-to-r from-blue-50 to-green-50 p-6 border-b border-gray-100"
+          >
+            <ProgressBar 
+              currentStep={currentStep} 
+              stepDescriptions={stepDescriptions}
+            />
           </div>
-        </div>
 
-        {/* Navigation Section */}
-        <NavigationSection
-          ref={navigationRef}
-          currentStep={currentStep}
-          setCurrentStep={setCurrentStep}
-          totalSteps={totalSteps}
-          animateStepTransition={animateStepTransition}
-          isStep2Valid={step2Valid}
-          setLoading={setLoading}
-          step2Data={step2Data}
-          userType={userType}
-        />
+          {/* Content Section */}
+          <div className="p-10">
+            <div ref={contentRef} className="min-h-[400px]">
+              {renderStepContent()}
+            </div>
+          </div>
+
+          {/* Navigation Section */}
+          <NavigationSection
+            ref={navigationRef}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            totalSteps={totalSteps}
+            animateStepTransition={animateStepTransition}
+            isStep2Valid={step2Valid}
+            setLoading={setLoading}
+            step2Data={step2Data}
+            userType={userType}
+            setUserId={setUserId}
+          />
+        </div>
       </div>
-    </div>
+    </PublicRoute>
   );
 }

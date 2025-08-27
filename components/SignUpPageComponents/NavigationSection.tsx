@@ -10,6 +10,7 @@ export default function NavigationSection({
   setLoading,
   step2Data,
   userType,
+  setUserId,
 }: {
   ref: React.Ref<HTMLDivElement>;
   currentStep: number;
@@ -24,6 +25,7 @@ export default function NavigationSection({
     confirmPassword: string;
   };
   userType: string;
+  setUserId: (userId: string) => void;
 }) {
   const handlePrevStep = () => {
     if (currentStep > 0) {
@@ -35,15 +37,33 @@ export default function NavigationSection({
   };
 
   const handleNextStep = async () => {
-    // For step 2 (Register Email), check if form is valid
+    // For step 2 (Register Email), check if form is valid and register user
     if (currentStep === 2) {
       if (!isStep2Valid) {
         return;
       }
       setLoading(true);
-      //Handle Register
-      await userService.register(userType, step2Data.email, step2Data.password);
-      setLoading(false);
+      
+      return userService
+        .basicRegister({
+          email: step2Data.email,
+          password: step2Data.password,
+          role: (userType.charAt(0).toUpperCase() + userType.slice(1)) as
+            | "Student"
+            | "Teacher",
+        })
+        .then((res) => {
+          // Registration successful
+          setCurrentStep(3);
+        })
+        .catch((error) => {
+          console.error("Registration error:", error);
+          // Error is already displayed by the userService alert
+          // No need to show additional alert here
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
 
     if (currentStep < totalSteps) {

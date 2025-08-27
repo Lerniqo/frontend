@@ -3,10 +3,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../../contexts/AuthContext";
+import Link from "next/link";
 
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
   const navRef = useRef(null);
   const logoRef = useRef(null);
   const linksRef = useRef(null);
@@ -181,11 +184,44 @@ const NavBar = () => {
 
             {/* Desktop CTA Button */}
             <div ref={ctaRef} className="hidden lg:block">
-              <button className="group relative px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:shadow-purple-500/25">
-                <span className="relative z-10">Sign Up</span>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
-              </button>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700 font-medium">
+                    Welcome, {user?.fullName}
+                  </span>
+                  <Link
+                    href={user?.role === 'Student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
+                    className="group relative px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:shadow-purple-500/25"
+                  >
+                    <span className="relative z-10">Dashboard</span>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
+                  </Link>
+                  <button
+                    onClick={logout}
+                    className="px-4 py-2 text-gray-700 hover:text-red-600 font-medium transition-colors duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <Link
+                    href="/Login"
+                    className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/SignUp"
+                    className="group relative px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:shadow-purple-500/25"
+                  >
+                    <span className="relative z-10">Sign Up</span>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300 animate-pulse"></div>
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -224,9 +260,40 @@ const NavBar = () => {
                   </a>
                 ))}
                 <div className="pt-4">
-                  <button className="w-full px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:scale-105">
-                    Sign Up
-                  </button>
+                  {isAuthenticated ? (
+                    <div className="space-y-3">
+                      <div className="text-center text-gray-700 font-medium py-2 border-b border-gray-100">
+                        Welcome, {user?.fullName}
+                      </div>
+                      <Link
+                        href={user?.role === 'Student' ? '/Student/Dashboard' : '/Teacher/Dashboard'}
+                        className="block w-full px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:scale-105 text-center"
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={logout}
+                        className="w-full px-6 py-3 text-gray-700 hover:text-red-600 font-medium transition-colors duration-300 border border-gray-300 rounded-full hover:bg-red-50"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Link
+                        href="/Login"
+                        className="block w-full px-6 py-3 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 border border-gray-300 rounded-full hover:bg-blue-50 text-center"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/SignUp"
+                        className="block w-full px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:scale-105 text-center"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

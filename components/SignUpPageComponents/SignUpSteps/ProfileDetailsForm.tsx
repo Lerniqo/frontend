@@ -1,45 +1,18 @@
 import StudentProfileDetailsForm from "../StudentProfileDetailsForm";
 import TeacherProfileDetailsForm from "../TeacherProfileDetailsForm";
-
 import { userService } from "../../../services/userService";
-
-interface StudentProfileData {
-  fullName: string;
-  school: string;
-  birthday: string;
-  grade: string;
-  gender?: string;
-  parentGuardianName: string;
-  parentGuardianRelationship: string;
-  parentContact: string;
-  address?: string;
-  profilePicture?: File;
-}
-
-interface TeacherProfileData {
-  fullName: string;
-  birthday: string;
-  address: string;
-  phoneNumber: string;
-  nationalIdOrPassport: string;
-  idProofFront?: File;
-  idProofBack?: File;
-  subjectsTaught: string[];
-  yearsOfExperience: number;
-  educationLevel: string;
-  bioOrTeachingPhilosophy: string;
-  profilePicture?: File;
-  certificates: File[];
-}
+import { StudentProfileData, TeacherProfileData } from "@/types/auth.types";
 
 export default function ProfileDetailsForm({
   setLoading,
   setCurrentStep,
   userType,
+  userId,
 }: {
   setLoading: (loading: boolean) => void;
   setCurrentStep: (step: number) => void;
   userType: string;
+  userId: string;
 }) {
   const handleSubmit = async (data: StudentProfileData | TeacherProfileData) => {
     try {
@@ -48,10 +21,10 @@ export default function ProfileDetailsForm({
 
       let response;
 
-      if (userType === "student") {
-        response = await userService.updateStudentProfileData(data as StudentProfileData);
-      } else if (userType === "teacher") {
-        response = await userService.updateTeacherProfileData(data as TeacherProfileData);
+      if (userType === "Student") {
+        response = await userService.completeProfile(data as StudentProfileData, userId);
+      } else if (userType === "Teacher") {
+        response = await userService.completeProfile(data as TeacherProfileData, userId);
       } else {
         throw new Error("Invalid user type");
       }
@@ -61,12 +34,12 @@ export default function ProfileDetailsForm({
         setCurrentStep(5);
       } else {
         // Handle API error response
-        console.error("Profile update failed:", response.message);
-        alert(`Profile update failed: ${response.message}`);
+        console.error("Profile completion failed:", response.message);
+        alert(`Profile completion failed: ${response.message}`);
       }
     } catch (error) {
       // Handle unexpected errors
-      console.error("Unexpected error during profile update:", error);
+      console.error("Unexpected error during profile completion:", error);
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
       alert(`Error: ${errorMessage}`);
@@ -74,14 +47,9 @@ export default function ProfileDetailsForm({
       setLoading(false);
     }
   };
-  //   return (
-  //     <div>
-  //       <StudentProfileDetailsForm onSubmit={handleSubmit} />
-  //     </div>
-  //   );
-  if (userType === "student") {
+  if (userType === "Student") {
     return <StudentProfileDetailsForm onSubmit={handleSubmit} />;
-  } else if (userType === "teacher") {
+  } else if (userType === "Teacher") {
     return <TeacherProfileDetailsForm onSubmit={handleSubmit} />;
   }
 }

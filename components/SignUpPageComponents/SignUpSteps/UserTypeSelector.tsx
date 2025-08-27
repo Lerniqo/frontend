@@ -22,21 +22,21 @@ interface UserTypeOption {
 
 const userTypes: UserTypeOption[] = [
   {
-    id: "teacher",
+    id: "Teacher",
     label: "Teacher",
     icon: FaChalkboardTeacher,
     description:
       "Create lessons and guide students through their learning journey",
   },
   {
-    id: "student",
+    id: "Student",
     label: "Student",
     icon: FaUserGraduate,
     description:
       "Access personalized lessons, quizzes, and contests to improve skills",
   },
   {
-    id: "admin",
+    id: "Admin",
     label: "Admin",
     icon: FaUserShield,
     description:

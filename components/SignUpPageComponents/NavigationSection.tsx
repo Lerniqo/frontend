@@ -50,7 +50,8 @@ export default function NavigationSection({
             | "Student"
             | "Teacher",
         })
-        .then(() => {
+        .then((res) => {
+          if(!res.success) throw new Error(res.message);
           // Registration successful
           setCurrentStep(3);
         })

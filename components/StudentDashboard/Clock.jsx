@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
 
+import { Html } from "@react-three/drei";
+
 export default function Clock(props) {
   const [hovered, setHovered] = useState(null);
 
@@ -48,7 +50,27 @@ export default function Clock(props) {
         });
       }}
     >
-      <primitive ref={clockRef} object={props.nodes.Clock} />
+      <primitive ref={clockRef} object={props.nodes.Clock}>
+        <Html
+          position={[0, 0, 0.2]} // adjust Y to appear below the radio
+          center
+        >
+          <div
+            style={{
+              color: "#000000",
+              fontWeight: "900",
+              fontSize: "25px",
+              fontFamily: "Comic Sans MS, cursive, fantasy",
+              textAlign: "center",
+              userSelect: "none",
+              letterSpacing: "0.8px",
+              transform: "scale(1.1)",
+            }}
+          >
+            01:29:44
+          </div>
+        </Html>
+      </primitive>
     </group>
   );
 }

@@ -382,7 +382,7 @@ const SyllabusGraph = () => {
 
         {/* Nodes */}
         <g className="nodes">
-          {nodes.map((node, index) => {
+          {nodes.map((node) => {
             const scale = getNodeScale(node);
             const opacity = getNodeOpacity(node);
 

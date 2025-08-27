@@ -10,7 +10,6 @@ export default function NavigationSection({
   setLoading,
   step2Data,
   userType,
-  setUserId,
 }: {
   ref: React.Ref<HTMLDivElement>;
   currentStep: number;
@@ -25,7 +24,6 @@ export default function NavigationSection({
     confirmPassword: string;
   };
   userType: string;
-  setUserId: (userId: string) => void;
 }) {
   const handlePrevStep = () => {
     if (currentStep > 0) {
@@ -52,7 +50,7 @@ export default function NavigationSection({
             | "Student"
             | "Teacher",
         })
-        .then((res) => {
+        .then(() => {
           // Registration successful
           setCurrentStep(3);
         })

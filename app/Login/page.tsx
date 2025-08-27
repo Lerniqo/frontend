@@ -16,7 +16,7 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push('/dashboard'); // Redirect to dashboard after successful login
-    } catch (err) {
+    } catch (_err) {
       setError('Login failed. Please check your credentials.');
     }
   };

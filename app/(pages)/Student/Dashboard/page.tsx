@@ -1,15 +1,7 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
-import { useState } from "react";
-
-import RoomModel from "@/components/StudentDashboard/RoomModel";
-import CameraController from "@/components/StudentDashboard/CameraController";
-import LoadingComponent from "../../../../components/CommonComponents/Loading";
 import '@/app/globals.css';
 import { ProtectedRoute } from '@/components/CommonComponents/ProtectedRoute';
-import StudentDashboardNavigation from "../../../../components/StudentDashboard/NavigationButtons/StudentDashboardNavigation";
 
 export default function StudentDashboard() {
   return (

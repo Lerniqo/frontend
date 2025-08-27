@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { userService } from "../../../services/userService";
+import { VerifyEmailSuccessData } from "../../../types/auth.types";
 
 interface ValidateEmailProps {
   email: string;
   setLoading: (loading: boolean) => void;
-  onSuccess: () => void;
+  onSuccess: (userData: VerifyEmailSuccessData) => void;
   onBack?: () => void;
 }
 
@@ -82,9 +83,9 @@ export default function ValidateEmail({
 
     try {
       setLoading(true);
-  const result = await userService.verifyEmail(code, email);
+      const result = await userService.verifyEmail(code, email);
       setLoading(false);
-      if (result.success) {
+      if (result.success && result.data) {
         // Success animation
         if (successRef.current) {
           gsap.fromTo(
@@ -95,7 +96,8 @@ export default function ValidateEmail({
         }
 
         setTimeout(() => {
-          onSuccess();
+          // Pass the verification data to the onSuccess callback
+          onSuccess(result.data!);
         }, 1500);
       } else {
         setError(result.message);

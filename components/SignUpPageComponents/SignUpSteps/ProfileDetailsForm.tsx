@@ -1,45 +1,18 @@
 import StudentProfileDetailsForm from "../StudentProfileDetailsForm";
 import TeacherProfileDetailsForm from "../TeacherProfileDetailsForm";
-
 import { userService } from "../../../services/userService";
-
-interface StudentProfileData {
-  fullName: string;
-  school?: string;
-  birthday?: string;
-  grade?: string;
-  gender?: string;
-  parentGuardianName?: string;
-  parentGuardianRelationship?: string;
-  parentContact?: string;
-  address?: string;
-  gradeLevel?: number;
-  learningGoals?: string;
-}
-
-interface TeacherProfileData {
-  fullName: string;
-  birthday?: string;
-  address?: string;
-  phoneNumber?: string;
-  nationalIdOrPassport?: string;
-  subjectsTaught?: string[];
-  yearsOfExperience?: number;
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
-  qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
-}
+import { StudentProfileData, TeacherProfileData } from "@/types/auth.types";
 
 export default function ProfileDetailsForm({
   setLoading,
   setCurrentStep,
   userType,
+  userId,
 }: {
   setLoading: (loading: boolean) => void;
   setCurrentStep: (step: number) => void;
   userType: string;
+  userId: string;
 }) {
   const handleSubmit = async (data: StudentProfileData | TeacherProfileData) => {
     try {
@@ -49,9 +22,9 @@ export default function ProfileDetailsForm({
       let response;
 
       if (userType === "Student") {
-        response = await userService.completeProfile(data as StudentProfileData);
+        response = await userService.completeProfile(data as StudentProfileData, userId);
       } else if (userType === "Teacher") {
-        response = await userService.completeProfile(data as TeacherProfileData);
+        response = await userService.completeProfile(data as TeacherProfileData, userId);
       } else {
         throw new Error("Invalid user type");
       }

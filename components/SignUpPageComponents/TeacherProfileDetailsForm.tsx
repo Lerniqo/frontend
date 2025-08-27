@@ -3,21 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { FaSpinner } from "react-icons/fa";
-
-interface TeacherProfileData {
-  fullName: string;
-  birthday?: string;
-  address?: string;
-  phoneNumber?: string;
-  nationalIdOrPassport?: string;
-  subjectsTaught?: string[];
-  yearsOfExperience?: number;
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
-  qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
-}
+import { TeacherProfileData } from "@/types/auth.types";
 
 interface TeacherProfileDetailsFormProps {
   onSubmit?: (data: TeacherProfileData) => void;
@@ -36,14 +22,11 @@ export default function TeacherProfileDetailsForm({
     birthday: initialData.birthday || "",
     address: initialData.address || "",
     phoneNumber: initialData.phoneNumber || "",
-    nationalIdOrPassport: initialData.nationalIdOrPassport || "",
-    subjectsTaught: initialData.subjectsTaught || [],
+    nationalIdPassport: initialData.nationalIdPassport || "",
     yearsOfExperience: initialData.yearsOfExperience || 0,
-    educationLevel: initialData.educationLevel || "",
-    bioOrTeachingPhilosophy: initialData.bioOrTeachingPhilosophy || "",
+    highestEducationLevel: initialData.highestEducationLevel || "",
     qualifications: initialData.qualifications || "",
-    experienceYears: initialData.experienceYears || 0,
-    bio: initialData.bio || "",
+    shortBio: initialData.shortBio || "",
   });
 
   // Error state
@@ -55,35 +38,13 @@ export default function TeacherProfileDetailsForm({
   const formRef = useRef<HTMLDivElement>(null);
   const errorRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Subject options
-  const subjectOptions = [
-    "Mathematics",
-    "Science",
-    "English",
-    "History",
-    "Geography",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Literature",
-    "Art",
-    "Music",
-    "Physical Education",
-    "Computer Science",
-    "Economics",
-    "Psychology",
-    "Philosophy",
-    "Foreign Languages",
-    "Other",
-  ];
-
   // Education level options
   const educationLevelOptions = [
     { value: "", label: "Select Education Level (Optional)" },
-    { value: "bachelor", label: "Bachelor's Degree" },
-    { value: "master", label: "Master's Degree" },
-    { value: "phd", label: "PhD/Doctorate" },
-    { value: "other", label: "Other" },
+    { value: "Bachelor's Degree", label: "Bachelor's Degree" },
+    { value: "Master's Degree", label: "Master's Degree" },
+    { value: "PhD in Chemistry", label: "PhD/Doctorate" },
+    { value: "Other", label: "Other" },
   ];
 
   // Animation effects
@@ -124,7 +85,7 @@ export default function TeacherProfileDetailsForm({
           }
         }
         return "";
-      case "bioOrTeachingPhilosophy":
+      case "shortBio":
         if (value && (value as string).trim() && (value as string).length > 300) {
           return "Bio must be 300 characters or less";
         }
@@ -155,16 +116,6 @@ export default function TeacherProfileDetailsForm({
         });
       }
     }
-  };
-
-  // Handle subject selection
-  const handleSubjectToggle = (subject: string) => {
-    const currentSubjects = formData.subjectsTaught || [];
-    const newSubjects = currentSubjects.includes(subject)
-      ? currentSubjects.filter((s) => s !== subject)
-      : [...currentSubjects, subject];
-
-    handleInputChange("subjectsTaught", newSubjects);
   };
 
   // Show error with animation
@@ -346,9 +297,9 @@ export default function TeacherProfileDetailsForm({
               </label>
               <input
                 type="text"
-                value={formData.nationalIdOrPassport}
+                value={formData.nationalIdPassport}
                 onChange={(e) =>
-                  handleInputChange("nationalIdOrPassport", e.target.value)
+                  handleInputChange("nationalIdPassport", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 placeholder="Enter ID or passport number (optional)"
@@ -362,29 +313,6 @@ export default function TeacherProfileDetailsForm({
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Professional Information
           </h3>
-
-          {/* Subjects Taught */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Subjects Taught
-            </label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 border border-gray-300 rounded-lg max-h-48 overflow-y-auto">
-              {subjectOptions.map((subject) => (
-                <label
-                  key={subject}
-                  className="flex items-center space-x-2 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={(formData.subjectsTaught || []).includes(subject)}
-                    onChange={() => handleSubjectToggle(subject)}
-                    className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <span className="text-sm text-gray-700">{subject}</span>
-                </label>
-              ))}
-            </div>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Years of Experience */}
@@ -413,9 +341,9 @@ export default function TeacherProfileDetailsForm({
                 Highest Education Level
               </label>
               <select
-                value={formData.educationLevel}
+                value={formData.highestEducationLevel}
                 onChange={(e) =>
-                  handleInputChange("educationLevel", e.target.value)
+                  handleInputChange("highestEducationLevel", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               >
@@ -450,9 +378,9 @@ export default function TeacherProfileDetailsForm({
               Short Bio / Teaching Philosophy (Max 300 characters)
             </label>
             <textarea
-              value={formData.bioOrTeachingPhilosophy}
+              value={formData.shortBio}
               onChange={(e) =>
-                handleInputChange("bioOrTeachingPhilosophy", e.target.value)
+                handleInputChange("shortBio", e.target.value)
               }
               maxLength={300}
               rows={4}
@@ -460,16 +388,16 @@ export default function TeacherProfileDetailsForm({
               placeholder="Describe your teaching philosophy or background... (optional)"
             />
             <div className="text-right text-sm text-gray-500 mt-1">
-              {(formData.bioOrTeachingPhilosophy || "").length}/300
+              {(formData.shortBio || "").length}/300
             </div>
-            {errors.bioOrTeachingPhilosophy && (
+            {errors.shortBio && (
               <div
                 ref={(el) => {
-                  errorRefs.current.bioOrTeachingPhilosophy = el;
+                  errorRefs.current.shortBio = el;
                 }}
                 className="text-red-500 text-sm mt-1"
               >
-                {errors.bioOrTeachingPhilosophy}
+                {errors.shortBio}
               </div>
             )}
           </div>

@@ -4,34 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
+import { User } from "@/types/auth.types";
 import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary
 import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjust the import path as necessary
 
-interface UserProfile {
-  id: string;
-  email: string;
-  role: 'Student' | 'Teacher' | 'Admin';
-  fullName: string;
-  profilePictureUrl?: string;
-  isVerified: boolean;
-  profileCompleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  gradeLevel?: number;
-  learningGoals?: string;
-  qualifications?: string;
-  experienceYears?: number;
-  bio?: string;
-}
-
 export default function StudentProfile() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<UserProfile | null>(null);
+  const [formData, setFormData] = useState<User | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -98,9 +82,6 @@ export default function StudentProfile() {
         email: formData.email,
         gradeLevel: formData.gradeLevel,
         learningGoals: formData.learningGoals,
-        qualifications: formData.qualifications,
-        experienceYears: formData.experienceYears,
-        bio: formData.bio,
         profilePictureUrl: formData.profilePictureUrl,
       };
 
@@ -323,26 +304,6 @@ export default function StudentProfile() {
                 ) : (
                   <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[80px]">
                     {formData.learningGoals || "No learning goals specified"}
-                  </p>
-                )}
-              </div>
-
-              {/* Bio */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Bio
-                </label>
-                {isEditing ? (
-                  <textarea
-                    name="bio"
-                    value={formData.bio || ""}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                ) : (
-                  <p className="w-full px-4 py-2 bg-gray-50 rounded-lg text-gray-800 min-h-[100px]">
-                    {formData.bio || "No bio available"}
                   </p>
                 )}
               </div>

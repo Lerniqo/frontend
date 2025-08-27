@@ -3,20 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { FaSpinner } from "react-icons/fa";
-
-interface StudentProfileData {
-  fullName: string;
-  school?: string;
-  birthday?: string;
-  grade?: string;
-  gender?: string;
-  parentGuardianName?: string;
-  parentGuardianRelationship?: string;
-  parentContact?: string;
-  address?: string;
-  gradeLevel?: number;
-  learningGoals?: string;
-}
+import { StudentProfileData } from "@/types/auth.types";
 
 interface StudentProfileDetailsFormProps {
   onSubmit?: (data: StudentProfileData) => void;
@@ -34,14 +21,23 @@ export default function StudentProfileDetailsForm({
     fullName: initialData.fullName || "",
     school: initialData.school || "",
     birthday: initialData.birthday || "",
-    grade: initialData.grade || "",
+    gradeLevel: initialData.gradeLevel || undefined,
     gender: initialData.gender || "",
     parentGuardianName: initialData.parentGuardianName || "",
-    parentGuardianRelationship: initialData.parentGuardianRelationship || "",
+    relationship: initialData.relationship || "",
     parentContact: initialData.parentContact || "",
-    address: initialData.address || "",
-    gradeLevel: initialData.gradeLevel || undefined,
+    addressCity: initialData.addressCity || "",
     learningGoals: initialData.learningGoals || "",
+  });
+
+  // Separate state for grade UI display
+  const [selectedGrade, setSelectedGrade] = useState<string>(() => {
+    // Initialize selectedGrade based on gradeLevel
+    if (initialData.gradeLevel !== undefined) {
+      const gradeOption = gradeOptions.find(option => option.numericValue === initialData.gradeLevel);
+      return gradeOption?.value || "";
+    }
+    return "";
   });
 
   // Error state
@@ -53,22 +49,22 @@ export default function StudentProfileDetailsForm({
   const formRef = useRef<HTMLDivElement>(null);
   const errorRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Grade options
+  // Grade options with numeric mapping
   const gradeOptions = [
-    { value: "", label: "Select Grade (Optional)" },
-    { value: "kindergarten", label: "Kindergarten" },
-    { value: "1", label: "1st Grade" },
-    { value: "2", label: "2nd Grade" },
-    { value: "3", label: "3rd Grade" },
-    { value: "4", label: "4th Grade" },
-    { value: "5", label: "5th Grade" },
-    { value: "6", label: "6th Grade" },
-    { value: "7", label: "7th Grade" },
-    { value: "8", label: "8th Grade" },
-    { value: "9", label: "9th Grade" },
-    { value: "10", label: "10th Grade" },
-    { value: "11", label: "11th Grade" },
-    { value: "12", label: "12th Grade" },
+    { value: "", label: "Select Grade (Optional)", numericValue: undefined },
+    { value: "kindergarten", label: "Kindergarten", numericValue: 0 },
+    { value: "1", label: "1st Grade", numericValue: 1 },
+    { value: "2", label: "2nd Grade", numericValue: 2 },
+    { value: "3", label: "3rd Grade", numericValue: 3 },
+    { value: "4", label: "4th Grade", numericValue: 4 },
+    { value: "5", label: "5th Grade", numericValue: 5 },
+    { value: "6", label: "6th Grade", numericValue: 6 },
+    { value: "7", label: "7th Grade", numericValue: 7 },
+    { value: "8", label: "8th Grade", numericValue: 8 },
+    { value: "9", label: "9th Grade", numericValue: 9 },
+    { value: "10", label: "10th Grade", numericValue: 10 },
+    { value: "11", label: "11th Grade", numericValue: 11 },
+    { value: "12", label: "12th Grade", numericValue: 12 },
   ];
 
   const genderOptions = [
@@ -81,10 +77,10 @@ export default function StudentProfileDetailsForm({
 
   const relationshipOptions = [
     { value: "", label: "Select Relationship (Optional)" },
-    { value: "father", label: "Father" },
-    { value: "mother", label: "Mother" },
-    { value: "guardian", label: "Guardian" },
-    { value: "other", label: "Other" },
+    { value: "Father", label: "Father" },
+    { value: "Mother", label: "Mother" },
+    { value: "Guardian", label: "Guardian" },
+    { value: "Other", label: "Other" },
   ];
 
   // Animation effects
@@ -134,6 +130,12 @@ export default function StudentProfileDetailsForm({
     }
   };
 
+  // Convert grade string to numeric gradeLevel
+  const convertGradeToNumeric = (gradeString: string): number | undefined => {
+    const gradeOption = gradeOptions.find(option => option.value === gradeString);
+    return gradeOption?.numericValue;
+  };
+
   // Handle input changes
   const handleInputChange = (name: keyof StudentProfileData, value: StudentProfileData[keyof StudentProfileData]) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -155,6 +157,13 @@ export default function StudentProfileDetailsForm({
         });
       }
     }
+  };
+
+  // Handle grade selection specifically
+  const handleGradeChange = (gradeString: string) => {
+    setSelectedGrade(gradeString);
+    const numericGrade = convertGradeToNumeric(gradeString);
+    setFormData((prev) => ({ ...prev, gradeLevel: numericGrade }));
   };
 
   // Show error with animation
@@ -301,8 +310,8 @@ export default function StudentProfileDetailsForm({
               Grade
             </label>
             <select
-              value={formData.grade}
-              onChange={(e) => handleInputChange("grade", e.target.value)}
+              value={selectedGrade}
+              onChange={(e) => handleGradeChange(e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             >
               {gradeOptions.map((option) => (
@@ -374,10 +383,10 @@ export default function StudentProfileDetailsForm({
                   Relationship
                 </label>
                 <select
-                  value={formData.parentGuardianRelationship}
+                  value={formData.relationship}
                   onChange={(e) =>
                     handleInputChange(
-                      "parentGuardianRelationship",
+                      "relationship",
                       e.target.value
                     )
                   }
@@ -427,8 +436,8 @@ export default function StudentProfileDetailsForm({
           </label>
           <input
             type="text"
-            value={formData.address}
-            onChange={(e) => handleInputChange("address", e.target.value)}
+            value={formData.addressCity}
+            onChange={(e) => handleInputChange("addressCity", e.target.value)}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
             placeholder="Enter address or city (optional)"
           />

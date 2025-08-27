@@ -44,7 +44,7 @@ export default function ChooseCategory({ setCategory }: ChooseCategoryProps) {
         <h2 className="text-3xl font-bold text-gray-800 mb-2">
           Choose Category
         </h2>
-        <p className="text-gray-600 text-lg">Select what you're looking for</p>
+        <p className="text-gray-600 text-lg">Select what you&apos;re looking for</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

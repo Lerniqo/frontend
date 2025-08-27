@@ -20,7 +20,6 @@ export default function SignUpPage() {
   const [userType, setUserType] = useState("");
   const [userId, setUserId] = useState("");
   const [verifiedUserId, setVerifiedUserId] = useState("");
-  const [verifiedRole, setVerifiedRole] = useState("");
   const [step2Valid, setStep2Valid] = useState(false);
   const [step2Data, setStep2Data] = useState({
     email: "",
@@ -186,7 +185,6 @@ export default function SignUpPage() {
   const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
     // Store the verification data
     setVerifiedUserId(userData.userId);
-    setVerifiedRole(userData.role);
     setUserId(userData.userId); // For backward compatibility
     
     // Validate role consistency
@@ -322,7 +320,6 @@ export default function SignUpPage() {
             setLoading={setLoading}
             step2Data={step2Data}
             userType={userType}
-            setUserId={setUserId}
           />
         </div>
       </div>

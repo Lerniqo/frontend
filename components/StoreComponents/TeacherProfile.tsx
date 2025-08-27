@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { gsap } from "gsap";
 import { userService } from "../../services/userService";
 import Loading from "../CommonComponents/Loading";
@@ -37,23 +38,11 @@ export default function TeacherProfile({
   const [error, setError] = useState<string>("");
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Initial animation for the card
-    gsap.fromTo(
-      cardRef.current,
-      { opacity: 0, y: 50, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
-    );
-
-    // Load teacher profile data
-    loadTeacherProfile();
-  }, [teacherId]);
-
-  const loadTeacherProfile = async () => {
+  const loadTeacherProfile = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
-      const response = await userService.getTeacher(teacherId);
+      const response = await userService.getTeacherProfile(teacherId);
 
       if (response.success && response.teacher) {
         setTeacher(response.teacher);
@@ -66,7 +55,19 @@ export default function TeacherProfile({
     } finally {
       setLoading(false);
     }
-  };
+  }, [teacherId]);
+
+  useEffect(() => {
+    // Initial animation for the card
+    gsap.fromTo(
+      cardRef.current,
+      { opacity: 0, y: 50, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
+    );
+
+    // Load teacher profile data
+    loadTeacherProfile();
+  }, [loadTeacherProfile]);
 
   const getLevelLabel = (level: number): string => {
     switch (level) {
@@ -214,9 +215,11 @@ export default function TeacherProfile({
             {/* Profile Picture & Basic Info Section */}
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <img
+                <Image
                   src={teacher.profilePictureUrl || "/Profile.jpg"}
                   alt="Teacher Profile"
+                  width={96}
+                  height={96}
                   className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
                 />
                 {teacher.isVerified && (

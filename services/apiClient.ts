@@ -3,7 +3,7 @@ import { AuthResponse, ErrorResponse } from '@/types/api.types';
 
 // Create an Axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com', // Set this in your .env.local file
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com') + '/api', // Add /api prefix to all requests
   timeout: 10000, // 10 seconds timeout
 });
 
@@ -82,7 +82,7 @@ apiClient.interceptors.response.use(
 
       try {
         const response = await axios.post<AuthResponse>(
-          `${process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com'}/user-service/auth/refresh`,
+          `${(process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com')}/api/user-service/auth/refresh`,
           {},
           { withCredentials: true }
         );

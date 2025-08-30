@@ -224,8 +224,7 @@ const completeProfile = async (
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           },
-          token: '', // Empty token - user needs to login separately
-          refreshToken: undefined
+          accessToken: ''
         }
       };
     } else {
@@ -259,12 +258,20 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
       data,
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
-
-    if (response.data.success && response.data.data?.token) {
-      setStoredToken(response.data.data.token);
+    
+    if(!response.data.data?.accessToken) {
+      throw new Error('No access token returned from login API');
     }
 
-    return response.data;
+    console.log('✅ Login successful:', response);
+
+    setStoredToken(response.data.data?.accessToken)
+
+    return {
+      success: true,
+      message: response.data.message,
+      data: response.data.data
+    }
   } catch (error: any) {
     return {
       success: false,

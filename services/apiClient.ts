@@ -48,7 +48,7 @@ apiClient.interceptors.response.use(
         data: response.data
       });
     }
-    return response;
+    return response; 
   },
   async (error) => {
     // Debug logging for development

@@ -43,7 +43,7 @@ export default function TeacherProfile({
         // Transform TeacherProfile to DetailedTeacherProfile by adding userId
         const detailedProfile: DetailedTeacherProfile = {
           ...response.data,
-          userId: response.data.id, // Map the id field to userId
+          userId: response.data.userId, // Map the id field to userId
         };
         setTeacher(detailedProfile);
       } else {

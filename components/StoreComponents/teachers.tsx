@@ -18,7 +18,6 @@ interface TeacherListItem {
 }
 
 interface DetailedTeacherProfile {
-  id: string;
   userId: string;
   fullName: string;
   address?: string;
@@ -71,11 +70,12 @@ export default function TeachersStore() {
       try {
         setLoading(true);
         const response = await userService.getTeachers();
+        console.log("Teachers:", response);
 
         if (response.success && response.data) {
           // Convert API TeacherProfile to TeacherListItem format
           const teacherListItems: TeacherListItem[] = response.data.teachers.map((teacher: APITeacherProfile) => ({
-            userId: teacher.id, // Map id to userId
+            userId: teacher.userId, // Map id to userId
             fullName: teacher.fullName,
             qualifications: teacher.qualifications || 'Not specified',
             experienceSummary: teacher.shortBio || 'No summary available',

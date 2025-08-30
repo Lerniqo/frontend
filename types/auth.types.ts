@@ -1,6 +1,6 @@
 // Core User interface with proper role union type
 export interface User {
-  id: string;
+  userId: string;
   email: string;
   role: 'Student' | 'Teacher' | 'Admin';
   fullName: string;

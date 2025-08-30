@@ -215,7 +215,7 @@ const completeProfile = async (
         message: responseData.message,
         data: {
           user: {
-            id: responseData.userId,
+            userId: responseData.userId,
             email: responseData.email,
             role: responseData.role as 'Student' | 'Teacher' | 'Admin',
             fullName: responseData.fullName,
@@ -347,7 +347,11 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
       `/user-service/users/teachers?page=${page}&limit=${limit}`
     );
 
-    return response.data;
+    return {
+      message: response.data.message,
+      data: response.data.data,
+      success: true
+    }
   } catch (error: any) {
     return {
       success: false,

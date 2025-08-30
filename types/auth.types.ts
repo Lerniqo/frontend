@@ -157,8 +157,7 @@ export interface BasicRegisterResponse {
 
 export interface AuthResponse {
   user: User;
-  token: string;
-  refreshToken?: string;
+  accessToken: string;
 }
 
 export interface TeachersListResponse {

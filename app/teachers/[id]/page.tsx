@@ -9,7 +9,7 @@ export async function generateStaticParams() {
 }
 
 // Server-side props
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   // We can still generate metadata based on the ID
   const { id } = await params;
   return {
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default async function TeacherProfilePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
 

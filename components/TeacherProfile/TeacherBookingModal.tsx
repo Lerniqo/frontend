@@ -71,11 +71,6 @@ const generateMockAvailability = (date: Date): DaySchedule[] => {
   return schedule;
 };
 
-// Function to get days in a month
-const getDaysInMonth = (year: number, month: number) => {
-  return new Date(year, month + 1, 0).getDate();
-};
-
 // Function to format date as "Month Year"
 const formatMonthYear = (date: Date) => {
   return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -85,7 +80,7 @@ export default function TeacherBookingModal({
   isOpen,
   onClose,
   teacherName,
-  teacherId,
+  teacherId: _teacherId,
   onSlotSelect
 }: TeacherBookingModalProps) {
   const [currentDate, setCurrentDate] = useState(new Date());

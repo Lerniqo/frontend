@@ -49,7 +49,7 @@ export default function TeacherProfileClientWrapper({ teacherId, teacher: initia
     router.push('/teachers');
   };
 
-  const handleHireTeacher = (teacherId: string) => {
+  const handleHireTeacher = (_teacherId: string) => {
     // This function will be handled by the TeacherProfileContainer now
     // The modal will be opened from there
   };

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
-import type { User, StudentProfile } from "@/types/auth.types";
+import type { StudentProfile } from "@/types/auth.types";
 import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary

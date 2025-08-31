@@ -22,13 +22,13 @@ export default function TeacherProfileContainer({
   teacher: initialTeacher,
   teacherId,
   onGoBack,
-  onHireTeacher,
+  onHireTeacher: _onHireTeacher,
 }: TeacherProfileContainerProps) {
   const [teacher, setTeacher] = useState<TeacherProfileType | null>(initialTeacher || null);
   const [loading, setLoading] = useState(!initialTeacher);
   const [error, setError] = useState<string | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
+  const [_selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
 
   useEffect(() => {
     // Only fetch if we don't have teacher data and we have an ID
@@ -55,7 +55,7 @@ export default function TeacherProfileContainer({
     }
   }, [initialTeacher, teacherId]);
 
-  const handleHireTeacher = (teacherId: string) => {
+  const handleHireTeacher = (_teacherId: string) => {
     // Open the booking modal instead of calling the passed prop
     setIsBookingModalOpen(true);
   };

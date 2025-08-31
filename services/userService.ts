@@ -215,7 +215,7 @@ const completeProfile = async (
         message: responseData.message,
         data: {
           user: {
-            id: responseData.userId,
+            userId: responseData.userId,
             email: responseData.email,
             role: responseData.role as 'Student' | 'Teacher' | 'Admin',
             fullName: responseData.fullName,
@@ -347,7 +347,11 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
       `/user-service/users/teachers?page=${page}&limit=${limit}`
     );
 
-    return response.data;
+    return {
+      message: response.data.message,
+      data: response.data.data,
+      success: true
+    }
   } catch (error: any) {
     return {
       success: false,
@@ -363,7 +367,11 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
 const getTeacherProfile = async (teacherId: string): Promise<ApiResponse<TeacherProfile>> => {
   try {
     const response = await apiClient.get<ApiResponse<TeacherProfile>>(`/user-service/users/teachers/${teacherId}`);
-    return response.data;
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    }
   } catch (error: any) {
     return {
       success: false,

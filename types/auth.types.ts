@@ -1,31 +1,38 @@
 // Core User interface with proper role union type
 export interface User {
-  id: string;
+  userId: string;
   email: string;
   role: 'Student' | 'Teacher' | 'Admin';
   fullName: string;
-  profilePictureUrl?: string;
+  profileImage?: string;
   isVerified: boolean;
   profileCompleted: boolean;
   createdAt: string;
   updatedAt: string;
-  // Optional properties that may be present based on user type
-  gradeLevel?: number;
-  learningGoals?: string;
-  qualifications?: string;
-  school?: string;
-  birthday?: string;
-  gender?: string;
-  parentGuardianName?: string;
-  relationship?: string; // Updated field name
-  parentContact?: string;
-  addressCity?: string; // Updated field name for students
-  address?: string; // For teachers
-  phoneNumber?: string;
-  nationalIdPassport?: string; // Updated field name
-  yearsOfExperience?: number;
-  highestEducationLevel?: string; // Updated field name
-  shortBio?: string; // Updated field name
+}
+
+// Booking related interfaces
+export interface TimeSlot {
+  id: string;
+  startTime: string; // e.g., "09:00"
+  endTime: string;   // e.g., "10:00"
+  isAvailable: boolean;
+}
+
+export interface DaySchedule {
+  date: string; // ISO date string
+  dayOfWeek: string; // e.g., "Monday"
+  timeSlots: TimeSlot[];
+}
+
+export interface TeacherAvailability {
+  teacherId: string;
+  schedule: DaySchedule[];
+}
+
+export interface SelectedSlot {
+  date: string;
+  timeSlot: TimeSlot;
 }
 
 // Extended user profiles for specific roles
@@ -44,14 +51,83 @@ export interface StudentProfile extends User {
 
 export interface TeacherProfile extends User {
   role: 'Teacher';
-  birthday?: string;
-  address?: string;
-  phoneNumber?: string;
-  nationalIdPassport?: string; // Updated field name
-  yearsOfExperience?: number;
-  highestEducationLevel?: string; // Updated field name
-  qualifications?: string;
-  shortBio?: string; // Updated field name
+  birthday?: string; // DateTime from backend
+  address?: string; // Text from backend
+  phoneNumber?: string; // phone_number from backend
+  nationalIdPassport?: string; // national_id_passport from backend
+  yearsOfExperience?: number; // years_of_experience from backend
+  highestEducationLevel?: string; // highest_education_level from backend
+  qualifications?: string; // Optional Text from backend
+  shortBio?: string; // short_bio from backend
+}
+
+// Enhanced teacher profile interface for detailed display
+export interface DetailedTeacherProfile extends TeacherProfile {
+  // Professional Information
+  experienceSummary?: string;
+  experienceLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  subjectsTaught: string[];
+  bioOrTeachingPhilosophy?: string;
+  
+  // Verification & Status
+  isOnline?: boolean;
+  availability: {
+    status: 'available' | 'busy' | 'offline';
+    nextAvailable?: string;
+  };
+  
+  // Performance Metrics
+  rating: number;
+  totalStudents?: number;
+  totalLessons?: number;
+  responseTime?: string; // e.g., "Usually responds in 2 hours"
+  
+  // Professional Details
+  hourlyRate?: number;
+  currency?: string;
+  languages?: string[];
+  timezone?: string;
+  
+  // Metadata
+  joinDate?: string;
+  lastActive?: string;
+  
+  // Additional Features
+  badges?: TeacherBadge[];
+  specializations?: string[];
+  teachingStyle?: string[];
+}
+
+export interface TeacherBadge {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+}
+
+// Filter and search interfaces
+export interface FilterOptions {
+  experienceLevel: ('beginner' | 'intermediate' | 'advanced' | 'expert')[];
+  subjects: string[];
+  yearsOfExperience: { min: number; max: number };
+  rating: number; // Keep for backward compatibility but not actively used
+  availability: boolean;
+  verified: boolean;
+  hourlyRate?: { min: number; max: number };
+  languages?: string[]; // Keep for backward compatibility but not actively used
+}
+
+export interface SortOptions {
+  field: 'name' | 'experience' | 'joinDate' | 'hourlyRate'; // Removed 'rating'
+  direction: 'asc' | 'desc';
+}
+
+export interface PaginationState {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
 }
 
 // Registration and profile data interfaces
@@ -76,14 +152,14 @@ export interface StudentProfileData {
 
 export interface TeacherProfileData {
   fullName: string;
-  birthday?: string;
-  address?: string;
-  phoneNumber?: string;
-  nationalIdPassport?: string; // Changed from 'nationalIdOrPassport'
-  yearsOfExperience?: number;
-  highestEducationLevel?: string; // Changed from 'educationLevel'
-  qualifications?: string;
-  shortBio?: string; // Changed from 'bioOrTeachingPhilosophy'
+  birthday?: string; // DateTime field
+  address?: string; // Text field
+  phoneNumber?: string; // phone_number field
+  nationalIdPassport?: string; // national_id_passport field
+  yearsOfExperience?: number; // years_of_experience field
+  highestEducationLevel?: string; // highest_education_level field
+  qualifications?: string; // Optional Text field
+  shortBio?: string; // short_bio field
 }
 
 // Authentication and API related interfaces

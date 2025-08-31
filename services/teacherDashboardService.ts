@@ -281,19 +281,20 @@ export const scheduleWebinar = async (webinar: Omit<Webinar, 'id' | 'attendees' 
 // Mock availability data
 export interface AvailabilitySlot {
   id: string;
-  day: string;
+  date: string; // ISO date string (YYYY-MM-DD)
+  day: string; // Day name for display
   startTime: string;
   endTime: string;
   isAvailable: boolean;
 }
 
 const mockAvailability: AvailabilitySlot[] = [
-  { id: '1', day: 'Monday', startTime: '09:00', endTime: '11:00', isAvailable: true },
-  { id: '2', day: 'Monday', startTime: '14:00', endTime: '16:00', isAvailable: true },
-  { id: '3', day: 'Tuesday', startTime: '10:00', endTime: '12:00', isAvailable: false },
-  { id: '4', day: 'Wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
-  { id: '5', day: 'Thursday', startTime: '15:00', endTime: '17:00', isAvailable: true },
-  { id: '6', day: 'Friday', startTime: '13:00', endTime: '15:00', isAvailable: false },
+  { id: '1', date: '2025-09-02', day: 'Monday', startTime: '09:00', endTime: '11:00', isAvailable: true },
+  { id: '2', date: '2025-09-02', day: 'Monday', startTime: '14:00', endTime: '16:00', isAvailable: true },
+  { id: '3', date: '2025-09-03', day: 'Tuesday', startTime: '10:00', endTime: '12:00', isAvailable: false },
+  { id: '4', date: '2025-09-04', day: 'Wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true },
+  { id: '5', date: '2025-09-05', day: 'Thursday', startTime: '15:00', endTime: '17:00', isAvailable: true },
+  { id: '6', date: '2025-09-06', day: 'Friday', startTime: '13:00', endTime: '15:00', isAvailable: false },
 ];
 
 export const getAvailability = async (): Promise<ApiResponse<AvailabilitySlot[]>> => {

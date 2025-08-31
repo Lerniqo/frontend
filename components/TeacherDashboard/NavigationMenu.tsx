@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Notification } from '@/services/teacherDashboardService';
 import NotificationPopup from './NotificationPopup';
 import ProfileDropdown from './ProfileDropdown';
@@ -28,11 +28,12 @@ export default function NavigationMenu({
   setShowNotificationPopup,
   setShowProfileDropdown
 }: NavigationMenuProps) {
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'content', label: 'Content Management', icon: '�' },
+    { id: 'content', label: 'Content Management', icon: '📚' },
     { id: 'schedule', label: 'Schedule Management', icon: '⏰' },
-    { id: 'contests', label: 'Contests', icon: '�' },
+    { id: 'contests', label: 'Contests', icon: '🏆' },
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -119,7 +120,10 @@ export default function NavigationMenu({
 
             {/* Mobile menu button */}
             <div className="md:hidden">
-              <button className="p-3 rounded-2xl text-slate-300 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300">
+              <button 
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="p-3 rounded-2xl text-slate-300 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300"
+              >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -153,6 +157,31 @@ export default function NavigationMenu({
           onLogout();
         }}
       />
+
+      {/* Mobile Menu */}
+      {showMobileMenu && (
+        <div className="md:hidden absolute top-full left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/20 shadow-2xl">
+          <div className="px-4 py-6 space-y-2">
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  onSectionChange(item.id);
+                  setShowMobileMenu(false);
+                }}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  activeSection === item.id
+                    ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <span className="text-lg">{item.icon}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

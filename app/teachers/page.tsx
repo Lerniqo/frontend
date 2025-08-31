@@ -339,16 +339,22 @@ export default function TeachersPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-purple-100 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse"></div>
+        <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-4000"></div>
+      </div>
       <NavBar />
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Breadcrumb Navigation */}
-        <nav className="flex mb-6 sm:mb-8" aria-label="Breadcrumb">
+        <nav className="flex mb-6 sm:mb-8 animate-fade-in" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-1 md:space-x-3">
             <li className="flex items-center">
               <Link
                 href="/"
-                className="text-gray-500 hover:text-blue-600 transition-colors duration-200 flex items-center text-sm sm:text-base"
+                className="text-purple-600 hover:text-purple-700 transition-all duration-300 flex items-center text-sm sm:text-base transform hover:scale-105"
               >
                 <svg className="w-4 h-4 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
@@ -358,40 +364,37 @@ export default function TeachersPage(): React.ReactElement {
             </li>
             <li>
               <div className="flex items-center">
-                <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path>
                 </svg>
-                <span className="ml-1 text-gray-700 font-medium text-sm sm:text-base">Browse Teachers</span>
+                <span className="ml-1 text-purple-700 font-medium text-sm sm:text-base">Browse Teachers</span>
               </div>
             </li>
           </ol>
         </nav>
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8 sm:mb-12 animate-fade-in animation-delay-500">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 transform hover:scale-105 transition-transform duration-500">
             Find Your Perfect{' '}
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-purple-700 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-gradient-x">
               Teacher
             </span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed">
             Discover qualified educators who can help you achieve your learning goals.
             Browse through our extensive network of verified teachers.
           </p>
         </div>
 
         {/* View Toggle */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-sm text-gray-600">
-            <span className="font-medium">{totalTeachers}</span> teachers found
-          </div>
-          <div className="bg-white border border-gray-200 rounded-lg p-1 flex shadow-sm">
+        <div className="flex justify-end items-center mb-6 animate-fade-in animation-delay-1000">
+          <div className="bg-white/80 backdrop-blur-sm border border-purple-200 rounded-lg p-1 flex shadow-lg hover:shadow-xl transition-shadow duration-300">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-2 transform hover:scale-105 ${
                 viewMode === 'grid'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                  ? 'bg-gradient-to-r from-purple-700 to-blue-500 text-white shadow-md'
+                  : 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,10 +404,10 @@ export default function TeachersPage(): React.ReactElement {
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-2 transform hover:scale-105 ${
                 viewMode === 'list'
-                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
+                  ? 'bg-gradient-to-r from-purple-700 to-blue-500 text-white shadow-md'
+                  : 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'
               }`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -419,13 +422,15 @@ export default function TeachersPage(): React.ReactElement {
         {isLoading && teachers.length === 0 ? (
           <SearchFilterLoading />
         ) : (
-          <SearchAndFilter
-            onSearch={handleSearch}
-            onFilter={handleFilter}
-            searchTerm={searchTerm}
-            activeFilters={filters}
-            totalResults={totalTeachers}
-          />
+          <div className="animate-fade-in animation-delay-1500">
+            <SearchAndFilter
+              onSearch={handleSearch}
+              onFilter={handleFilter}
+              searchTerm={searchTerm}
+              activeFilters={filters}
+              totalResults={totalTeachers}
+            />
+          </div>
         )}
 
         {/* Content Area */}
@@ -442,32 +447,39 @@ export default function TeachersPage(): React.ReactElement {
         ) : (
           <>
             {/* Teachers Grid/List */}
-            <div className={`mb-12 ${
+            <div className={`mb-12 animate-fade-in animation-delay-2000 ${
               viewMode === 'grid'
                 ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
                 : 'space-y-6'
             }`}>
-              {currentPageTeachers.map((teacher) => (
-                <TeacherCard
+              {currentPageTeachers.map((teacher, index) => (
+                <div
                   key={teacher.userId}
-                  teacher={teacher}
-                  viewMode={viewMode}
-                  onViewProfile={handleViewProfile}
-                  onBookLesson={handleBookLesson}
-                  onToggleFavorite={handleToggleFavorite}
-                />
+                  className="transform hover:scale-105 transition-all duration-300 animate-fade-in"
+                  style={{ animationDelay: `${2000 + index * 100}ms` }}
+                >
+                  <TeacherCard
+                    teacher={teacher}
+                    viewMode={viewMode}
+                    onViewProfile={handleViewProfile}
+                    onBookLesson={handleBookLesson}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                </div>
               ))}
             </div>
 
             {/* Pagination */}
-            <Pagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              itemsPerPage={pagination.itemsPerPage}
-              totalItems={pagination.totalItems}
-              onPageChange={handlePageChange}
-              onItemsPerPageChange={handleItemsPerPageChange}
-            />
+            <div className="animate-fade-in animation-delay-2500">
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                itemsPerPage={pagination.itemsPerPage}
+                totalItems={pagination.totalItems}
+                onPageChange={handlePageChange}
+                onItemsPerPageChange={handleItemsPerPageChange}
+              />
+            </div>
           </>
         )}
       </div>

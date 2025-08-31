@@ -215,22 +215,22 @@ export default function TeachersPage(): React.ReactElement {
       setIsLoading(true);
       setError(null);
 
-      console.log('Loading teachers from API...');
+      // Loading teachers from API...
 
       // Call the actual API
       const response = await userService.getTeachers(page, limit);
 
-      console.log('API Response:', response);
+      // API Response:
 
       if (response.success && response.data) {
-        console.log('Teachers data:', response.data.teachers);
+        // Teachers data:
         // Transform API response to DetailedTeacherProfile format
         const transformedTeachers = response.data.teachers.map(transformTeacherProfile);
         setTeachers(transformedTeachers);
 
         // Update total count from API response or use the length of returned teachers
         setTotalTeachers(response.data.total || transformedTeachers.length);
-        console.log(`Loaded ${transformedTeachers.length} teachers out of ${response.data.total || transformedTeachers.length} total`);
+        // Loaded teachers count
       } else {
         throw new Error(response.message || 'Failed to load teachers');
       }

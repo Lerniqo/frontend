@@ -71,7 +71,7 @@ export default function TeachersStore() {
       try {
         setLoading(true);
         const response = await userService.getTeachers();
-        console.log("Teachers:", response);
+        // Teachers data from API
 
         if (response.success && response.data) {
           // Convert API TeacherProfile to TeacherListItem format

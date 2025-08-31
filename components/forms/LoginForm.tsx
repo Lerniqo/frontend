@@ -246,7 +246,7 @@ export default function LoginForm({
       } else {
         setSubmitError(result.message || "Login failed");
       }
-    } catch (error) {
+    } catch (_error) {
       setSubmitError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -451,7 +451,7 @@ export default function LoginForm({
         {showSignUpLink && (
           <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/20">
             <p className="text-center text-white/85 sm:text-white/80 md:text-white/75 text-xs sm:text-sm md:text-base lg:text-lg drop-shadow-md font-medium">
-              Don't have an account?{" "}
+              Do not have an account?{" "}
               <button
                 type="button"
                 onClick={() => router.push("/SignUp")}

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { PaginationState } from '@/types/auth.types';
+// import { PaginationState } from '@/types/auth.types';
 
 interface PaginationProps {
   currentPage: number;

@@ -56,7 +56,7 @@ export default function SearchAndFilter({
     }
   }, [debouncedSearchTerm, onSearch, searchTerm]);
 
-  const handleFilterChange = useCallback((key: keyof FilterOptions, value: any) => {
+  const handleFilterChange = useCallback(<K extends keyof FilterOptions>(key: K, value: FilterOptions[K]) => {
     const newFilters = { ...activeFilters, [key]: value };
     onFilter(newFilters);
   }, [activeFilters, onFilter]);
@@ -210,9 +210,9 @@ export default function SearchAndFilter({
               {experienceLevels.map((level) => (
                 <button
                   key={level.value}
-                  onClick={() => handleExperienceLevelToggle(level.value as any)}
+                  onClick={() => handleExperienceLevelToggle(level.value as 'beginner' | 'intermediate' | 'advanced' | 'expert')}
                   className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    activeFilters.experienceLevel.includes(level.value as any)
+                    activeFilters.experienceLevel.includes(level.value as 'beginner' | 'intermediate' | 'advanced' | 'expert')
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-blue-100'
                   }`}

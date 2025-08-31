@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
+// import { useState } from 'react';
 import { DetailedTeacherProfile } from '@/types/auth.types';
 
 interface TeacherCardProps {
@@ -8,7 +9,7 @@ interface TeacherCardProps {
   viewMode: 'grid' | 'list';
   onViewProfile: (teacherId: string) => void;
   onBookLesson?: (teacherId: string) => void;
-  onToggleFavorite?: (teacherId: string) => void;
+  // onToggleFavorite?: (teacherId: string) => void;
 }
 
 export default function TeacherCard({
@@ -16,7 +17,7 @@ export default function TeacherCard({
   viewMode,
   onViewProfile,
   onBookLesson,
-  onToggleFavorite
+  // onToggleFavorite
 }: TeacherCardProps) {
   const getExperienceLevelColor = (level: string): string => {
     switch (level) {

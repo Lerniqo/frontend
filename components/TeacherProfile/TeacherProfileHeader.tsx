@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface TeacherProfileHeaderProps {
   name: string;
@@ -26,11 +27,14 @@ export default function TeacherProfileHeader({
       <div className="flex flex-col md:flex-row items-center">
         <div className="mb-6 md:mb-0 md:mr-8">
           {profilePictureUrl ? (
-            <img 
-              src={profilePictureUrl} 
-              alt={name} 
-              className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
-            />
+            <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-xl">
+              <Image 
+                src={profilePictureUrl} 
+                alt={name} 
+                fill
+                className="rounded-full object-cover"
+              />
+            </div>
           ) : (
             <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl bg-white flex items-center justify-center text-blue-700 font-bold text-3xl">
               {getInitials(name)}

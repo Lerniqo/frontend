@@ -1,6 +1,6 @@
-import { TeacherProfile as TeacherProfileType } from '@/types/auth.types';
+// import { TeacherProfile as TeacherProfileType } from '@/types/auth.types';
 import TeacherProfileClientWrapper from '@/components/TeacherProfile/TeacherProfileClientWrapper';
-import { notFound } from 'next/navigation';
+// import { notFound } from 'next/navigation';
 
 export const dynamicParams = true;
 

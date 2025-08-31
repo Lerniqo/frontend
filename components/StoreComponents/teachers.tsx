@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "../../services/userService";
 import TeacherStoreCard from "./TeacherStoreCard";
-import TeacherProfile from "./TeacherProfile";
+import TeacherProfile from "../TeacherProfile/TeacherProfile";
 import type { TeacherProfile as APITeacherProfile } from "@/types/auth.types";
 
 // Local interface for teacher list display
@@ -17,31 +17,32 @@ interface TeacherListItem {
   level: number;
 }
 
-interface DetailedTeacherProfile {
-  userId: string;
-  fullName: string;
-  address?: string;
-  phoneNumber?: string;
-  qualifications?: string;
-  experienceSummary?: string;
-  yearsOfExperience?: number;
-  level?: number; // 0, 1, 2, 3
-  educationLevel?: string;
-  bioOrTeachingPhilosophy?: string;
-  subjectsTaught?: string[];
-  profilePictureUrl?: string;
-  isVerified: boolean;
-  role: 'Teacher';
-  email: string;
-  profileCompleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  // Optional fields from TeacherProfile type
-  birthday?: string;
-  nationalIdPassport?: string;
-  highestEducationLevel?: string;
-  shortBio?: string;
-}
+// This interface is no longer used as we've refactored to use the new TeacherProfile components
+// interface DetailedTeacherProfile {
+//   userId: string;
+//   fullName: string;
+//   address?: string;
+//   phoneNumber?: string;
+//   qualifications?: string;
+//   experienceSummary?: string;
+//   yearsOfExperience?: number;
+//   level?: number; // 0, 1, 2, 3
+//   educationLevel?: string;
+//   bioOrTeachingPhilosophy?: string;
+//   subjectsTaught?: string[];
+//   profilePictureUrl?: string;
+//   isVerified: boolean;
+//   role: 'Teacher';
+//   email: string;
+//   profileCompleted: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+//   // Optional fields from TeacherProfile type
+//   birthday?: string;
+//   nationalIdPassport?: string;
+//   highestEducationLevel?: string;
+//   shortBio?: string;
+// }
 
 export default function TeachersStore() {
   const [teachers, setTeachers] = useState<TeacherListItem[]>([]);
@@ -175,10 +176,10 @@ export default function TeachersStore() {
     router.push("/Student/Dashboard");
   };
 
-  const handleHireTeacher = (teacher: DetailedTeacherProfile) => {
+  const handleHireTeacher = (teacherId: string) => {
     // Handle hiring logic here
-    console.warn("Hiring teacher:", teacher.fullName);
-    alert(`Have to Complete this teacher name ${teacher.fullName}'s profile.`);
+    console.warn("Hiring teacher with ID:", teacherId);
+    alert(`Have to Complete this teacher ID ${teacherId}'s profile.`);
     // You can add more hiring logic here, such as:
     // - Navigate to a booking/payment page
     // - Send a hiring request to the backend

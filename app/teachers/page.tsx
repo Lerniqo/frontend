@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { DetailedTeacherProfile, FilterOptions, PaginationState } from '@/types/auth.types';
+import { useRouter } from 'next/navigation';
+import { DetailedTeacherProfile, FilterOptions, PaginationState, TeacherProfile } from '@/types/auth.types';
 import { userService } from '@/services/userService';
 import SearchAndFilter from '@/components/TeachersPage/SearchAndFilter';
 import TeacherCard from '@/components/TeachersPage/TeacherCard';
@@ -16,92 +17,6 @@ import {
 import NavBar from '@/components/LandingPageComponents/NavBar';
 import Footer from '@/components/LandingPageComponents/Footer';
 import Link from 'next/link';
-
-// Mock data generator for demonstration (since we don't have real teacher data yet)
-const generateMockTeacher = (id: number): DetailedTeacherProfile => {
-  const firstNames = ['John', 'Sarah', 'Michael', 'Emma', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Anna'];
-  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
-  const subjects = ['Mathematics', 'Science', 'English', 'History', 'Physics', 'Chemistry', 'Biology', 'Geography', 'Computer Science', 'Arts'];
-  const experienceLevels: ('beginner' | 'intermediate' | 'advanced' | 'expert')[] = ['beginner', 'intermediate', 'advanced', 'expert'];
-  const availabilityStatuses: ('available' | 'busy' | 'offline')[] = ['available', 'busy', 'offline'];
-  const educationLevels = ['Bachelor\'s Degree', 'Master\'s Degree', 'PhD/Doctorate', 'Professional Certificate'];
-  const addresses = [
-    '123 Main Street, Cityville, State 12345',
-    '456 Oak Avenue, Springfield, State 67890',
-    '789 Pine Road, Riverside, State 11111',
-    '321 Elm Street, Lakeside, State 22222'
-  ];
-  
-  const firstName = firstNames[id % firstNames.length];
-  const lastName = lastNames[(id * 3) % lastNames.length];
-  const fullName = `${firstName} ${lastName}`;
-  const yearsOfExperience = Math.floor(Math.random() * 20) + 1;
-  
-  // Generate a realistic birthday (25-65 years old)
-  const currentYear = new Date().getFullYear();
-  const birthYear = currentYear - (25 + Math.floor(Math.random() * 40));
-  const birthMonth = Math.floor(Math.random() * 12) + 1;
-  const birthDay = Math.floor(Math.random() * 28) + 1;
-  const birthday = `${birthYear}-${birthMonth.toString().padStart(2, '0')}-${birthDay.toString().padStart(2, '0')}`;
-  
-  return {
-    userId: `teacher-${id}`,
-    email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`,
-    role: 'Teacher',
-    fullName,
-    profilePictureUrl: undefined,
-    isVerified: Math.random() > 0.3,
-    profileCompleted: true,
-    createdAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-    updatedAt: new Date().toISOString(),
-    
-    // Backend teacher fields matching the Prisma schema
-    birthday, // DateTime field
-    address: addresses[id % addresses.length], // Text field
-    phoneNumber: `+1${Math.floor(Math.random() * 900000000) + 100000000}`, // phone_number
-    nationalIdPassport: `ID${Math.floor(Math.random() * 900000000) + 100000000}`, // national_id_passport
-    yearsOfExperience, // years_of_experience (Int)
-    highestEducationLevel: educationLevels[Math.floor(Math.random() * educationLevels.length)], // highest_education_level
-    qualifications: 'Bachelor of Education, Teaching Certification, Subject Matter Expert', // Optional Text
-    shortBio: `Passionate educator with ${yearsOfExperience} years of experience in teaching. Committed to helping students achieve their academic goals through innovative teaching methods.`, // short_bio
-    
-    // Additional UI-specific fields for enhanced display
-    experienceLevel: experienceLevels[Math.floor(Math.random() * experienceLevels.length)],
-    subjectsTaught: subjects.slice(0, Math.floor(Math.random() * 4) + 1),
-    bioOrTeachingPhilosophy: `I believe in creating an engaging and supportive learning environment where every student can thrive. My teaching philosophy centers on making complex concepts accessible and fostering critical thinking skills.`,
-    
-    // Status
-    isOnline: Math.random() > 0.5,
-    availability: {
-      status: availabilityStatuses[Math.floor(Math.random() * availabilityStatuses.length)],
-      nextAvailable: Math.random() > 0.5 ? 'Available in 2 hours' : undefined
-    },
-    
-    // Metrics (removed rating)
-    rating: 0, // Not used
-    totalStudents: Math.floor(Math.random() * 200) + 10,
-    totalLessons: Math.floor(Math.random() * 500) + 50,
-    responseTime: ['Usually responds in 1 hour', 'Usually responds in 2 hours', 'Usually responds in 4 hours'][Math.floor(Math.random() * 3)],
-    
-    // Professional Details (removed languages)
-    hourlyRate: Math.floor(Math.random() * 80) + 20,
-    currency: 'USD',
-    languages: [], // Not used
-    timezone: 'EST',
-    
-    // Metadata
-    joinDate: new Date(Date.now() - Math.random() * 730 * 24 * 60 * 60 * 1000).toISOString(),
-    lastActive: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-    
-    // Additional Features
-    badges: [],
-    specializations: subjects.slice(0, Math.floor(Math.random() * 2) + 1),
-    teachingStyle: ['Interactive', 'Visual', 'Hands-on', 'Discussion-based'].slice(0, Math.floor(Math.random() * 2) + 1)
-  };
-};
-
-// Generate mock data
-const MOCK_TEACHERS: DetailedTeacherProfile[] = Array.from({ length: 120 }, (_, i) => generateMockTeacher(i + 1));
 
 // Filter service class
 class TeacherFilterService {
@@ -201,6 +116,7 @@ class PaginationService {
 }
 
 export default function TeachersPage(): React.ReactElement {
+  const router = useRouter();
   // State management
   const [teachers, setTeachers] = useState<DetailedTeacherProfile[]>([]);
   const [filteredTeachers, setFilteredTeachers] = useState<DetailedTeacherProfile[]>([]);
@@ -220,30 +136,111 @@ export default function TeachersPage(): React.ReactElement {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalTeachers, setTotalTeachers] = useState(0);
 
-  // Load teachers data
-  const loadTeachers = useCallback(async () => {
+    // Transformation function to convert TeacherProfile to DetailedTeacherProfile
+  const transformTeacherProfile = useCallback((teacher: TeacherProfile): DetailedTeacherProfile => {
+    // Determine experience level based on years of experience
+    const getExperienceLevel = (years: number): 'beginner' | 'intermediate' | 'advanced' | 'expert' => {
+      if (years < 2) return 'beginner';
+      if (years < 5) return 'intermediate';
+      if (years < 10) return 'advanced';
+      return 'expert';
+    };
+
+    // Generate subjects taught (this might come from a separate API call in the future)
+    const subjects = ['Mathematics', 'Science', 'English', 'History', 'Physics', 'Chemistry', 'Biology', 'Geography', 'Computer Science', 'Arts'];
+    const subjectsTaught = subjects.slice(0, Math.floor(Math.random() * 3) + 1);
+
+    return {
+      // Core user fields
+      userId: teacher.userId,
+      email: teacher.email,
+      role: teacher.role,
+      fullName: teacher.fullName,
+      profilePictureUrl: teacher.profilePictureUrl,
+      isVerified: teacher.isVerified,
+      profileCompleted: teacher.profileCompleted,
+      createdAt: teacher.createdAt,
+      updatedAt: teacher.updatedAt,
+
+      // Teacher-specific fields
+      birthday: teacher.birthday,
+      address: teacher.address,
+      phoneNumber: teacher.phoneNumber,
+      nationalIdPassport: teacher.nationalIdPassport,
+      yearsOfExperience: teacher.yearsOfExperience || 0,
+      highestEducationLevel: teacher.highestEducationLevel,
+      qualifications: teacher.qualifications,
+      shortBio: teacher.shortBio,
+
+      // Additional UI fields
+      experienceLevel: getExperienceLevel(teacher.yearsOfExperience || 0),
+      subjectsTaught,
+      bioOrTeachingPhilosophy: teacher.shortBio,
+
+      // Status
+      isOnline: Math.random() > 0.5, // This could come from a real-time API
+      availability: {
+        status: Math.random() > 0.3 ? 'available' : 'busy',
+        nextAvailable: Math.random() > 0.5 ? 'Available in 2 hours' : undefined
+      },
+
+      // Metrics (these might come from separate API endpoints)
+      rating: 0, // Not implemented yet
+      totalStudents: Math.floor(Math.random() * 200) + 10,
+      totalLessons: Math.floor(Math.random() * 500) + 50,
+      responseTime: ['Usually responds in 1 hour', 'Usually responds in 2 hours', 'Usually responds in 4 hours'][Math.floor(Math.random() * 3)],
+
+      // Professional Details
+      hourlyRate: Math.floor(Math.random() * 80) + 20,
+      currency: 'USD',
+      languages: [], // Not implemented yet
+      timezone: 'EST',
+
+      // Metadata
+      joinDate: teacher.createdAt,
+      lastActive: teacher.updatedAt,
+
+      // Additional Features
+      badges: [],
+      specializations: subjectsTaught.slice(0, Math.floor(Math.random() * 2) + 1),
+      teachingStyle: ['Interactive', 'Visual', 'Hands-on', 'Discussion-based'].slice(0, Math.floor(Math.random() * 2) + 1)
+    };
+  }, []);
+
+  // Load teachers data from API
+  const loadTeachers = useCallback(async (page: number = 1, limit: number = 120) => {
     try {
       setIsLoading(true);
       setError(null);
-      
-      // For now, we'll use mock data
-      // In a real application, this would call the API:
-      // const response = await userService.getTeachers();
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setTeachers(MOCK_TEACHERS);
+
+      console.log('Loading teachers from API...');
+
+      // Call the actual API
+      const response = await userService.getTeachers(page, limit);
+
+      console.log('API Response:', response);
+
+      if (response.success && response.data) {
+        console.log('Teachers data:', response.data.teachers);
+        // Transform API response to DetailedTeacherProfile format
+        const transformedTeachers = response.data.teachers.map(transformTeacherProfile);
+        setTeachers(transformedTeachers);
+
+        // Update total count from API response or use the length of returned teachers
+        setTotalTeachers(response.data.total || transformedTeachers.length);
+        console.log(`Loaded ${transformedTeachers.length} teachers out of ${response.data.total || transformedTeachers.length} total`);
+      } else {
+        throw new Error(response.message || 'Failed to load teachers');
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load teachers');
       console.error('Failed to load teachers:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load teachers');
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  // Load teachers on component mount
+  }, [transformTeacherProfile]);  // Load teachers on component mount
   useEffect(() => {
     loadTeachers();
   }, [loadTeachers]);
@@ -259,14 +256,14 @@ export default function TeachersPage(): React.ReactElement {
     setCurrentPage(1); // Reset to first page when filters change
   }, [processedTeachers]);
 
-  // Calculate pagination
+  // Calculate pagination using API total count
   const pagination = useMemo(() => {
     return PaginationService.calculatePagination(
-      filteredTeachers.length,
+      totalTeachers,
       currentPage,
       itemsPerPage
     );
-  }, [filteredTeachers.length, currentPage, itemsPerPage]);
+  }, [totalTeachers, currentPage, itemsPerPage]);
 
   // Get current page teachers
   const currentPageTeachers = useMemo(() => {
@@ -297,20 +294,17 @@ export default function TeachersPage(): React.ReactElement {
   }, []);
 
   const handleViewProfile = useCallback((teacherId: string) => {
-    // Navigate to teacher profile page
-    console.log('View profile for teacher:', teacherId);
-    // In a real app: router.push(`/teachers/${teacherId}`);
-  }, []);
+    // Navigate to teacher profile page using dynamic route
+    router.push(`/teachers/${teacherId}`);
+  }, [router]);
 
-  const handleBookLesson = useCallback((teacherId: string) => {
+  const handleBookLesson = useCallback((_teacherId: string) => {
     // Navigate to booking page
-    console.log('Book lesson with teacher:', teacherId);
     // In a real app: router.push(`/book-lesson/${teacherId}`);
   }, []);
 
-  const handleToggleFavorite = useCallback((teacherId: string) => {
+  const handleToggleFavorite = useCallback((_teacherId: string) => {
     // Toggle favorite status
-    console.log('Toggle favorite for teacher:', teacherId);
   }, []);
 
   const clearAllFilters = useCallback(() => {
@@ -389,7 +383,7 @@ export default function TeachersPage(): React.ReactElement {
         {/* View Toggle */}
         <div className="flex justify-between items-center mb-6">
           <div className="text-sm text-gray-600">
-            <span className="font-medium">{filteredTeachers.length}</span> teachers found
+            <span className="font-medium">{totalTeachers}</span> teachers found
           </div>
           <div className="bg-white border border-gray-200 rounded-lg p-1 flex shadow-sm">
             <button
@@ -430,7 +424,7 @@ export default function TeachersPage(): React.ReactElement {
             onFilter={handleFilter}
             searchTerm={searchTerm}
             activeFilters={filters}
-            totalResults={filteredTeachers.length}
+            totalResults={totalTeachers}
           />
         )}
 
@@ -439,7 +433,7 @@ export default function TeachersPage(): React.ReactElement {
           <ErrorState error={error} onRetry={loadTeachers} />
         ) : isLoading ? (
           <TeachersGridLoading viewMode={viewMode} count={itemsPerPage} />
-        ) : filteredTeachers.length === 0 ? (
+        ) : totalTeachers === 0 ? (
           <EmptyState
             searchTerm={searchTerm}
             hasActiveFilters={hasActiveFilters}

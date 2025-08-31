@@ -4,28 +4,11 @@ export interface User {
   email: string;
   role: 'Student' | 'Teacher' | 'Admin';
   fullName: string;
-  profilePictureUrl?: string;
+  profileImage?: string;
   isVerified: boolean;
   profileCompleted: boolean;
   createdAt: string;
   updatedAt: string;
-  // Optional properties that may be present based on user type
-  gradeLevel?: number;
-  learningGoals?: string;
-  qualifications?: string;
-  school?: string;
-  birthday?: string;
-  gender?: string;
-  parentGuardianName?: string;
-  relationship?: string; // Updated field name
-  parentContact?: string;
-  addressCity?: string; // Updated field name for students
-  address?: string; // For teachers
-  phoneNumber?: string;
-  nationalIdPassport?: string; // Updated field name
-  yearsOfExperience?: number;
-  highestEducationLevel?: string; // Updated field name
-  shortBio?: string; // Updated field name
 }
 
 // Extended user profiles for specific roles

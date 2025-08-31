@@ -367,7 +367,11 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
 const getTeacherProfile = async (teacherId: string): Promise<ApiResponse<TeacherProfile>> => {
   try {
     const response = await apiClient.get<ApiResponse<TeacherProfile>>(`/user-service/users/teachers/${teacherId}`);
-    return response.data;
+    return {
+      success: true,
+      data: response.data.data,
+      message: response.data.message,
+    }
   } catch (error: any) {
     return {
       success: false,

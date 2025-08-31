@@ -220,7 +220,7 @@ export default function StudentProfile() {
                   {formData.fullName}
                 </h2>
                 <p className="text-gray-600">{formData.role}</p>
-                <p className="text-sm text-gray-500">ID: {formData.id}</p>
+                <p className="text-sm text-gray-500">ID: {formData.userId}</p>
               </div>
             </div>
 

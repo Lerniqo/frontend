@@ -50,10 +50,8 @@ export default function TeacherProfileClientWrapper({ teacherId, teacher: initia
   };
 
   const handleHireTeacher = (teacherId: string) => {
-    // For now, just show an alert - this can be expanded to open a booking modal
-    alert(`Booking lesson with teacher ${teacherId}`);
-    // In a real implementation, you might redirect to a booking page or open a modal
-    // router.push(`/booking?teacherId=${teacherId}`);
+    // This function will be handled by the TeacherProfileContainer now
+    // The modal will be opened from there
   };
 
   if (loading) {

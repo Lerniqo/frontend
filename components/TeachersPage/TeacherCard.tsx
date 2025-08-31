@@ -9,7 +9,7 @@ interface TeacherCardProps {
   viewMode: 'grid' | 'list';
   onViewProfile: (teacherId: string) => void;
   onBookLesson?: (teacherId: string) => void;
-  // onToggleFavorite?: (teacherId: string) => void;
+  onToggleFavorite?: (teacherId: string) => void;
 }
 
 export default function TeacherCard({
@@ -17,7 +17,7 @@ export default function TeacherCard({
   viewMode,
   onViewProfile,
   onBookLesson,
-  // onToggleFavorite
+  onToggleFavorite
 }: TeacherCardProps) {
   const getExperienceLevelColor = (level: string): string => {
     switch (level) {
@@ -97,7 +97,21 @@ export default function TeacherCard({
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="flex items-center gap-2">
+                {onToggleFavorite && (
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleFavorite(teacher.userId);
+                    }}
+                    className="text-gray-400 hover:text-red-500 transition-colors duration-200"
+                    aria-label="Toggle favorite"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                  </button>
+                )}
                 {teacher.hourlyRate && (
                   <div className="text-lg font-bold text-green-600">
                     ${teacher.hourlyRate}/{teacher.currency || 'USD'}
@@ -185,6 +199,20 @@ export default function TeacherCard({
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
           )}
         </div>
+        {onToggleFavorite && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(teacher.userId);
+            }}
+            className="text-gray-400 hover:text-red-500 transition-colors duration-200"
+            aria-label="Toggle favorite"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Teacher Info */}

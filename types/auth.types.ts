@@ -11,6 +11,30 @@ export interface User {
   updatedAt: string;
 }
 
+// Booking related interfaces
+export interface TimeSlot {
+  id: string;
+  startTime: string; // e.g., "09:00"
+  endTime: string;   // e.g., "10:00"
+  isAvailable: boolean;
+}
+
+export interface DaySchedule {
+  date: string; // ISO date string
+  dayOfWeek: string; // e.g., "Monday"
+  timeSlots: TimeSlot[];
+}
+
+export interface TeacherAvailability {
+  teacherId: string;
+  schedule: DaySchedule[];
+}
+
+export interface SelectedSlot {
+  date: string;
+  timeSlot: TimeSlot;
+}
+
 // Extended user profiles for specific roles
 export interface StudentProfile extends User {
   role: 'Student';

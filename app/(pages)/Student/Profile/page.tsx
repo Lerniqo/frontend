@@ -4,18 +4,18 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useRouter } from "next/navigation";
 import { userService } from "@/services/userService";
-import { User } from "@/types/auth.types";
+import type { User, StudentProfile } from "@/types/auth.types";
 import Image from "next/image";
 
 import Loading from "@/components/CommonComponents/Loading"; // Adjust the import path as necessary
 import UpdatingComponent from "@/components/CommonComponents/Updating"; // Adjust the import path as necessary
 
 export default function StudentProfile() {
-  const [profile, setProfile] = useState<User | null>(null);
+  const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState<User | null>(null);
+  const [formData, setFormData] = useState<StudentProfile | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -36,8 +36,10 @@ export default function StudentProfile() {
       setLoading(true);
       const response = await userService.getCurrentUser();
       if (response.success && response.data) {
-        setProfile(response.data);
-        setFormData(response.data);
+        // Cast to StudentProfile since this is the student profile page
+        const studentProfile = response.data as StudentProfile;
+        setProfile(studentProfile);
+        setFormData(studentProfile);
       }
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -55,7 +57,7 @@ export default function StudentProfile() {
     setFormData((prev) => ({
       ...prev!,
       [name]:
-        name === "gradeLevel" || name === "experienceYears"
+        name === "gradeLevel"
           ? value === ""
             ? null
             : parseInt(value)
@@ -82,14 +84,15 @@ export default function StudentProfile() {
         email: formData.email,
         gradeLevel: formData.gradeLevel,
         learningGoals: formData.learningGoals,
-        profilePictureUrl: formData.profilePictureUrl,
       };
 
       const response = await userService.updateProfile(updateData);
 
       if (response.success && response.data) {
-        setProfile(response.data);
-        setFormData(response.data);
+        // Cast to StudentProfile since this is the student profile page
+        const updatedProfile = response.data as StudentProfile;
+        setProfile(updatedProfile);
+        setFormData(updatedProfile);
         setIsEditing(false);
         alert("Profile updated successfully!");
       } else {
@@ -208,7 +211,7 @@ export default function StudentProfile() {
             <div className="flex items-center space-x-6">
               <div className="relative">
                 <Image
-                  src={formData.profilePictureUrl || "/Profile.jpg"}
+                  src={formData.profileImage || "/Profile.jpg"}
                   alt="Profile"
                   width={96}
                   height={96}

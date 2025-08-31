@@ -158,7 +158,7 @@ export default function TeachersPage(): React.ReactElement {
       email: teacher.email,
       role: teacher.role,
       fullName: teacher.fullName,
-      profilePictureUrl: teacher.profilePictureUrl,
+      profileImage: teacher.profileImage,
       isVerified: teacher.isVerified,
       profileCompleted: teacher.profileCompleted,
       createdAt: teacher.createdAt,

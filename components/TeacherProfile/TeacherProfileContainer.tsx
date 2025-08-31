@@ -8,6 +8,8 @@ import TeacherProfileHeader from '@/components/TeacherProfile/TeacherProfileHead
 import TeacherAboutSection from '@/components/TeacherProfile/TeacherAboutSection';
 import TeacherBookingCard from '@/components/TeacherProfile/TeacherBookingCard';
 import TeacherContactInfo from '@/components/TeacherProfile/TeacherContactInfo';
+import TeacherBookingModal from '@/components/TeacherProfile/TeacherBookingModal';
+import { SelectedSlot } from '@/types/auth.types';
 
 interface TeacherProfileContainerProps {
   teacher?: TeacherProfileType;
@@ -25,6 +27,8 @@ export default function TeacherProfileContainer({
   const [teacher, setTeacher] = useState<TeacherProfileType | null>(initialTeacher || null);
   const [loading, setLoading] = useState(!initialTeacher);
   const [error, setError] = useState<string | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
 
   useEffect(() => {
     // Only fetch if we don't have teacher data and we have an ID
@@ -50,6 +54,18 @@ export default function TeacherProfileContainer({
       fetchTeacherProfile();
     }
   }, [initialTeacher, teacherId]);
+
+  const handleHireTeacher = (teacherId: string) => {
+    // Open the booking modal instead of calling the passed prop
+    setIsBookingModalOpen(true);
+  };
+
+  const handleSlotSelect = (slot: SelectedSlot) => {
+    setSelectedSlot(slot);
+    setIsBookingModalOpen(false);
+    // Here you would typically proceed with the booking process
+    alert(`Booking confirmed for ${slot.date} at ${slot.timeSlot.startTime} - ${slot.timeSlot.endTime}`);
+  };
 
   if (loading) {
     return <Loading />;
@@ -130,7 +146,7 @@ export default function TeacherProfileContainer({
             <div className="space-y-6">
               <TeacherBookingCard 
                 teacherId={teacher.userId}
-                onHireTeacher={onHireTeacher}
+                onHireTeacher={handleHireTeacher}
               />
               <TeacherContactInfo 
                 address={teacher.address}
@@ -141,6 +157,15 @@ export default function TeacherProfileContainer({
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <TeacherBookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => setIsBookingModalOpen(false)}
+        teacherName={teacher.fullName || 'Unknown Teacher'}
+        teacherId={teacher.userId}
+        onSlotSelect={handleSlotSelect}
+      />
     </div>
   );
 }

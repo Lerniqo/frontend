@@ -1,7 +1,6 @@
 "use client";
 
 import '@/app/globals.css';
-import { ProtectedRoute } from '@/components/CommonComponents/ProtectedRoute';
 
 export default function StudentDashboard() {
   return (

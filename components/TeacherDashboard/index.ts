@@ -1,4 +1,10 @@
 export { default as TeacherDashboard } from './TeacherDashboard';
+export { default as DashboardOverview } from './DashboardOverview';
+export { default as ContentManagement } from './ContentManagement';
+export { default as ScheduleManagement } from './ScheduleManagement';
+export { default as ContestsPage } from './ContestsPage';
+export { default as TeacherProfile } from './TeacherProfile';
+export { default as SharedNavigation } from './SharedNavigation';
 export { default as NavigationMenu } from './NavigationMenu';
 export { default as MotivatedHeading } from './MotivatedHeading';
 export { default as AvailabilityManager } from './AvailabilityManager';

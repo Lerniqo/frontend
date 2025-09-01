@@ -1,9 +1,14 @@
-import React from 'react'
+'use client'
 
-const page = () => {
+import React from 'react'
+import AdminDashboard from '@/components/AdminDashboard'
+
+const AdminDashboardPage = () => {
   return (
-    <div>page</div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <AdminDashboard />
+    </div>
   )
 }
 
-export default page
+export default AdminDashboardPage

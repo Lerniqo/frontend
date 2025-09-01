@@ -8,14 +8,12 @@ const Protected = ({
     student,
     admin,
 }:{
-    teacher: React.FC,
-    student: React.FC,
-    admin: React.FC,
+    teacher: React.ReactNode,
+    student: React.ReactNode,
+    admin: React.ReactNode,
 }) => {
     const { user, isAuthenticated, isLoading } = useAuth()
     const router = useRouter()
-
-    return admin;
 
     if (isLoading) return <div>Loading...</div>
 

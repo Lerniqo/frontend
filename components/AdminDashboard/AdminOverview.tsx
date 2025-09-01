@@ -6,7 +6,6 @@ import {
   BookOpen, 
   BarChart3, 
   CheckCircle, 
-  TrendingUp,
   UserCheck,
   FileText,
   Globe,
@@ -170,7 +169,7 @@ const AdminOverview = () => {
             </div>
             
             <div className="mt-6 pt-6 border-t border-white/10">
-              <h4 className="text-lg font-semibold text-white mb-4">Today's Stats</h4>
+              <h4 className="text-lg font-semibold text-white mb-4">Today&apos;s Stats</h4>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: 'New Users', value: '34' },

@@ -60,8 +60,8 @@ const UserManagement = () => {
     }
   ]
 
-  const handleApproval = (id: number, approved: boolean) => {
-    console.log(`Teacher ${id} ${approved ? 'approved' : 'rejected'}`)
+  const handleApproval = (_id: number, _approved: boolean) => {
+    // console.log(`Teacher ${id} ${approved ? 'approved' : 'rejected'}`)
   }
 
   return (

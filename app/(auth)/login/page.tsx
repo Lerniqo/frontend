@@ -10,7 +10,7 @@ const Login = () => {
       <DarkVeil />
       <LoginForm 
         showSignUpLink={true}
-        redirectPath="/Dashboard"
+        redirectPath="/dashboard"
         className='w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl'
       />
     </div>

@@ -107,7 +107,7 @@ export default function StudentProfile() {
   };
 
   const handleBackToDashboard = () => {
-    router.push("/Student/Dashboard");
+    router.push("/dashboard");
   };
 
   if (loading) {

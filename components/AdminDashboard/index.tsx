@@ -6,14 +6,10 @@ import {
   BookOpen, 
   BarChart3, 
   CheckCircle, 
-  XCircle, 
-  TrendingUp,
   UserCheck,
   FileText,
   Globe,
-  Activity,
   Shield,
-  Star,
   Clock,
   Bell,
   User
@@ -401,7 +397,7 @@ const OverviewSection = () => {
             </div>
             
             <div className="mt-6 pt-6 border-t border-white/10">
-              <h4 className="text-lg font-semibold text-white mb-4">Today's Stats</h4>
+              <h4 className="text-lg font-semibold text-white mb-4">Today&apos;s Stats</h4>
               <div className="grid grid-cols-2 gap-4">
                 {[
                   { label: 'New Users', value: '34' },

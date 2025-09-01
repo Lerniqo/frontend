@@ -48,7 +48,7 @@ export default function LoginForm({
   isLoading = false, 
   className = "", 
   showSignUpLink = true,
-  redirectPath = "/Dashboard"
+  redirectPath = "/dgrep ashboard"
 }: LoginFormProps) {
   // State management
   const [formData, setFormData] = useState<FormState>({

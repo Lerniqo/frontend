@@ -9,7 +9,6 @@ import {
   Clock,
   CheckCircle,
   AlertTriangle,
-  Zap,
   Search,
   Filter,
   MoreVertical,
@@ -93,8 +92,8 @@ const ContentManagement = () => {
     }
   }
 
-  const handleContentAction = (id: number, action: string) => {
-    console.log(`Content ${id} ${action}`)
+  const handleContentAction = (_id: number, _action: string) => {
+    // console.log(`Content ${id} ${action}`)
   }
 
   return (

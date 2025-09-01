@@ -13,7 +13,6 @@ import {
   ArrowUp,
   ArrowDown,
   Calendar,
-  Filter,
   Download,
   Eye,
   Clock,
@@ -25,7 +24,7 @@ interface MetricData {
   value: string
   trend: string
   isPositive: boolean
-  icon: React.ComponentType<any>
+  icon: React.ComponentType<{ className?: string }>
   color: string
 }
 

@@ -14,6 +14,7 @@ import {
   Settings,
   LogOut
 } from 'lucide-react'
+import AdminFooter from '@/components/AdminDashboard/AdminFooter'
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -118,7 +119,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         break
       case 'logout':
         // Handle logout logic here
-        console.log('Logging out...')
+        console.warn('Logging out...')
         break
       default:
         break
@@ -126,7 +127,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden flex flex-col">
       {/* Premium background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.3),transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.2),transparent_50%)]"></div>
@@ -356,9 +357,12 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       </nav>
 
       {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex-1 min-h-0">
         {children}
       </div>
+
+      {/* Admin Footer */}
+      <AdminFooter />
 
       {/* Custom animations */}
       <style jsx>{`

@@ -15,3 +15,4 @@ export { default as ResourceManager } from './ResourceManager';
 export { default as WebinarManager } from './WebinarManager';
 export { default as NotificationPopup } from './NotificationPopup';
 export { default as ProfileDropdown } from './ProfileDropdown';
+export { default as TeacherFooter } from './TeacherFooter';

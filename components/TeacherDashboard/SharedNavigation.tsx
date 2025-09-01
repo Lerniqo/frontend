@@ -28,7 +28,6 @@ export default function SharedNavigation({
     { id: 'content-management', label: 'Content', icon: '📚', path: '/content-management' },
     { id: 'schedule-management', label: 'Schedule', icon: '⏰', path: '/schedule-management' },
     { id: 'contests', label: 'Contests', icon: '🏆', path: '/contests' },
-    { id: 'profile', label: 'Profile', icon: '👤', path: '/profile' },
   ];
 
   const unreadCount = notifications.filter(n => !n.read).length;

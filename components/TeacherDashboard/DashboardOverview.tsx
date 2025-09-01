@@ -6,6 +6,7 @@ import MotivatedHeading from './MotivatedHeading';
 import AvailabilityManager from './AvailabilityManager';
 import NotificationsPanel from './NotificationsPanel';
 import SharedNavigation from './SharedNavigation';
+import TeacherFooter from './TeacherFooter';
 
 export default function DashboardOverview() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -63,7 +64,7 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden flex flex-col">
       {/* Premium background effects */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.4),transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.3),transparent_50%)]"></div>
@@ -91,7 +92,7 @@ export default function DashboardOverview() {
         }}
       />
 
-      <div className="relative z-10 pt-8 pb-16">
+      <div className="relative z-10 pt-8 pb-16 flex-1">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="space-y-16">
             <div className="text-center mb-12">
@@ -171,6 +172,9 @@ export default function DashboardOverview() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <TeacherFooter />
 
       <style jsx>{`
         @keyframes blob {

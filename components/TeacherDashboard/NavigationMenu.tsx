@@ -155,8 +155,8 @@ export default function NavigationMenu({
 
       {/* Mobile Menu */}
       {showMobileMenu && (
-        <div className="lg:hidden absolute top-full left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-b border-white/20 shadow-2xl">
-          <div className="px-4 py-6 space-y-2">
+        <div className="lg:hidden absolute top-full left-0 right-0 bg-slate-900/80 backdrop-blur-2xl border-b border-white/30 shadow-2xl before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/20 before:via-white/5 before:to-transparent">
+          <div className="relative z-10 px-4 py-6 space-y-3">
             {menuItems.map((item) => (
               <button
                 key={item.id}
@@ -164,14 +164,17 @@ export default function NavigationMenu({
                   onSectionChange(item.id);
                   setShowMobileMenu(false);
                 }}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-base transition-all duration-300 ${
+                className={`w-full flex items-center space-x-3 px-6 py-4 rounded-2xl font-medium text-base transition-all duration-500 backdrop-blur-sm overflow-hidden ${
                   activeSection === item.id
-                    ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-xl ring-2 ring-white/20'
-                    : 'text-slate-200 hover:text-white hover:bg-white/10 border border-white/10 hover:border-white/30'
+                    ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white shadow-2xl ring-2 ring-white/30 scale-105 border border-white/20'
+                    : 'text-slate-200 hover:text-white hover:bg-white/20 border border-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl'
                 }`}
               >
-                <span className="text-lg">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
+                <span className="text-xl drop-shadow-sm">{item.icon}</span>
+                <span className="font-medium drop-shadow-sm">{item.label}</span>
+                {activeSection === item.id && (
+                  <div className="absolute inset-0 bg-white/10 animate-pulse rounded-2xl"></div>
+                )}
               </button>
             ))}
           </div>

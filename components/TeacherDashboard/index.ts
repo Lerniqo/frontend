@@ -1,4 +1,10 @@
 export { default as TeacherDashboard } from './TeacherDashboard';
+export { default as DashboardOverview } from './DashboardOverview';
+export { default as ContentManagement } from './ContentManagement';
+export { default as ScheduleManagement } from './ScheduleManagement';
+export { default as ContestsPage } from './ContestsPage';
+export { default as TeacherProfile } from './TeacherProfile';
+export { default as SharedNavigation } from './SharedNavigation';
 export { default as NavigationMenu } from './NavigationMenu';
 export { default as MotivatedHeading } from './MotivatedHeading';
 export { default as AvailabilityManager } from './AvailabilityManager';
@@ -9,3 +15,4 @@ export { default as ResourceManager } from './ResourceManager';
 export { default as WebinarManager } from './WebinarManager';
 export { default as NotificationPopup } from './NotificationPopup';
 export { default as ProfileDropdown } from './ProfileDropdown';
+export { default as TeacherFooter } from './TeacherFooter';

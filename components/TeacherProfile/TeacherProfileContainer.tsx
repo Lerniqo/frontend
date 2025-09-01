@@ -73,14 +73,19 @@ export default function TeacherProfileContainer({
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error</h2>
-          <p className="text-gray-700 mb-6">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-12 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Something went wrong</h2>
+          <p className="text-gray-600 mb-8 leading-relaxed">{error}</p>
           {onGoBack && (
             <button
               onClick={onGoBack}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition duration-300"
+              className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               Go Back
             </button>
@@ -92,16 +97,21 @@ export default function TeacherProfileContainer({
 
   if (!teacher) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-12 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Teacher Not Found</h2>
-          <p className="text-gray-600 mb-6">The requested teacher profile could not be found.</p>
+          <p className="text-gray-600 mb-8 leading-relaxed">The requested teacher profile could not be found.</p>
           {onGoBack && (
             <button
               onClick={onGoBack}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition duration-300"
+              className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              Go Back
+              Browse Teachers
             </button>
           )}
         </div>
@@ -110,14 +120,15 @@ export default function TeacherProfileContainer({
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
+    <div className="max-w-7xl mx-auto">
+      {/* Back Button */}
+      <div className="flex justify-between items-center mb-8">
         {onGoBack && (
           <button
             onClick={onGoBack}
-            className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300"
+            className="group flex items-center text-purple-600 hover:text-purple-700 font-semibold transition-all duration-300 bg-white/60 backdrop-blur-sm rounded-full px-6 py-3 shadow-lg hover:shadow-xl border border-white/30"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
             </svg>
             Back to Teachers
@@ -125,7 +136,8 @@ export default function TeacherProfileContainer({
         )}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+      {/* Main Profile Card */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
         <TeacherProfileHeader 
           name={teacher.fullName || 'Unknown Teacher'}
           profilePictureUrl={teacher.profileImage}
@@ -134,20 +146,21 @@ export default function TeacherProfileContainer({
           qualifications={teacher.qualifications}
         />
         
-        <div className="p-6 md:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+        <div className="p-8 md:p-12">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="xl:col-span-2 space-y-8">
               <TeacherAboutSection 
                 shortBio={teacher.shortBio}
                 qualifications={teacher.qualifications}
               />
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-8">
               <TeacherBookingCard 
                 teacherId={teacher.userId}
                 onHireTeacher={handleHireTeacher}
               />
+              
               <TeacherContactInfo 
                 address={teacher.address}
                 phoneNumber={teacher.phoneNumber}

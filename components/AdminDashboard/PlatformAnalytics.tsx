@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { 
   TrendingUp, 
   BarChart3, 
@@ -11,7 +11,13 @@ import {
   DollarSign,
   Target,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Calendar,
+  Filter,
+  Download,
+  Eye,
+  Clock,
+  Award
 } from 'lucide-react'
 
 interface MetricData {
@@ -24,6 +30,8 @@ interface MetricData {
 }
 
 const PlatformAnalytics = () => {
+  const [timeRange, setTimeRange] = useState('7d')
+
   const keyMetrics: MetricData[] = [
     { 
       label: 'Student Engagement', 
@@ -47,64 +55,126 @@ const PlatformAnalytics = () => {
       trend: '+0.3', 
       isPositive: true,
       icon: Star, 
-      color: 'from-purple-500 to-purple-600' 
+      color: 'from-purple-600 to-purple-700' 
     },
     { 
-      label: 'Platform Health', 
-      value: '98.7%', 
-      trend: '+1.2%', 
+      label: 'Platform Revenue', 
+      value: '$45.2K', 
+      trend: '+18.7%', 
       isPositive: true,
-      icon: Activity, 
-      color: 'from-indigo-500 to-indigo-600' 
+      icon: DollarSign, 
+      color: 'from-emerald-500 to-emerald-600' 
     }
   ]
 
-  const engagementData = [
-    { metric: 'Daily Active Users', value: '1,789', percentage: 89 },
-    { metric: 'Course Completion Rate', value: '73.8%', percentage: 74 },
-    { metric: 'Average Session Duration', value: '24 min', percentage: 67 },
-    { metric: 'User Retention (30 days)', value: '85.2%', percentage: 85 }
+  const performanceData = [
+    { subject: 'Mathematics', completion: 89, engagement: 92, difficulty: 'Advanced' },
+    { subject: 'Physics', completion: 84, engagement: 88, difficulty: 'Intermediate' },
+    { subject: 'Chemistry', completion: 78, engagement: 85, difficulty: 'Beginner' },
+    { subject: 'Biology', completion: 91, engagement: 94, difficulty: 'Intermediate' }
   ]
 
-  const difficultyAreas = [
-    { subject: 'Advanced Calculus', struggleRate: 67, students: 234 },
-    { subject: 'Quantum Physics', struggleRate: 71, students: 189 },
-    { subject: 'Organic Chemistry', struggleRate: 58, students: 267 },
-    { subject: 'Linear Algebra', struggleRate: 52, students: 198 }
-  ]
-
-  const topTeachers = [
-    { name: 'Dr. Smith', rating: 9.8, students: 1245, subject: 'Mathematics' },
-    { name: 'Prof. Johnson', rating: 9.7, students: 987, subject: 'Physics' },
-    { name: 'Ms. Davis', rating: 9.5, students: 876, subject: 'Chemistry' },
-    { name: 'Dr. Wilson', rating: 9.4, students: 654, subject: 'Biology' }
+  const learningTrends = [
+    { 
+      category: 'Most Popular Subject', 
+      value: 'Mathematics', 
+      percentage: '34%',
+      icon: BookOpen,
+      color: 'text-blue-400'
+    },
+    { 
+      category: 'Peak Learning Hours', 
+      value: '2-6 PM', 
+      percentage: '42%',
+      icon: Clock,
+      color: 'text-purple-400'
+    },
+    { 
+      category: 'Top Teacher Rating', 
+      value: 'Dr. Johnson', 
+      percentage: '9.8/10',
+      icon: Award,
+      color: 'text-green-400'
+    },
+    { 
+      category: 'Success Rate', 
+      value: 'Course Completion', 
+      percentage: '87%',
+      icon: Target,
+      color: 'text-indigo-400'
+    }
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
+      {/* Header */}
+      <div className="text-center mb-20">
+        <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-blue-500/20 to-purple-600/20 backdrop-blur-xl rounded-full px-8 py-4 border border-white/20 mb-8">
+          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+          <span className="text-blue-300 text-sm font-medium tracking-wide">Platform Analytics</span>
+        </div>
+        <h1 className="text-6xl font-bold mb-8 tracking-tight leading-tight bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          Analytics Dashboard
+        </h1>
+        <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          Comprehensive insights into platform performance, user engagement, and learning outcomes
+        </p>
+      </div>
+
+      {/* Time Range Selector */}
+      <div className="group relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-500/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center space-x-4">
+              <Calendar className="w-6 h-6 text-blue-400" />
+              <h3 className="text-2xl font-bold text-white">Analytics Overview</h3>
+            </div>
+            <div className="flex items-center space-x-3">
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="appearance-none bg-white/10 border border-white/20 rounded-2xl px-6 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 backdrop-blur-sm transition-all duration-300 cursor-pointer"
+              >
+                <option value="24h" className="bg-slate-800 text-white">Last 24 Hours</option>
+                <option value="7d" className="bg-slate-800 text-white">Last 7 Days</option>
+                <option value="30d" className="bg-slate-800 text-white">Last 30 Days</option>
+                <option value="90d" className="bg-slate-800 text-white">Last 90 Days</option>
+              </select>
+              <button className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <Download className="w-5 h-5" />
+                <span className="font-semibold">Export</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {keyMetrics.map((metric, index) => {
           const IconComponent = metric.icon
           return (
-            <div key={index} className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm font-medium">{metric.label}</p>
-                  <p className="text-2xl font-bold text-gray-900 mt-1">{metric.value}</p>
-                  <div className="flex items-center mt-1">
-                    {metric.isPositive ? (
-                      <ArrowUp className="w-4 h-4 text-green-500 mr-1" />
-                    ) : (
-                      <ArrowDown className="w-4 h-4 text-red-500 mr-1" />
-                    )}
-                    <p className={`text-sm ${metric.isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                      {metric.trend} this week
-                    </p>
+            <div key={index} className="group relative">
+              <div className={`absolute inset-0 bg-gradient-to-r ${metric.color}/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500`}></div>
+              <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500 hover:scale-105">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${metric.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <div className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-semibold ${
+                    metric.isPositive 
+                      ? 'text-green-400 bg-green-400/20' 
+                      : 'text-red-400 bg-red-400/20'
+                  }`}>
+                    {metric.isPositive ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
+                    {metric.trend}
                   </div>
                 </div>
-                <div className={`p-3 rounded-lg bg-gradient-to-r ${metric.color}`}>
-                  <IconComponent className="w-6 h-6 text-white" />
+                <div>
+                  <p className="text-slate-400 text-sm font-medium mb-2">{metric.label}</p>
+                  <p className="text-3xl font-bold text-white">{metric.value}</p>
+                  <p className="text-slate-400 text-xs mt-1">vs last period</p>
                 </div>
               </div>
             </div>
@@ -112,182 +182,158 @@ const PlatformAnalytics = () => {
         })}
       </div>
 
-      {/* Platform Analytics Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Student Engagement Metrics</h3>
-            <Users className="w-6 h-6 text-blue-500" />
-          </div>
-          <div className="space-y-4">
-            {engagementData.map((item, index) => (
-              <div key={index}>
-                <div className="flex justify-between text-sm mb-2">
-                  <span className="text-gray-600">{item.metric}</span>
-                  <span className="font-medium text-gray-900">{item.value}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-1000 ease-out" 
-                    style={{width: `${item.percentage}%`}}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Marketplace Activity</h3>
-            <DollarSign className="w-6 h-6 text-green-500" />
-          </div>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-50/50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-xl font-bold text-green-600">$12,456</p>
-                <p className="text-xs text-green-500">+18% this month</p>
-              </div>
-              <div className="bg-gray-50/50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">Active Subscriptions</p>
-                <p className="text-xl font-bold text-blue-600">1,234</p>
-                <p className="text-xs text-blue-500">+7% this month</p>
+      {/* Subject Performance */}
+      <div className="group relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl hover:bg-white/15 transition-all duration-500">
+          <div className="p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-3xl font-bold text-white">Subject Performance</h3>
+              <div className="flex items-center space-x-2 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full border border-blue-500/30">
+                <BarChart3 className="w-4 h-4" />
+                <span className="text-sm font-medium">Live Data</span>
               </div>
             </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Teacher Earnings</span>
-                <span className="font-semibold text-purple-600">$8,901</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Platform Commission</span>
-                <span className="font-semibold text-indigo-600">$3,555</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Popular Category</span>
-                <span className="font-semibold text-orange-600">Mathematics</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Detailed Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Common Difficulty Areas */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Difficulty Areas</h3>
-            <Target className="w-6 h-6 text-red-500" />
-          </div>
-          <div className="space-y-4">
-            {difficultyAreas.map((area, index) => (
-              <div key={index} className="p-3 bg-gray-50/50 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium text-gray-900">{area.subject}</span>
-                  <span className="text-sm text-red-600">{area.struggleRate}%</span>
-                </div>
-                <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>Struggle Rate</span>
-                  <span>{area.students} students</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div 
-                    className="bg-gradient-to-r from-red-400 to-red-600 h-2 rounded-full" 
-                    style={{width: `${area.struggleRate}%`}}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+            <div className="space-y-6">
+              {performanceData.map((subject, index) => (
+                <div key={index} className="group relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                  <div className="relative backdrop-blur-sm bg-white/5 rounded-2xl border border-white/20 p-6 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <BookOpen className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                          <h4 className="text-xl font-bold text-white">{subject.subject}</h4>
+                          <span className={`text-sm px-3 py-1 rounded-full ${
+                            subject.difficulty === 'Advanced' ? 'text-red-300 bg-red-400/20' :
+                            subject.difficulty === 'Intermediate' ? 'text-yellow-300 bg-yellow-400/20' :
+                            'text-green-300 bg-green-400/20'
+                          }`}>
+                            {subject.difficulty}
+                          </span>
+                        </div>
+                      </div>
 
-        {/* Top Performing Teachers */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Top Teachers</h3>
-            <Star className="w-6 h-6 text-yellow-500" />
-          </div>
-          <div className="space-y-4">
-            {topTeachers.map((teacher, index) => (
-              <div key={index} className="p-3 bg-gray-50/50 rounded-lg">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium text-gray-900">{teacher.name}</span>
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                    <span className="text-sm font-medium">{teacher.rating}</span>
+                      <div className="grid grid-cols-2 gap-8 flex-1 max-w-md">
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-slate-300 text-sm">Completion</span>
+                            <span className="text-white font-semibold">{subject.completion}%</span>
+                          </div>
+                          <div className="w-full bg-slate-700 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500"
+                              style={{width: `${subject.completion}%`}}
+                            ></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-slate-300 text-sm">Engagement</span>
+                            <span className="text-white font-semibold">{subject.engagement}%</span>
+                          </div>
+                          <div className="w-full bg-slate-700 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-purple-600 to-purple-700 h-2 rounded-full transition-all duration-500"
+                              style={{width: `${subject.engagement}%`}}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>{teacher.subject}</span>
-                  <span>{teacher.students} students</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Content Popularity */}
-        <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Popular Content</h3>
-            <BookOpen className="w-6 h-6 text-purple-500" />
-          </div>
-          <div className="space-y-4">
-            {[
-              { subject: 'Mathematics', enrollments: 1456, growth: '+12%' },
-              { subject: 'Physics', enrollments: 1234, growth: '+8%' },
-              { subject: 'Chemistry', enrollments: 987, growth: '+15%' },
-              { subject: 'Biology', enrollments: 876, growth: '+6%' }
-            ].map((content, index) => (
-              <div key={index} className="p-3 bg-gray-50/50 rounded-lg">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-medium text-gray-900">{content.subject}</span>
-                  <span className="text-sm text-green-600">{content.growth}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>Enrollments</span>
-                  <span className="font-medium">{content.enrollments}</span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Performance Insights */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Performance Insights & Recommendations</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-4 bg-blue-50/50 rounded-lg border border-blue-200">
-            <h4 className="font-medium text-blue-900 mb-2">Student Success</h4>
-            <p className="text-sm text-blue-800 mb-3">
-              Overall student engagement is up 5.2% this week, with particularly strong performance in Mathematics and Physics courses.
-            </p>
-            <button className="text-xs bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-colors">
-              View Details
-            </button>
+      {/* Learning Trends */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="group relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+          <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500">
+            <h3 className="text-2xl font-bold text-white mb-6">Learning Trends</h3>
+            <div className="space-y-4">
+              {learningTrends.map((trend, index) => {
+                const IconComponent = trend.icon
+                return (
+                  <div key={index} className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <div className="flex items-center space-x-3">
+                      <IconComponent className={`w-5 h-5 ${trend.color}`} />
+                      <span className="text-slate-300 font-medium">{trend.category}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-lg text-white">{trend.value}</div>
+                      <div className={`text-sm ${trend.color}`}>{trend.percentage}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-          
-          <div className="p-4 bg-purple-50/50 rounded-lg border border-purple-200">
-            <h4 className="font-medium text-purple-900 mb-2">Content Quality</h4>
-            <p className="text-sm text-purple-800 mb-3">
-              Teacher-submitted content maintains high quality with an average score of 8.7/10. Consider featuring top-rated content.
-            </p>
-            <button className="text-xs bg-purple-500 text-white px-3 py-1 rounded-full hover:bg-purple-600 transition-colors">
-              Review Content
-            </button>
+        </div>
+
+        <div className="group relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-500/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+          <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500">
+            <h3 className="text-2xl font-bold text-white mb-6">Platform Statistics</h3>
+            <div className="space-y-4">
+              {[
+                { label: 'Daily Active Users', value: '1,234', icon: Users, color: 'text-blue-400' },
+                { label: 'Session Duration', value: '42 min', icon: Clock, color: 'text-purple-400' },
+                { label: 'Course Completion', value: '87%', icon: Target, color: 'text-green-400' },
+                { label: 'User Satisfaction', value: '4.8/5', icon: Star, color: 'text-yellow-400' }
+              ].map((stat, index) => {
+                const IconComponent = stat.icon
+                return (
+                  <div key={index} className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10">
+                    <div className="flex items-center space-x-3">
+                      <IconComponent className={`w-5 h-5 ${stat.color}`} />
+                      <span className="text-slate-300 font-medium">{stat.label}</span>
+                    </div>
+                    <span className={`font-bold text-lg ${stat.color}`}>{stat.value}</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
-          
-          <div className="p-4 bg-green-50/50 rounded-lg border border-green-200">
-            <h4 className="font-medium text-green-900 mb-2">Revenue Growth</h4>
-            <p className="text-sm text-green-800 mb-3">
-              Marketplace revenue is up 18% this month. Consider expanding popular course categories.
-            </p>
-            <button className="text-xs bg-green-500 text-white px-3 py-1 rounded-full hover:bg-green-600 transition-colors">
-              Analyze Trends
-            </button>
+        </div>
+      </div>
+
+      {/* Real-time Activity */}
+      <div className="group relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
+        <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-3xl font-bold text-white">Real-time Activity</h3>
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-400 text-sm font-medium">Live</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { label: 'Active Sessions', value: '156', icon: Activity, color: 'from-green-500 to-green-600' },
+              { label: 'Questions Solved', value: '2,341', icon: Target, color: 'from-blue-500 to-blue-600' },
+              { label: 'Live Lessons', value: '23', icon: Eye, color: 'from-purple-600 to-purple-700' }
+            ].map((activity, index) => {
+              const IconComponent = activity.icon
+              return (
+                <div key={index} className="text-center p-6 bg-white/5 rounded-2xl border border-white/10">
+                  <div className={`w-16 h-16 bg-gradient-to-br ${activity.color} rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4`}>
+                    <IconComponent className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-white mb-2">{activity.value}</div>
+                  <div className="text-slate-400 text-sm">{activity.label}</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

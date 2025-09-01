@@ -1,13 +1,15 @@
 'use client'
 
 import React from 'react'
-import AdminDashboard from '@/components/AdminDashboard'
+import AdminOverview from '@/components/AdminDashboard/AdminOverview'
 
 const AdminDashboardPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <AdminDashboard />
-    </div>
+    <main className="pt-8 pb-24">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <AdminOverview />
+      </div>
+    </main>
   )
 }
 

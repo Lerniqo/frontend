@@ -38,6 +38,189 @@ export interface SyllabusResponse {
   hierarchy: Subject;
 }
 
+// Types for concept structure
+export interface ConceptPrerequisite {
+  conceptId: string;
+  name: string;
+}
+
+export interface ConceptResource {
+  resourceId: string;
+  title: string;
+  type: "Video" | "Note" | "Quiz";
+  url: string;
+}
+
+export interface ConceptResponse {
+  conceptId: string;
+  name: string;
+  prerequisites: ConceptPrerequisite[];
+  resources: ConceptResource[];
+}
+
+/**
+ * Retrieves a specific concept by ID with its prerequisites and resources
+ * @param conceptId - The ID of the concept to retrieve
+ * @returns Promise<ConceptResponse> - The concept details with prerequisites and resources
+ */
+export async function getConceptById(
+  conceptId: string
+): Promise<ConceptResponse> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch(`/api/content/concepts/${conceptId}`);
+    // const data = await response.json();
+    // return data;
+
+    // Mock data for different concepts
+    const mockConceptsData: Record<string, ConceptResponse> = {
+      "pythagorean-theorem": {
+        conceptId: "pythagorean-theorem",
+        name: "Pythagorean Theorem",
+        prerequisites: [
+          { conceptId: "square-root", name: "Square Roots" },
+          { conceptId: "right-triangles", name: "Right Triangles" },
+          { conceptId: "basic-algebra", name: "Basic Algebra" },
+        ],
+        resources: [
+          {
+            resourceId: "video-pythagoras-intro",
+            title: "Introduction to Pythagorean Theorem",
+            type: "Video",
+            url: "https://www.youtube.com/watch?v=pythagorean-intro",
+          },
+          {
+            resourceId: "exercise-pythagoras-basic",
+            title: "Basic Pythagorean Theorem Problems",
+            type: "Quiz",
+            url: "/exercises/pythagorean-basic",
+          },
+          {
+            resourceId: "article-pythagoras-history",
+            title: "History and Applications of Pythagorean Theorem",
+            type: "Note",
+            url: "/articles/pythagorean-history",
+          },
+          {
+            resourceId: "quiz-pythagoras-assessment",
+            title: "Pythagorean Theorem Quiz",
+            type: "Quiz",
+            url: "/quizzes/pythagorean-assessment",
+          },
+        ],
+      },
+      "fraction-multiplication": {
+        conceptId: "fraction-multiplication",
+        name: "Multiplication of Fractions",
+        prerequisites: [
+          { conceptId: "basic-fractions", name: "Basic Fractions" },
+          { conceptId: "multiplication", name: "Basic Multiplication" },
+        ],
+        resources: [
+          {
+            resourceId: "video-fraction-mult-intro",
+            title: "How to Multiply Fractions",
+            type: "Video",
+            url: "https://www.youtube.com/watch?v=fraction-multiplication",
+          },
+          {
+            resourceId: "exercise-fraction-mult-practice",
+            title: "Fraction Multiplication Practice",
+            type: "Quiz",
+            url: "/exercises/fraction-multiplication-practice",
+          },
+          {
+            resourceId: "document-fraction-mult-guide",
+            title: "Step-by-Step Guide to Fraction Multiplication",
+            type: "Note",
+            url: "/documents/fraction-multiplication-guide.pdf",
+          },
+        ],
+      },
+      "linear-equations": {
+        conceptId: "linear-equations",
+        name: "Linear Equations",
+        prerequisites: [
+          { conceptId: "algebraic-expressions", name: "Algebraic Expressions" },
+          { conceptId: "basic-operations", name: "Basic Operations" },
+          { conceptId: "integers", name: "Working with Integers" },
+        ],
+        resources: [
+          {
+            resourceId: "video-linear-eq-solving",
+            title: "Solving Linear Equations",
+            type: "Video",
+            url: "https://www.youtube.com/watch?v=Tj5OkhsTjvg",
+          },
+          {
+            resourceId: "exercise-linear-eq-practice",
+            title: "Linear Equation Practice Problems",
+            type: "Quiz",
+            url: "/exercises/linear-equations-practice",
+          },
+          {
+            resourceId: "article-linear-eq-applications",
+            title: "Real-World Applications of Linear Equations",
+            type: "Note",
+            url: "https://topicpdfs.s3.eu-north-1.amazonaws.com/Grade%2010/grade-10-mathematics-Algebraic-Fractions.pdf",
+          },
+          {
+            resourceId: "quiz-linear-eq-test",
+            title: "Linear Equations Mastery Test",
+            type: "Quiz",
+            url: "/quizzes/linear-equations-test",
+          },
+        ],
+      },
+      "area-calculations": {
+        conceptId: "area-calculations",
+        name: "Area Calculations",
+        prerequisites: [
+          { conceptId: "basic-multiplication", name: "Basic Multiplication" },
+          { conceptId: "geometric-shapes", name: "Basic Geometric Shapes" },
+          { conceptId: "pi-concept", name: "Understanding Pi" },
+        ],
+        resources: [
+          {
+            resourceId: "video-area-formulas",
+            title: "Area Formulas for Different Shapes",
+            type: "Video",
+            url: "https://www.youtube.com/watch?v=Tj5OkhsTjvg",
+          },
+          {
+            resourceId: "exercise-area-practice",
+            title: "Area Calculation Practice",
+            type: "Quiz",
+            url: "/exercises/area-calculations-practice",
+          },
+          {
+            resourceId: "document-area-reference",
+            title: "Quick Reference: Area Formulas",
+            type: "Note",
+            url: "/documents/area-formulas-reference.pdf",
+          },
+        ],
+      },
+    };
+
+    const conceptId = "linear-equations";
+
+    // Check if the concept exists in our mock data
+    const conceptData = mockConceptsData[conceptId];
+    if (!conceptData) {
+      throw new Error(`Concept with ID '${conceptId}' not found`);
+    }
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return conceptData;
+  } catch (error) {
+    console.error(`Error retrieving concept ${conceptId}:`, error);
+    throw new Error(`Failed to retrieve concept: ${conceptId}`);
+  }
+}
+
 /**
  * Retrieves the entire syllabus structure
  * @returns Promise<SyllabusResponse> - The syllabus hierarchy
@@ -792,6 +975,127 @@ export function findNodeById(
   }
 
   return null;
+}
+
+// Types for quiz structure
+export interface QuizOption {
+  id: string;
+  text: string;
+}
+
+export interface QuizQuestion {
+  id: string;
+  text: string;
+  difficulty: "Easy" | "Medium" | "Hard";
+  options: QuizOption[];
+  correctOptionId: string;
+  explanation: string;
+}
+
+export interface QuizResponse {
+  id: string;
+  title: string;
+  questions: QuizQuestion[];
+}
+
+/**
+ * Retrieves a specific quiz by ID with its questions, options, and answers
+ * @param quizId - The ID of the quiz to retrieve
+ * @returns Promise<QuizResponse> - The quiz details with questions and options
+ */
+export async function getQuizzById(quizId: string): Promise<QuizResponse> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch(`/api/content/quizzes/${quizId}`);
+    // const data = await response.json();
+    // return data;
+
+    // Mock data - return same quiz for any quizId for now
+    const mockQuizData: QuizResponse = {
+      id: quizId, // Use the provided quizId
+      title: "Mathematics Practice Quiz",
+      questions: [
+        {
+          id: "question-001",
+          text: "In a right-angled triangle, what is the side opposite the right angle called?",
+          difficulty: "Easy",
+          options: [
+            { id: "option-001a", text: "Adjacent" },
+            { id: "option-001b", text: "Opposite" },
+            { id: "option-001c", text: "Hypotenuse" },
+            { id: "option-001d", text: "Tangent" },
+          ],
+          correctOptionId: "option-001c",
+          explanation:
+            "The hypotenuse is always the longest side in a right-angled triangle and is located opposite the right angle.",
+        },
+        {
+          id: "question-002",
+          text: "If the two shorter sides of a right-angled triangle measure 6cm and 8cm, what is the length of the hypotenuse?",
+          difficulty: "Medium",
+          options: [
+            { id: "option-002a", text: "14cm" },
+            { id: "option-002b", text: "10cm" },
+            { id: "option-002c", text: "48cm" },
+            { id: "option-002d", text: "100cm" },
+          ],
+          correctOptionId: "option-002b",
+          explanation:
+            "According to Pythagoras' theorem, a² + b² = c². So, 6² + 8² = 36 + 64 = 100. The square root of 100 is 10. Therefore, the hypotenuse is 10cm.",
+        },
+        {
+          id: "question-003",
+          text: "Which of the following is the correct formula for the Pythagorean theorem?",
+          difficulty: "Easy",
+          options: [
+            { id: "option-003a", text: "a + b = c" },
+            { id: "option-003b", text: "a² + b² = c²" },
+            { id: "option-003c", text: "a × b = c" },
+            { id: "option-003d", text: "a² - b² = c²" },
+          ],
+          correctOptionId: "option-003b",
+          explanation:
+            "The Pythagorean theorem states that in a right triangle, the square of the hypotenuse (c) equals the sum of squares of the other two sides: a² + b² = c².",
+        },
+        {
+          id: "question-004",
+          text: "What is 2/3 × 3/4?",
+          difficulty: "Medium",
+          options: [
+            { id: "option-004a", text: "5/7" },
+            { id: "option-004b", text: "6/12" },
+            { id: "option-004c", text: "1/2" },
+            { id: "option-004d", text: "2/4" },
+          ],
+          correctOptionId: "option-004c",
+          explanation:
+            "To multiply fractions, multiply the numerators together and denominators together: (2×3)/(3×4) = 6/12 = 1/2.",
+        },
+        {
+          id: "question-005",
+          text: "Solve for x: 2x + 5 = 13",
+          difficulty: "Medium",
+          options: [
+            { id: "option-005a", text: "x = 4" },
+            { id: "option-005b", text: "x = 6" },
+            { id: "option-005c", text: "x = 8" },
+            { id: "option-005d", text: "x = 9" },
+          ],
+          correctOptionId: "option-005a",
+          explanation:
+            "Subtract 5 from both sides: 2x = 8. Then divide both sides by 2: x = 4.",
+        },
+      ],
+    };
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return mockQuizData;
+  } catch (error) {
+    console.error(`Error retrieving quiz ${quizId}:`, error);
+    throw new Error(`Failed to retrieve quiz: ${quizId}`);
+  }
 }
 
 // Helper function to get all particles from a specific atom

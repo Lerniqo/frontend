@@ -207,13 +207,13 @@ const NavBar = () => {
               ) : (
                 <div className="flex items-center space-x-4">
                   <Link
-                    href="/Login"
+                    href="/login"
                     className="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300"
                   >
                     Login
                   </Link>
                   <Link
-                    href="/SignUp"
+                    href="/signup"
                     className="group relative px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 hover:shadow-purple-500/25"
                   >
                     <span className="relative z-10">Sign Up</span>

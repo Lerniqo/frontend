@@ -17,7 +17,7 @@ const HeroSection = () => {
       id: 1,
       headline: "Learn O/L Maths with Learniqo",
       subtitle: "Start your personalized learning journey today!",
-      cta: { text: "Sign Up", link: "/register" },
+      cta: { text: "Sign Up", link: "/signup" },
       bgImage: "/images/hero-slide1-bg.jpg",
       badge: "Free to Start",
       bgColor: "from-blue-600 via-purple-600 to-blue-800",

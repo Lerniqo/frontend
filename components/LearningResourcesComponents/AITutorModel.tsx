@@ -5,7 +5,6 @@ import { gsap } from "gsap";
 import {
   FaTimes,
   FaRobot,
-  FaComments,
   FaFileAlt,
   FaQuestionCircle,
   FaPaperPlane,
@@ -119,7 +118,7 @@ export default function AITutorModel({ isOpen, onClose }: AITutorModelProps) {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chatMessages]);
+  }, [chatMessages.length]);
 
   const handleClose = () => {
     if (modalRef.current && overlayRef.current) {
@@ -179,6 +178,7 @@ export default function AITutorModel({ isOpen, onClose }: AITutorModelProps) {
 
       // Log suggested concepts if available (you can use these for UI enhancements later)
       if (response.suggestedConcepts && response.suggestedConcepts.length > 0) {
+        // eslint-disable-next-line no-console
         console.log("Suggested concepts:", response.suggestedConcepts);
       }
     } catch (error) {
@@ -394,7 +394,7 @@ export default function AITutorModel({ isOpen, onClose }: AITutorModelProps) {
               Generate Mock Test
             </h3>
             <p className="text-gray-600 mb-6">
-              I'll create a personalized practice test based on your study
+              I&apos;ll create a personalized practice test based on your study
               material to help you assess your understanding.
             </p>
             <button
@@ -551,7 +551,7 @@ export default function AITutorModel({ isOpen, onClose }: AITutorModelProps) {
               <h3 className="text-3xl font-bold text-gray-800 mb-2">
                 Test Complete!
               </h3>
-              <p className="text-gray-600">Here's how you performed:</p>
+              <p className="text-gray-600">Here&apos;s how you performed:</p>
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 mb-6">

@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { gsap } from "gsap";
 import {
   getConceptById,
@@ -25,7 +25,7 @@ import {
 
 import LoadingComponent from "@/components/CommonComponents/Loading";
 
-export default function ConceptPage() {
+function ConceptPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const conceptId = searchParams.get("conceptId");
@@ -81,7 +81,7 @@ export default function ConceptPage() {
     router.push(`/concept-page?conceptId=${prerequisiteId}`);
   };
 
-  const handleResourceClick = (resource: any) => {
+  const handleResourceClick = (resource: { resourceId: string; type: string; url: string }) => {
     router.push(
       `/learning-resource?resourceId=${resource.resourceId}&type=${
         resource.type
@@ -264,7 +264,7 @@ export default function ConceptPage() {
                     • Click on any prerequisite to learn more about it first
                   </li>
                   <li>
-                    • Use the "Start Learning" button to begin with the first
+                    • Use the &quot;Start Learning&quot; button to begin with the first
                     resource
                   </li>
                   <li>• Track your progress as you complete each resource</li>
@@ -477,5 +477,13 @@ export default function ConceptPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConceptPage() {
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <ConceptPageContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { gsap } from "gsap";
 
 import LoadingComponent from "@/components/CommonComponents/Loading";
@@ -11,7 +11,7 @@ import AITutorButton from "@/components/LearningResourcesComponents/AITutorButto
 import AITutorModel from "@/components/LearningResourcesComponents/AITutorModel";
 import QuizzResource from "@/components/LearningResourcesComponents/QuizzResource";
 
-export default function ResourcePage() {
+function ResourcePageContent() {
   const searchParams = useSearchParams();
   const resourceId = searchParams.get("resourceId");
   const type = searchParams.get("type");
@@ -46,7 +46,7 @@ export default function ResourcePage() {
     }
   }, [loading, resourceId, type, url]);
 
-  const getResourceBgColor = (type: string) => {
+  const _getResourceBgColor = (type: string) => {
     switch (type) {
       case "Video":
         return "from-red-100 to-pink-100";
@@ -172,5 +172,13 @@ export default function ResourcePage() {
         onClose={() => setIsAITutorOpen(false)}
       />
     </div>
+  );
+}
+
+export default function ResourcePage() {
+  return (
+    <Suspense fallback={<LoadingComponent />}>
+      <ResourcePageContent />
+    </Suspense>
   );
 }

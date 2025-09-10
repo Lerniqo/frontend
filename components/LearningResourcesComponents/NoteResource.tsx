@@ -8,8 +8,6 @@ import {
   FaCompress,
   FaSearchPlus,
   FaSearchMinus,
-  FaChevronLeft,
-  FaChevronRight,
   FaFileAlt,
   FaExclamationTriangle,
   FaSpinner,
@@ -162,7 +160,7 @@ export default function NoteResource({ url }: NoteResourceProps) {
         Error Loading PDF
       </h3>
       <p className="text-gray-600 text-center mb-6 max-w-md">
-        We couldn't load the PDF document. This might be due to a network issue
+        We couldn&apos;t load the PDF document. This might be due to a network issue
         or the file format.
       </p>
       <div className="flex gap-4">

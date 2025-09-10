@@ -136,8 +136,8 @@ export default function SharedNavigation({
 
         {/* Mobile menu */}
         {showMobileMenu && (
-          <div className="lg:hidden border-t border-white/20 py-4">
-            <div className="space-y-2">
+          <div className="lg:hidden border-t border-white/30 py-6 bg-white/5 backdrop-blur-2xl">
+            <div className="space-y-3 px-4">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
@@ -145,14 +145,17 @@ export default function SharedNavigation({
                     handleNavigation(item.path);
                     setShowMobileMenu(false);
                   }}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-base transition-all duration-300 ${
+                  className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl font-medium text-base transition-all duration-500 backdrop-blur-sm overflow-hidden ${
                     isActive(item.path)
-                      ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white'
-                      : 'text-slate-200 hover:text-white hover:bg-white/10'
+                      ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white shadow-2xl ring-2 ring-white/30 scale-105 border border-white/20'
+                      : 'text-slate-200 hover:text-white hover:bg-white/20 border border-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl'
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
-                  <span>{item.label}</span>
+                  <span className="text-xl drop-shadow-sm">{item.icon}</span>
+                  <span className="drop-shadow-sm">{item.label}</span>
+                  {isActive(item.path) && (
+                    <div className="absolute inset-0 bg-white/10 animate-pulse rounded-2xl"></div>
+                  )}
                 </button>
               ))}
             </div>

@@ -534,7 +534,7 @@ export default function LessonLibrary() {
   };
 
   const renderParticles = (atom: Atom) => {
-    return atom.particles.map((particle, index) => (
+    return atom.particles.map((particle, _index) => (
       <TreeItem
         key={particle.id}
         id={particle.id}
@@ -552,7 +552,7 @@ export default function LessonLibrary() {
   };
 
   const renderAtoms = (molecule: Molecule) => {
-    return molecule.children.map((atom, index) => (
+    return molecule.children.map((atom, _index) => (
       <TreeItem
         key={atom.id}
         id={atom.id}
@@ -572,7 +572,7 @@ export default function LessonLibrary() {
   };
 
   const renderMolecules = (matter: Matter) => {
-    return matter.children.map((molecule, index) => (
+    return matter.children.map((molecule, _index) => (
       <TreeItem
         key={molecule.id}
         id={molecule.id}
@@ -592,7 +592,7 @@ export default function LessonLibrary() {
   };
 
   const renderMatters = (subject: Subject) => {
-    return subject.children.map((matter, index) => {
+    return subject.children.map((matter, _index) => {
       const isExpanded = expandedState.matters.has(matter.id);
       return (
         <TreeItem
@@ -772,7 +772,7 @@ export default function LessonLibrary() {
                   searchQuery && (
                     <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                       <div className="p-4 text-center text-gray-500">
-                        No results found for "{searchQuery}"
+                        No results found for &quot;{searchQuery}&quot;
                       </div>
                     </div>
                   )}

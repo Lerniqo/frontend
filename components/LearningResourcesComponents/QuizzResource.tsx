@@ -5,8 +5,6 @@ import { gsap } from "gsap";
 import {
   getQuizzById,
   type QuizResponse,
-  type QuizQuestion,
-  type QuizOption,
 } from "@/services/contentService";
 import {
   FaPlay,
@@ -21,7 +19,6 @@ import {
   FaSpinner,
   FaExclamationTriangle,
   FaBookOpen,
-  FaStar,
   FaAward,
   FaThumbsUp,
   FaBrain,
@@ -372,7 +369,7 @@ export default function QuizzResource({ resourceId }: QuizzResourceProps) {
               Ready to Start?
             </h3>
             <p className="text-gray-600 max-w-md mx-auto">
-              Test your knowledge with this interactive quiz. You'll get
+              Test your knowledge with this interactive quiz. You&apos;ll get
               immediate feedback and explanations for each question.
             </p>
           </div>

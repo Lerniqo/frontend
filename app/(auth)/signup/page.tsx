@@ -285,7 +285,7 @@ export default function SignUpPage() {
 
   return (
     <PublicRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-green-50 to-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white flex items-center justify-center p-4">
         {loading && <Loading />}
         <div
           ref={cardRef}
@@ -294,7 +294,7 @@ export default function SignUpPage() {
           {/* Progress Bar Section */}
           <div
             ref={progressBarRef}
-            className="bg-gradient-to-r from-blue-50 to-green-50 p-6 border-b border-gray-100"
+            className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b border-gray-100"
           >
             <ProgressBar 
               currentStep={currentStep} 

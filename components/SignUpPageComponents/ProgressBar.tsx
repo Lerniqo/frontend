@@ -15,7 +15,10 @@ interface ProgressBarProps {
   stepDescriptions?: string[];
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescriptions = [] }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  currentStep = 1,
+  stepDescriptions = [],
+}) => {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const circlesRef = useRef<(HTMLDivElement | null)[]>([]);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -28,10 +31,13 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
       return stepDescriptions.map((description, index) => ({
         id: index + 1,
         label: description,
-        shortLabel: description.length > 8 ? description.substring(0, 8) + "..." : description
+        shortLabel:
+          description.length > 8
+            ? description.substring(0, 8) + "..."
+            : description,
       }));
     }
-    
+
     // Default steps if no descriptions provided
     return [
       { id: 1, label: "User Type", shortLabel: "Type" },

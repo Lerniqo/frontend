@@ -16,7 +16,7 @@ import ValidateEmail from "@/components/SignUpPageComponents/SignUpSteps/Validat
 import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/ProfileDetailsForm";
 
 export default function SignUpPage() {
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState(""); // Default to Student
   const [userId, setUserId] = useState("");
   const [verifiedUserId, setVerifiedUserId] = useState("");
@@ -31,7 +31,7 @@ export default function SignUpPage() {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const navigationRef = useRef<HTMLDivElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Updated step descriptions for the new two-step flow
   const stepDescriptions = [

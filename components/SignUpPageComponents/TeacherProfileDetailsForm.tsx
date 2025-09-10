@@ -86,7 +86,11 @@ export default function TeacherProfileDetailsForm({
         }
         return "";
       case "shortBio":
-        if (value && (value as string).trim() && (value as string).length > 300) {
+        if (
+          value &&
+          (value as string).trim() &&
+          (value as string).length > 300
+        ) {
           return "Bio must be 300 characters or less";
         }
         return "";
@@ -96,7 +100,10 @@ export default function TeacherProfileDetailsForm({
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof TeacherProfileData, value: TeacherProfileData[keyof TeacherProfileData]) => {
+  const handleInputChange = (
+    name: keyof TeacherProfileData,
+    value: TeacherProfileData[keyof TeacherProfileData]
+  ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -198,10 +205,12 @@ export default function TeacherProfileDetailsForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Complete Your Teacher Profile
           </h2>
-          <p className="text-gray-600">Tell us more about yourself to enhance your teaching profile</p>
+          <p className="text-gray-600">
+            Tell us more about yourself to enhance your teaching profile
+          </p>
         </div>
 
         {/* Personal Information Section */}
@@ -379,9 +388,7 @@ export default function TeacherProfileDetailsForm({
             </label>
             <textarea
               value={formData.shortBio}
-              onChange={(e) =>
-                handleInputChange("shortBio", e.target.value)
-              }
+              onChange={(e) => handleInputChange("shortBio", e.target.value)}
               maxLength={300}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -407,7 +414,7 @@ export default function TeacherProfileDetailsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onMouseEnter={(e) =>
             !isLoading && handleButtonHover(true, e.currentTarget)
           }

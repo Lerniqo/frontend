@@ -16,8 +16,8 @@ import ValidateEmail from "@/components/SignUpPageComponents/SignUpSteps/Validat
 import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/ProfileDetailsForm";
 
 export default function SignUpPage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [userType, setUserType] = useState("");
+  const [currentStep, setCurrentStep] = useState(5);
+  const [userType, setUserType] = useState(""); // Default to Student
   const [userId, setUserId] = useState("");
   const [verifiedUserId, setVerifiedUserId] = useState("");
   const [step2Valid, setStep2Valid] = useState(false);
@@ -35,12 +35,12 @@ export default function SignUpPage() {
 
   // Updated step descriptions for the new two-step flow
   const stepDescriptions = [
-    "Welcome",           // Step 0: Welcome/Selection
-    "Choose Role",       // Step 1: User type selection
-    "Basic Info",        // Step 2: Email & password registration
-    "Verify Email",      // Step 3: Email verification
-    "Complete Profile",  // Step 4: Profile completion
-    "Welcome!"           // Step 5: Success
+    "Welcome", // Step 0: Welcome/Selection
+    "Choose Role", // Step 1: User type selection
+    "Basic Info", // Step 2: Email & password registration
+    "Verify Email", // Step 3: Email verification
+    "Complete Profile", // Step 4: Profile completion
+    "Welcome!", // Step 5: Success
   ];
 
   const totalSteps = 5;
@@ -186,11 +186,11 @@ export default function SignUpPage() {
     // Store the verification data
     setVerifiedUserId(userData.userId);
     setUserId(userData.userId); // For backward compatibility
-    
+
     // Validate role consistency
     const normalizedVerifiedRole = userData.role.toLowerCase();
     const normalizedSelectedRole = userType.toLowerCase();
-    
+
     if (normalizedVerifiedRole !== normalizedSelectedRole) {
       console.warn(
         `Role mismatch: Selected '${userType}' but verified as '${userData.role}'. Using verified role.`
@@ -200,7 +200,7 @@ export default function SignUpPage() {
     } else {
       console.warn(`Role verification successful: ${userData.role}`);
     }
-    
+
     // Proceed to profile completion step
     setCurrentStep(4);
   };
@@ -250,27 +250,39 @@ export default function SignUpPage() {
                 🎉 Welcome to Your Learning Journey!
               </h2>
               <p className="text-gray-600 text-lg">
-                Your profile has been completed successfully. You can now access all the features of our platform.
+                Your profile has been completed successfully. You can now access
+                all the features of our platform.
               </p>
             </div>
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg text-center border border-green-200">
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-8 rounded-lg text-center border border-purple-200">
               <div className="mb-4">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-green-800 mb-2">
+                <h3 className="text-xl font-semibold text-purple-800 mb-2">
                   Registration Complete!
                 </h3>
-                <p className="text-green-700">
-                  You&apos;re all set to start your learning adventure as a <span className="font-semibold capitalize">{userType}</span>.
+                <p className="text-purple-700">
+                  You&apos;re all set to start your learning adventure as a{" "}
+                  <span className="font-semibold capitalize">{userType}</span>.
                 </p>
               </div>
               <div className="mt-6">
                 <button
-                  onClick={() => window.location.href = '/Login'}
-                  className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  onClick={() => (window.location.href = "/Login")}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
                   Continue to Login
                 </button>
@@ -296,8 +308,8 @@ export default function SignUpPage() {
             ref={progressBarRef}
             className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b border-gray-100"
           >
-            <ProgressBar 
-              currentStep={currentStep} 
+            <ProgressBar
+              currentStep={currentStep}
               stepDescriptions={stepDescriptions}
             />
           </div>

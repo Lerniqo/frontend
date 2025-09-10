@@ -175,7 +175,7 @@ export default function UserTypeSelector({
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto p-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
           Choose Your Role
         </h2>
         <p className="text-gray-600">
@@ -198,7 +198,7 @@ export default function UserTypeSelector({
                 relative cursor-pointer transition-all duration-200 rounded-2xl overflow-hidden
                 ${
                   isSelected
-                    ? "bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-400"
+                    ? "bg-gradient-to-br from-purple-50 to-blue-50 border-2 border-purple-400"
                     : "bg-white border-2 border-gray-200 hover:border-gray-300"
                 }
               `}
@@ -207,11 +207,11 @@ export default function UserTypeSelector({
               onClick={() => handleRoleSelect(userType.id, index)}
             >
               {/* Shadow layer for hover effect */}
-              <div className="card-shadow absolute inset-0 bg-gradient-to-br from-green-100/20 to-blue-100/20 opacity-0 pointer-events-none rounded-2xl" />
+              <div className="card-shadow absolute inset-0 bg-gradient-to-br from-purple-100/20 to-blue-100/20 opacity-0 pointer-events-none rounded-2xl" />
 
               {/* Selection indicator */}
               {isSelected && (
-                <div className="selection-indicator absolute top-4 right-4 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="selection-indicator absolute top-4 right-4 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-white"
                     fill="currentColor"
@@ -233,7 +233,7 @@ export default function UserTypeSelector({
                   inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 transition-colors duration-200
                   ${
                     isSelected
-                      ? "bg-gradient-to-br from-green-400 to-blue-400 text-white"
+                      ? "bg-gradient-to-br from-purple-400 to-blue-400 text-white"
                       : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
                   }
                 `}
@@ -245,7 +245,7 @@ export default function UserTypeSelector({
                 <h3
                   className={`
                   text-xl font-semibold mb-2 transition-colors duration-200
-                  ${isSelected ? "text-green-700" : "text-gray-800"}
+                  ${isSelected ? "text-purple-700" : "text-gray-800"}
                 `}
                 >
                   {userType.label}
@@ -255,7 +255,7 @@ export default function UserTypeSelector({
                 <p
                   className={`
                   text-sm transition-colors duration-200
-                  ${isSelected ? "text-green-600" : "text-gray-500"}
+                  ${isSelected ? "text-purple-600" : "text-gray-500"}
                 `}
                 >
                   {userType.description}
@@ -268,7 +268,7 @@ export default function UserTypeSelector({
                 h-1 w-full transition-all duration-300
                 ${
                   isSelected
-                    ? "bg-gradient-to-r from-green-400 to-blue-400"
+                    ? "bg-gradient-to-r from-purple-400 to-blue-400"
                     : "bg-gray-200"
                 }
               `}
@@ -282,7 +282,7 @@ export default function UserTypeSelector({
         <div className="mt-8 text-center">
           <p className="text-gray-600">
             Selected:{" "}
-            <span className="font-semibold text-green-600 capitalize">
+            <span className="font-semibold text-purple-600 capitalize">
               {selectedRole}
             </span>
           </p>

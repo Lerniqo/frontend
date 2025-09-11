@@ -281,13 +281,13 @@ const NavBar = () => {
                   ) : (
                     <div className="space-y-3">
                       <Link
-                        href="/Login"
+                        href="/login"
                         className="block w-full px-6 py-3 text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 border border-gray-300 rounded-full hover:bg-blue-50 text-center"
                       >
                         Login
                       </Link>
                       <Link
-                        href="/SignUp"
+                        href="/signUp"
                         className="block w-full px-6 py-3 font-semibold text-white rounded-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg transform hover:scale-105 text-center"
                       >
                         Sign Up

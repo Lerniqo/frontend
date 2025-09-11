@@ -114,12 +114,30 @@ export default function ValidateEmail({
     setError(null);
 
     try {
-      // Note: The new API doesn't have a resend endpoint, so we'll show a message
-      // In a real implementation, you might want to handle this differently
-      setError("Please check your email for the verification code. If you don't see it, check your spam folder.");
-      setResendTimer(30);
-    } catch {
-      setError("Unable to resend code. Please check your email or contact support.");
+      const result = await userService.resendVerificationCode(email);
+      
+      if (result.success) {
+        // Show success message and reset timer
+        setResendTimer(60); // 60 seconds cooldown
+        // Show a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'text-green-600 text-sm text-center mt-2';
+        successDiv.textContent = 'New verification code sent!';
+        
+        const form = formRef.current;
+        if (form) {
+          form.appendChild(successDiv);
+          setTimeout(() => {
+            if (form.contains(successDiv)) {
+              form.removeChild(successDiv);
+            }
+          }, 3000);
+        }
+      } else {
+        setError(result.message || "Failed to resend verification code");
+      }
+    } catch (error: any) {
+      setError("Network error. Please try again.");
     } finally {
       setIsResending(false);
     }

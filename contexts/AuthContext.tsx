@@ -21,16 +21,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = async () => {
       if (userService.isAuthenticated()) {
         try {
-          const response = await userService.getCurrentUser();
-          if (response.success && response.data) {
-            setUser(response.data);
+          // First try to get stored user data
+          const storedUser = userService.getUser();
+          if (storedUser) {
+            setUser(storedUser);
+            
+            // Verify token is still valid by calling getCurrentUser
+            const response = await userService.getCurrentUser();
+            if (response.success && response.data) {
+              // Update user data in case it changed
+              setUser(response.data);
+            } else {
+              // Token might be invalid, clear auth
+              userService.clearAuth();
+              setUser(null);
+            }
           } else {
-            // Token might be invalid, clear auth
-            userService.clearAuth();
+            // No stored user, try to get current user
+            const response = await userService.getCurrentUser();
+            if (response.success && response.data) {
+              setUser(response.data);
+            } else {
+              // Failed to get user, clear auth
+              userService.clearAuth();
+            }
           }
         } catch (error) {
           // Error getting user, clear auth
+          console.error('Auth initialization error:', error);
           userService.clearAuth();
+          setUser(null);
         }
       }
       setIsLoading(false);
@@ -90,6 +110,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(updatedUser);
   };
 
+  const refreshTokenMethod = async (): Promise<{ success: boolean; message?: string }> => {
+    try {
+      const response = await userService.refreshToken();
+      if (response.success && response.data?.user) {
+        setUser(response.data.user);
+        return { success: true, message: response.message };
+      }
+      return { success: false, message: response.message || 'Token refresh failed' };
+    } catch (error) {
+      return { success: false, message: 'Token refresh failed' };
+    }
+  };
+
   const isAuthenticated = !!user;
 
   return (
@@ -100,7 +133,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login, 
       register,
       logout, 
-      updateUser
+      updateUser,
+      refreshToken: refreshTokenMethod
     }}>
       {children}
     </AuthContext.Provider>

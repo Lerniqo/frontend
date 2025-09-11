@@ -95,7 +95,10 @@ export default function SignUpOrInSelect({
       duration: 0.1,
       yoyo: true,
       repeat: 1,
-      onComplete: () => setCurrentStep(10),
+      onComplete: () => {
+        // Redirect to login page instead of internal step
+        window.location.href = '/login';
+      },
     });
   };
 
@@ -104,13 +107,13 @@ export default function SignUpOrInSelect({
       {/* Main Heading */}
       <h2
         ref={headingRef}
-        className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2"
+        className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2"
       >
         Welcome! Do you want to create a new account or sign in?
       </h2>
 
       {/* Decorative element */}
-      <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-green-500 rounded-full"></div>
+      <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
 
       {/* Action Cards Container */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-4xl">
@@ -125,7 +128,7 @@ export default function SignUpOrInSelect({
 
           <div className="relative p-8 flex flex-col items-center text-center space-y-6">
             {/* Icon */}
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-shadow duration-300">
               <UserPlusIcon className="w-10 h-10 text-white" />
             </div>
 
@@ -140,7 +143,7 @@ export default function SignUpOrInSelect({
             </p>
 
             {/* Button */}
-            <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform group-hover:translate-y-0 shadow-lg hover:shadow-xl">
+            <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform group-hover:translate-y-0 shadow-lg hover:shadow-xl">
               Get Started
             </button>
           </div>

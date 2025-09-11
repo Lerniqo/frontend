@@ -15,6 +15,8 @@ const Protected = ({
     const { user, isAuthenticated, isLoading } = useAuth()
     const router = useRouter()
 
+    // return student;
+
     if (isLoading) return <div>Loading...</div>
 
     if (!user || !isAuthenticated) return router.push('/login');

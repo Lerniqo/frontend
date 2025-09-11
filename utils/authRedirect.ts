@@ -40,7 +40,7 @@ export const checkAuthState = async (): Promise<AuthState> => {
     return {
       isLoggedIn: true,
       isEmailVerified: user.isVerified,
-      isProfileComplete: user.profileCompleted,
+      isProfileComplete: user.isProfileCompleted,
       user: {
         userId: user.userId,
         email: user.email,

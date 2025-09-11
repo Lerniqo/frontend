@@ -6,7 +6,7 @@ export interface User {
   fullName: string;
   profileImage?: string;
   isVerified: boolean;
-  profileCompleted: boolean;
+  isProfileCompleted: boolean;
   createdAt: string;
   updatedAt: string;
 }

@@ -63,7 +63,14 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
 
     // If error is 401 and we haven't already tried to refresh the token
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Don't try to refresh token for login/signup/auth endpoints
+    if (error.response?.status === 401 && 
+        !originalRequest._retry && 
+        !originalRequest.url?.includes('/login') &&
+        !originalRequest.url?.includes('/signup') &&
+        !originalRequest.url?.includes('/register') &&
+        !originalRequest.url?.includes('/verify-email') &&
+        !originalRequest.url?.includes('/refresh-token')) {
       if (isRefreshing) {
         // Wait for the token to be refreshed
         return new Promise((resolve, reject) => {
@@ -81,26 +88,42 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.post<AuthResponse>(
-          `${(process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com')}/api/user-service/auth/refresh`,
+        const response = await axios.post(
+          `${(process.env.NEXT_PUBLIC_API_URL || 'https://api.example.com')}/api/user-service/users/refresh-token`,
           {},
           { withCredentials: true }
         );
-        const { token: newAccessToken } = response.data;
+        
+        // Handle the backend response format: { success: true, data: { accessToken, user }, message }
+        if (response.data?.success && response.data?.data?.accessToken) {
+          const { accessToken } = response.data.data;
+          
+          // Update access token in localStorage
+          localStorage.setItem('accessToken', accessToken);
 
-        // Update access token in localStorage
-        localStorage.setItem('accessToken', newAccessToken);
+          // Process failed requests
+          failedRequestsQueue.forEach(({ resolve }) => resolve());
+          failedRequestsQueue = [];
 
-        // Process failed requests
-        failedRequestsQueue.forEach(({ resolve }) => resolve());
-        failedRequestsQueue = [];
-
-        // Retry original request with new token
-        return apiClient(originalRequest);
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return apiClient(originalRequest);
+        } else {
+          throw new Error('Invalid refresh token response');
+        }
       } catch (refreshError) {
         // Clear tokens and redirect to login
         localStorage.removeItem('accessToken');
-        window.location.href = '/Login';
+        localStorage.removeItem('userData');
+        
+        // Process failed requests with rejection
+        failedRequestsQueue.forEach(({ reject }) => reject(refreshError));
+        failedRequestsQueue = [];
+        
+        // Only redirect if we're not already on the login page
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

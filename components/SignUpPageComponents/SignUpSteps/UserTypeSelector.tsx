@@ -5,7 +5,6 @@ import { gsap } from "gsap";
 import {
   FaChalkboardTeacher,
   FaUserGraduate,
-  FaUserShield,
 } from "react-icons/fa";
 
 interface UserTypeSelectorProps {
@@ -34,13 +33,6 @@ const userTypes: UserTypeOption[] = [
     icon: FaUserGraduate,
     description:
       "Access personalized lessons, quizzes, and contests to improve skills",
-  },
-  {
-    id: "Admin",
-    label: "Admin",
-    icon: FaUserShield,
-    description:
-      "Manage the platform, oversee users, and monitor learning progress",
   },
 ];
 
@@ -198,7 +190,7 @@ export default function UserTypeSelector({
                 relative cursor-pointer transition-all duration-200 rounded-2xl overflow-hidden
                 ${
                   isSelected
-                    ? "bg-gradient-to-br from-green-50 to-blue-50 border-2 border-green-400"
+                    ? "bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-500"
                     : "bg-white border-2 border-gray-200 hover:border-gray-300"
                 }
               `}
@@ -207,11 +199,11 @@ export default function UserTypeSelector({
               onClick={() => handleRoleSelect(userType.id, index)}
             >
               {/* Shadow layer for hover effect */}
-              <div className="card-shadow absolute inset-0 bg-gradient-to-br from-green-100/20 to-blue-100/20 opacity-0 pointer-events-none rounded-2xl" />
+              <div className="card-shadow absolute inset-0 bg-gradient-to-br from-blue-100/20 to-purple-100/20 opacity-0 pointer-events-none rounded-2xl" />
 
               {/* Selection indicator */}
               {isSelected && (
-                <div className="selection-indicator absolute top-4 right-4 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="selection-indicator absolute top-4 right-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
                   <svg
                     className="w-4 h-4 text-white"
                     fill="currentColor"
@@ -233,7 +225,7 @@ export default function UserTypeSelector({
                   inline-flex items-center justify-center w-20 h-20 rounded-full mb-6 transition-colors duration-200
                   ${
                     isSelected
-                      ? "bg-gradient-to-br from-green-400 to-blue-400 text-white"
+                      ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white"
                       : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
                   }
                 `}
@@ -245,7 +237,7 @@ export default function UserTypeSelector({
                 <h3
                   className={`
                   text-xl font-semibold mb-2 transition-colors duration-200
-                  ${isSelected ? "text-green-700" : "text-gray-800"}
+                  ${isSelected ? "text-blue-700" : "text-gray-800"}
                 `}
                 >
                   {userType.label}

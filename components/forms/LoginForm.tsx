@@ -13,6 +13,7 @@ import {
   ArrowRightIcon
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
+import { handleLoginResponse } from "@/utils/authRedirect";
 
 // LoginForm component props interface
 interface LoginFormProps {
@@ -48,7 +49,7 @@ export default function LoginForm({
   isLoading = false, 
   className = "", 
   showSignUpLink = true,
-  redirectPath = "/dgrep ashboard"
+  redirectPath = "/dashboard"
 }: LoginFormProps) {
   // State management
   const [formData, setFormData] = useState<FormState>({
@@ -67,7 +68,7 @@ export default function LoginForm({
   const [submitSuccess, setSubmitSuccess] = useState("");
 
   // Hooks
-  const { login, isAuthenticated } = useAuth();
+  const { login: _login, isAuthenticated } = useAuth();
   const router = useRouter();
 
   // Refs for animations
@@ -222,7 +223,11 @@ export default function LoginForm({
       if (onSubmit) {
         result = await onSubmit(formData.email, formData.password);
       } else {
-        result = await login(formData.email, formData.password);
+        // Use the new authentication flow
+        result = await handleLoginResponse({
+          email: formData.email,
+          password: formData.password
+        });
       }
 
       if (result.success) {
@@ -239,9 +244,13 @@ export default function LoginForm({
           });
         }
 
-        // Redirect after short delay
+        // Redirect based on user state
         setTimeout(() => {
-          router.push(redirectPath);
+          if ('redirectPath' in result && typeof result.redirectPath === 'string') {
+            router.push(result.redirectPath);
+          } else {
+            router.push(redirectPath);
+          }
         }, 1000);
       } else {
         setSubmitError(result.message || "Login failed");
@@ -454,7 +463,7 @@ export default function LoginForm({
               Do not have an account?{" "}
               <button
                 type="button"
-                onClick={() => router.push("/SignUp")}
+                onClick={() => router.push("/signup")}
                 className="text-blue-200 hover:text-blue-100 md:hover:text-white font-semibold transition-colors duration-300 hover:underline drop-shadow-md"
               >
                 Sign up here

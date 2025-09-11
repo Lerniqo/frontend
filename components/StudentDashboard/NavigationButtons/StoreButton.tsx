@@ -7,7 +7,7 @@ const StoreButton = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/Student/Store");
+    router.push("/store");
   };
 
   return (

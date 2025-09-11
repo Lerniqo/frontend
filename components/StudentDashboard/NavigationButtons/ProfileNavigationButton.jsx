@@ -32,7 +32,7 @@ export default function ProfileNavigationButton() {
 
   const toggleExpansion = () => {
     if (isExpanded) {
-      router.push("/Student/Profile");
+      router.push("/profile");
       return;
     }
     setIsExpanded(!isExpanded);

@@ -13,30 +13,11 @@ import UserTypeSelector from "@/components/SignUpPageComponents/SignUpSteps/User
 export default function SignUpPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState("");
-  const [userId, setUserId] = useState("");
-  const [verifiedUserId, setVerifiedUserId] = useState("");
-  const [step2Valid, setStep2Valid] = useState(false);
-  const [step2Data, setStep2Data] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const cardRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const [loading, _setLoading] = useState(false);
-
-  // Updated step descriptions for the new two-step flow
-  const stepDescriptions = [
-    "Welcome",           // Step 0: Welcome/Selection
-    "Choose Role",       // Step 1: User type selection
-    "Basic Info",        // Step 2: Email & password registration
-    "Verify Email",      // Step 3: Email verification
-    "Complete Profile",  // Step 4: Profile completion
-    "Welcome!"           // Step 5: Success
-  ];
-
-  const totalSteps = 5;
 
   useEffect(() => {
     // Initial animation for the card
@@ -99,9 +80,15 @@ export default function SignUpPage() {
     } else {
       console.warn(`Role verification successful: ${userData.role}`);
     }
-    
-    // Proceed to profile completion step
-    setCurrentStep(4);
+  };
+
+  const handlePrevStep = () => {
+    if (currentStep === 1) {
+      animateStepTransition("backward");
+      setTimeout(() => {
+        setCurrentStep(0);
+      }, 300);
+    }
   };
 
   const renderStepContent = () => {
@@ -115,66 +102,6 @@ export default function SignUpPage() {
               onSelectRole={handleSelectRole}
               initialSelection={userType}
             />
-          </div>
-        );
-      case 2:
-        return (
-          <RegisterEmail
-            onValidationChange={handleStep2ValidationChange}
-            onDataChange={handleStep2DataChange}
-          />
-        );
-      case 3:
-        return (
-          <ValidateEmail
-            email={step2Data.email}
-            onSuccess={handleEmailVerificationSuccess}
-            setLoading={setLoading}
-          />
-        );
-      case 4:
-        return (
-          <ProfileDetailsForm
-            setLoading={setLoading}
-            setCurrentStep={setCurrentStep}
-            userType={userType}
-            userId={verifiedUserId || userId} // Use verifiedUserId with fallback
-          />
-        );
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                🎉 Welcome to Your Learning Journey!
-              </h2>
-              <p className="text-gray-600 text-lg">
-                Your profile has been completed successfully. You can now access all the features of our platform.
-              </p>
-            </div>
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg text-center border border-green-200">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold text-green-800 mb-2">
-                  Registration Complete!
-                </h3>
-                <p className="text-green-700">
-                  You&apos;re all set to start your learning adventure as a <span className="font-semibold capitalize">{userType}</span>.
-                </p>
-              </div>
-              <div className="mt-6">
-                <button
-                  onClick={() => window.location.href = '/Login'}
-                  className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
-                >
-                  Continue to Login
-                </button>
-              </div>
-            </div>
           </div>
         );
       default:
@@ -220,17 +147,6 @@ export default function SignUpPage() {
           ref={cardRef}
           className="w-full max-w-4xl bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          {/* Progress Bar Section */}
-          <div
-            ref={progressBarRef}
-            className="bg-gradient-to-r from-blue-50 to-green-50 p-6 border-b border-gray-100"
-          >
-            <ProgressBar 
-              currentStep={currentStep} 
-              stepDescriptions={stepDescriptions}
-            />
-          </div>
-
           {/* Content Section */}
           <div className="p-10">
             <div ref={contentRef} className="min-h-[400px]">

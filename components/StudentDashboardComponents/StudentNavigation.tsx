@@ -1,22 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   HomeIcon,
-  UserIcon,
   CogIcon,
   AcademicCapIcon,
   ChartBarIcon,
-  LightBulbIcon,
   CalendarIcon,
-  TrophyIcon,
   SparklesIcon,
   BuildingLibraryIcon,
   UserGroupIcon,
   ChatBubbleLeftRightIcon,
-  BellIcon,
 } from "@heroicons/react/24/outline";
-import ProfileNavigationButton from "./DashboardInterativeItems/ProfileNavigationButton";
 
 interface NavigationItem {
   id: string;
@@ -150,9 +145,9 @@ export default function StudentNavigation() {
   );
 }
 
-function NotificationsSection() {
+function _NotificationsSection() {
   return (
-    <div className="h-full w-full bg-gradient-to-br from-purple-800/40 to-blue-900/40 rounded-xl p-4 backdrop-blur-sm border border-purple-400/30 h-full">
+    <div className="h-full w-full bg-gradient-to-br from-purple-800/40 to-blue-900/40 rounded-xl p-4 backdrop-blur-sm border border-purple-400/30">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-white">Notifications</h3>
         <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>

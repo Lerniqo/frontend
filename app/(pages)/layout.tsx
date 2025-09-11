@@ -306,13 +306,13 @@ export default function PagesLayout({
 
   const [currentStationIndex, setCurrentStationIndex] = useState<number>(0);
   const [nextStationIndex, setNextStationIndex] = useState<number>(0);
-  const [currentPathIndex, setCurrentPathIndex] = useState<number>(0);
+  const [_currentPathIndex, setCurrentPathIndex] = useState<number>(0);
 
   // Camera Debugger
-  const [cameraPositionDebug, setCameraPositionDebug] = useState<
+  const [_cameraPositionDebug, setCameraPositionDebug] = useState<
     [number, number, number]
   >([0, 0, 0]);
-  const [cameraRotationDebug, setCameraRotationDebug] = useState<
+  const [_cameraRotationDebug, setCameraRotationDebug] = useState<
     [number, number, number]
   >([0, 0, 0]);
 
@@ -509,23 +509,23 @@ export default function PagesLayout({
         "<"
       );
     }
-  }, [nextStationIndex]);
+  }, [nextStationIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [inputStationIndex, setInputStationIndex] = useState<number>(0);
+  const [inputStationIndex, _setInputStationIndex] = useState<number>(0);
 
-  const handleNext = () => {
+  const _handleNext = () => {
     if (nextStationIndex < stations.length - 1) {
       setNextStationIndex(nextStationIndex + 1);
     }
   };
 
-  const handlePrev = () => {
+  const _handlePrev = () => {
     if (nextStationIndex > 0) {
       setNextStationIndex(nextStationIndex - 1);
     }
   };
 
-  const handleSubmitStation = () => {
+  const _handleSubmitStation = () => {
     if (
       inputStationIndex >= 0 &&
       inputStationIndex < stations.length &&

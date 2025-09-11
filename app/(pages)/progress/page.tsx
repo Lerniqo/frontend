@@ -91,15 +91,15 @@ export default function ProgressPage() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span>Completed "Algebra Fundamentals" - 2 hours ago</span>
+                <span>Completed &ldquo;Algebra Fundamentals&rdquo; - 2 hours ago</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                <span>Started "Chemical Reactions" - 5 hours ago</span>
+                <span>Started &ldquo;Chemical Reactions&rdquo; - 5 hours ago</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                <span>Earned "Quick Learner" badge - 1 day ago</span>
+                <span>Earned &ldquo;Quick Learner&rdquo; badge - 1 day ago</span>
               </div>
             </div>
           </div>

@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import {
   HomeIcon,
-  UserIcon,
   CogIcon,
   AcademicCapIcon,
   ChartBarIcon,
-  LightBulbIcon,
   CalendarIcon,
-  TrophyIcon,
   SparklesIcon,
   BuildingLibraryIcon,
   UserGroupIcon,

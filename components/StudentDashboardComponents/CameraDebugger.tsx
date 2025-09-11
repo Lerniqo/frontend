@@ -18,8 +18,8 @@ function CameraDebuggerInner({
   setCameraRotation,
 }: CameraDebuggerProps) {
   const { camera } = useThree();
-  const [position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
-  const [rotation, setRotation] = useState<[number, number, number]>([0, 0, 0]);
+  const [_position, setPosition] = useState<[number, number, number]>([0, 0, 0]);
+  const [_rotation, setRotation] = useState<[number, number, number]>([0, 0, 0]);
 
   useEffect(() => {
     const updateCameraData = () => {
@@ -70,10 +70,10 @@ function CameraDebuggerInner({
     // };
 
     // Auto-update camera data every 100ms when showUI is enabled
-    let interval: NodeJS.Timeout | null = null;
+    let _interval: NodeJS.Timeout | null = null;
     if (showUI) {
       updateCameraData(); // Initial update
-      interval = setInterval(updateCameraData, 100);
+      _interval = setInterval(updateCameraData, 100);
     }
 
     // // Use keyup instead of keydown to avoid conflicts
@@ -83,7 +83,7 @@ function CameraDebuggerInner({
     //   window.removeEventListener("keyup", handleKeyPress);
     //   if (interval) clearInterval(interval);
     // };
-  }, [camera, logToConsole, showUI]);
+  }, [camera, logToConsole, showUI, setCameraPosition, setCameraRotation]);
 
   useEffect(() => {
     if (logToConsole) {
@@ -96,7 +96,7 @@ function CameraDebuggerInner({
 
   if (!showUI) return null;
 
-  const formatNumber = (num: number): string => {
+  const _formatNumber = (num: number): string => {
     return num.toFixed(3);
   };
 

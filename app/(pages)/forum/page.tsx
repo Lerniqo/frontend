@@ -43,7 +43,7 @@ export default function ForumPage() {
                   <span className="text-xs text-gray-400">2 min ago</span>
                 </div>
                 <p className="text-gray-300 text-sm mb-3">
-                  I'm struggling with the chain rule and when to apply it. Can
+                  I&apos;m struggling with the chain rule and when to apply it. Can
                   someone explain with examples?
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">
@@ -100,7 +100,7 @@ export default function ForumPage() {
                   <span className="text-xs text-gray-400">3 hours ago</span>
                 </div>
                 <p className="text-gray-300 text-sm mb-3">
-                  How do you structure an analytical essay for Shakespeare's
+                  How do you structure an analytical essay for Shakespeare&apos;s
                   plays?
                 </p>
                 <div className="flex items-center space-x-4 text-xs text-gray-400">

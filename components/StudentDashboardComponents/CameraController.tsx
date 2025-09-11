@@ -24,7 +24,7 @@ export default function CameraController({
   useEffect(() => {
     camera.position.set(...cameraPosition);
     camera.rotation.set(...cameraRotation);
-  }, [cameraPosition, cameraRotation]);
+  }, [cameraPosition, cameraRotation, camera.position, camera.rotation]);
 
   return null;
 }

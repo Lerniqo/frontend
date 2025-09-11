@@ -48,7 +48,7 @@ export default function AITutorPage() {
                 </div>
                 <div className="bg-purple-600/30 rounded-lg p-3 max-w-xs">
                   <p className="text-sm">
-                    Hello! I'm your AI tutor. What subject would you like help
+                    Hello! I&apos;m your AI tutor. What subject would you like help
                     with today?
                   </p>
                 </div>

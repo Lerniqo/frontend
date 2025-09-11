@@ -117,7 +117,7 @@ export default function Robot(props) {
             {/* <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-r-[12px] border-t-transparent border-b-transparent border-r-white"></div> */}
 
             <button
-              onClick={() => router.push("/LessonLibrary")}
+              onClick={() => router.push("/lesson-library")}
               className="relative bg-white hover:bg-gray-50 text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-green-400 hover:border-blue-400 backdrop-blur-sm overflow-hidden"
               style={{
                 ...responsiveButtonStyles,

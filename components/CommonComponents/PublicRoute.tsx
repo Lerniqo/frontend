@@ -23,19 +23,8 @@ const PublicRoute: React.FC<PublicRouteProps> = ({
       if (redirectTo) {
         router.push(redirectTo);
       } else {
-        switch (user.role) {
-          case 'Student':
-            router.push('/Student/Dashboard');
-            break;
-          case 'Teacher':
-            router.push('/Teacher/Dashboard');
-            break;
-          case 'Admin':
-            router.push('/Admin/Dashboard');
-            break;
-          default:
-            router.push('/LandingPage');
-        }
+        // Redirect to dashboard - the layout will show the appropriate content based on user role
+        router.push('/dashboard');
       }
     }
   }, [isAuthenticated, user, isLoading, redirectTo, router]);

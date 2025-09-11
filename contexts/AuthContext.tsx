@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       userService.clearAuth();
       setUser(null);
-      router.push('/Login'); // Updated to match the correct route
+      router.push('/login'); // Updated to match the correct route
     }
   };
 

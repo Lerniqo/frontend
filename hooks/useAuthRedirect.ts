@@ -21,7 +21,7 @@ export const useAuthRedirect = ({
 
     // If authentication is required but user is not authenticated
     if (requireAuth && !isAuthenticated) {
-      const redirectPath = redirectTo || '/Login';
+      const redirectPath = redirectTo || '/login';
       router.push(redirectPath);
       return;
     }
@@ -31,20 +31,8 @@ export const useAuthRedirect = ({
       let redirectPath = redirectTo;
       
       if (!redirectPath) {
-        // Redirect to appropriate dashboard based on user role
-        switch (user?.role) {
-          case 'Student':
-            redirectPath = '/Student/Dashboard';
-            break;
-          case 'Teacher':
-            redirectPath = '/Teacher/Dashboard';
-            break;
-          case 'Admin':
-            redirectPath = '/Admin/Dashboard';
-            break;
-          default:
-            redirectPath = '/LandingPage';
-        }
+        // Redirect to dashboard - the layout will show the appropriate content based on user role
+        redirectPath = '/dashboard';
       }
       
       router.push(redirectPath);
@@ -56,20 +44,10 @@ export const useAuthRedirect = ({
       let redirectPath = redirectTo;
       
       if (!redirectPath) {
-        // Redirect to appropriate dashboard based on user role
-        switch (user.role) {
-          case 'Student':
-            redirectPath = '/Student/Dashboard';
-            break;
-          case 'Teacher':
-            redirectPath = '/Teacher/Dashboard';
-            break;
-          case 'Admin':
-            redirectPath = '/Admin/Dashboard';
-            break;
-          default:
-            redirectPath = '/LandingPage';
-        }
+      if (!redirectPath) {
+        // Redirect to dashboard - the layout will show the appropriate content based on user role
+        redirectPath = '/dashboard';
+      }
       }
       
       router.push(redirectPath);

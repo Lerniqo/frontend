@@ -398,7 +398,7 @@ export default function StudentDashboardPage() {
 
       const currentStationFromTo = stations[currentStationIndex].fromTo;
       const targetStationFromTo = stations[nextStationIndex].fromTo;
-      
+
       // Calculate total distance to determine if this is a long jump
       const stationDistance = Math.abs(nextStationIndex - currentStationIndex);
       const isLongJump = stationDistance > 1;

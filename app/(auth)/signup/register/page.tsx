@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import Loading from "@/components/CommonComponents/Loading";
@@ -8,7 +8,7 @@ import PublicRoute from "@/components/CommonComponents/PublicRoute";
 import RegisterEmail from "@/components/SignUpPageComponents/SignUpSteps/RegisterEmail";
 import { userService } from "@/services/userService";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const [isValid, setIsValid] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -145,5 +145,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }

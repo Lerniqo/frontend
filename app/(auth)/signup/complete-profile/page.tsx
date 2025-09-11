@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import Loading from "@/components/CommonComponents/Loading";
 import PublicRoute from "@/components/CommonComponents/PublicRoute";
 import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/ProfileDetailsForm";
 
-export default function CompleteProfilePage() {
+function CompleteProfilePageContent() {
   const [loading, setLoading] = useState(false);
   const [_currentStep, setCurrentStep] = useState(4); // For ProfileDetailsForm compatibility
   
@@ -121,5 +121,13 @@ export default function CompleteProfilePage() {
         </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function CompleteProfilePage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <CompleteProfilePageContent />
+    </Suspense>
   );
 }

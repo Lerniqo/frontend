@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
 import Loading from "@/components/CommonComponents/Loading";
@@ -8,7 +8,7 @@ import PublicRoute from "@/components/CommonComponents/PublicRoute";
 import ValidateEmail from "@/components/SignUpPageComponents/SignUpSteps/ValidateEmail";
 import { VerifyEmailSuccessData } from "@/types/auth.types";
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageContent() {
   const [loading, setLoading] = useState(false);
   const [error, _setError] = useState("");
   
@@ -126,5 +126,13 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </PublicRoute>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <VerifyEmailPageContent />
+    </Suspense>
   );
 }

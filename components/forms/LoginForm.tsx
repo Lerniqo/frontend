@@ -255,7 +255,7 @@ export default function LoginForm({
 
   // Get input field classes based on validation state
   const getInputClasses = (field: keyof FormState) => {
-    const baseClasses = "w-full pl-10 sm:pl-12 md:pl-14 pr-4 py-2.5 sm:py-3 md:py-4 border-2 rounded-lg md:rounded-xl transition-all duration-300 focus:outline-none focus:ring-0 placeholder-gray-500 md:placeholder-gray-400 text-sm sm:text-base md:text-lg font-medium";
+    const baseClasses = "w-full pl-10 sm:pl-12 md:pl-12 pr-4 py-2 sm:py-2.5 md:py-3 border-2 rounded-lg md:rounded-xl transition-all duration-300 focus:outline-none focus:ring-0 placeholder-gray-500 md:placeholder-gray-400 text-sm sm:text-base md:text-base font-medium";
     
     if (!validation[field].touched) {
       return `${baseClasses} border-white/30 focus:border-blue-400/60 focus:shadow-lg focus:shadow-blue-500/20`;
@@ -269,7 +269,7 @@ export default function LoginForm({
   };
 
   return (
-    <div className={`mx-auto ${className}`}>
+    <div className={`mx-auto max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl ${className}`}>
       <div 
         ref={formRef}
         className="p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full backdrop-blur-xl border border-white/20"
@@ -279,24 +279,24 @@ export default function LoginForm({
         }}
       >
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8 md:mb-10">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-50 bg-clip-text text-transparent mb-2 sm:mb-3 md:mb-4 drop-shadow-lg">
+        <div className="text-center mb-4 sm:mb-6 md:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-blue-50 bg-clip-text text-transparent mb-1 sm:mb-2 md:mb-2 drop-shadow-lg">
             Welcome Back
           </h1>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 sm:text-white/85 md:text-white/80 drop-shadow-md font-medium">
+          <p className="text-sm sm:text-base md:text-base lg:text-lg text-white/90 sm:text-white/85 md:text-white/80 drop-shadow-md font-medium">
             Sign in to your account to continue learning
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
           {/* Email Field */}
-          <div ref={emailFieldRef} className="space-y-1.5 sm:space-y-2">
-            <label htmlFor="email" className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
+          <div ref={emailFieldRef} className="space-y-1 sm:space-y-1.5">
+            <label htmlFor="email" className="block text-xs sm:text-sm md:text-sm lg:text-base font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
               Email Address
             </label>
             <div className="relative">
-              <EnvelopeIcon className="absolute left-3 sm:left-4 md:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-400" />
+              <EnvelopeIcon className="absolute left-3 sm:left-4 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -316,9 +316,9 @@ export default function LoginForm({
               {validation.email.touched && (
                 <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
                   {validation.email.isValid ? (
-                    <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-500" />
+                    <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-green-500" />
                   ) : (
-                    <ExclamationCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-500" />
+                    <ExclamationCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-red-500" />
                   )}
                 </div>
               )}
@@ -337,12 +337,12 @@ export default function LoginForm({
           </div>
 
           {/* Password Field */}
-          <div ref={passwordFieldRef} className="space-y-1.5 sm:space-y-2">
-            <label htmlFor="password" className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
+          <div ref={passwordFieldRef} className="space-y-1 sm:space-y-1.5">
+            <label htmlFor="password" className="block text-xs sm:text-sm md:text-sm lg:text-base font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
               Password
             </label>
             <div className="relative">
-              <LockClosedIcon className="absolute left-3 sm:left-4 md:left-5 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-gray-400" />
+              <LockClosedIcon className="absolute left-3 sm:left-4 md:left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-gray-400" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -363,9 +363,9 @@ export default function LoginForm({
                 {validation.password.touched && (
                   <>
                     {validation.password.isValid ? (
-                      <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-500" />
+                      <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-green-500" />
                     ) : (
-                      <ExclamationCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-500" />
+                      <ExclamationCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 text-red-500" />
                     )}
                   </>
                 )}
@@ -376,9 +376,9 @@ export default function LoginForm({
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <EyeSlashIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                    <EyeSlashIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5" />
                   ) : (
-                    <EyeIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                    <EyeIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5" />
                   )}
                 </button>
               </div>
@@ -432,16 +432,16 @@ export default function LoginForm({
             ref={submitButtonRef}
             type="submit"
             disabled={!isFormValid || isSubmitting || isLoading}
-            className="w-full py-2.5 sm:py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 text-sm sm:text-base md:text-lg lg:text-xl drop-shadow-lg"
+            className="w-full py-2.5 sm:py-3 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 text-sm sm:text-base md:text-base lg:text-lg drop-shadow-lg"
           >
             {isSubmitting || isLoading ? (
-              <>                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 border-b-2 border-white"></div>
+              <>                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5 border-b-2 border-white"></div>
                 <span>Signing In...</span>
               </>
             ) : (
               <>
                 <span>Sign In</span>
-                <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
+                <ArrowRightIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-5 md:w-5" />
               </>
             )}
           </button>
@@ -449,8 +449,8 @@ export default function LoginForm({
 
         {/* Sign Up Link */}
         {showSignUpLink && (
-          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/20">
-            <p className="text-center text-white/85 sm:text-white/80 md:text-white/75 text-xs sm:text-sm md:text-base lg:text-lg drop-shadow-md font-medium">
+          <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-white/20">
+            <p className="text-center text-white/85 sm:text-white/80 md:text-white/75 text-xs sm:text-sm md:text-sm lg:text-base drop-shadow-md font-medium">
               Do not have an account?{" "}
               <button
                 type="button"

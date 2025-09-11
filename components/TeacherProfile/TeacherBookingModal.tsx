@@ -192,24 +192,24 @@ export default function TeacherBookingModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div
-        className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col border border-white/20"
+        className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-auto flex flex-col border border-white/20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-blue-600 p-8 text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20">
+        <div className="bg-gradient-to-r from-purple-500 via-purple-600 to-blue-600 p-8 text-white relative">
+          <div className="absolute inset-0 opacity-20 overflow-hidden">
             <div className="absolute -top-4 -right-4 w-32 h-32 bg-white rounded-full"></div>
             <div className="absolute top-1/2 -left-8 w-24 h-24 bg-white/30 rounded-full"></div>
           </div>
 
-          <div className="relative z-10 flex justify-between items-center">
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Set Availability</h2>
-              <p className="text-purple-100 text-lg">for {teacherName}</p>
+          <div className="relative z-10 flex flex-wrap justify-between items-start gap-4 min-w-0">
+            <div className="min-w-0 w-full sm:w-auto flex-1">
+              <h2 className="text-3xl font-bold mb-2 break-words w-full">Set Availability</h2>
+              <p className="text-purple-100 text-lg break-words whitespace-normal w-full">for {teacherName}</p>
             </div>
             <button
               onClick={onClose}
-              className="text-white hover:text-purple-200 transition-all duration-300 p-2 rounded-full hover:bg-white/20 group"
+              className="text-white hover:text-purple-200 transition-all duration-300 p-2 rounded-full hover:bg-white/20 group flex-shrink-0"
               aria-label="Close modal"
             >
               <svg

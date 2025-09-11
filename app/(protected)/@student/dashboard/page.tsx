@@ -1,15 +1,41 @@
 "use client";
 
-import '@/app/globals.css';
+import { Canvas } from "@react-three/fiber";
+import { useCameraPathNavigation } from "@/hooks/useCameraPathNavigation";
+import { CAMERA_PATH } from "@/constants/cameraPath";
+import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
 
 export default function StudentDashboard() {
+  const {
+    currentPathProgress,
+    setCurrentPathProgress,
+    mouseOffset,
+    getInterpolatedPosition,
+    getLookDirection,
+  } = useCameraPathNavigation();
+
   return (
-      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Student Dashboard
-          </h2>
-        </div>
-      </div>
+    <div className="w-full h-screen bg-gradient-to-br from-blue-100 via-green-50 to-white">
+      {/* 3D Canvas */}
+      <Canvas
+        camera={{
+          position: CAMERA_PATH[0].position as [number, number, number],
+          fov: 75,
+          near: 0.1,
+          far: 1000,
+        }}
+      >
+        <Scene3D
+          currentPathProgress={currentPathProgress}
+          setCurrentPathProgress={setCurrentPathProgress}
+          mouseOffset={mouseOffset}
+          getInterpolatedPosition={getInterpolatedPosition}
+          getLookDirection={getLookDirection}
+        />
+      </Canvas>
+
+      {/* UI Overlay */}
+      <DashboardUI currentPathProgress={currentPathProgress} />
+    </div>
   );
 }

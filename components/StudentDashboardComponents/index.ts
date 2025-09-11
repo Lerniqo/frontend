@@ -1,0 +1,9 @@
+export { default as PathCameraController } from './PathCameraController';
+export { default as DashboardUI } from './DashboardUI';
+export { default as Scene3D } from './Scene3D';
+export { default as ModelRenderer } from './ModelRenderer';
+export { default as CameraController } from './CameraController';
+export { default as CameraDebugger } from './CameraDebugger';
+export { default as KeyboardCameraControls } from './KeyboardCameraControls';
+export { default as StudentNavigation } from './StudentNavigation';
+export { default as DashboardButtons } from './DashboardButtons';

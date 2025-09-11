@@ -349,11 +349,12 @@ export default function StudentDashboardPage() {
         return current + diff;
       };
 
-      // Helper function to add animation step
-      const addAnimationStep = (
+      // Helper function to add smooth animation step
+      const addSmoothAnimationStep = (
         targetPos: [number, number, number],
         targetRot: [number, number, number],
-        duration: number = 1.5
+        duration: number = 0.8,
+        ease: string = "power1.inOut"
       ) => {
         const currentRot = cameraRotationRef.current;
         const normalizedRot = {
@@ -367,7 +368,7 @@ export default function StudentDashboardPage() {
           x: targetPos[0],
           y: targetPos[1],
           z: targetPos[2],
-          ease: "power2.inOut",
+          ease: ease,
           onUpdate: () => {
             setCameraPosition([
               cameraPositionRef.current.x,
@@ -382,7 +383,7 @@ export default function StudentDashboardPage() {
             x: normalizedRot.x,
             y: normalizedRot.y,
             z: normalizedRot.z,
-            ease: "power2.inOut",
+            ease: ease,
             onUpdate: () => {
               setCameraRotation([
                 cameraRotationRef.current.x,
@@ -395,17 +396,22 @@ export default function StudentDashboardPage() {
         );
       };
 
-      // Step 1: Go to current station's fromTo path point
       const currentStationFromTo = stations[currentStationIndex].fromTo;
-      addAnimationStep(
+      const targetStationFromTo = stations[nextStationIndex].fromTo;
+      
+      // Calculate total distance to determine if this is a long jump
+      const stationDistance = Math.abs(nextStationIndex - currentStationIndex);
+      const isLongJump = stationDistance > 1;
+
+      // Step 1: Go to current station's fromTo path point (slower start)
+      addSmoothAnimationStep(
         path[currentStationFromTo].position,
         path[currentStationFromTo].rotation,
-        1.2
+        isLongJump ? 1.0 : 1.2,
+        "power2.out"
       );
 
-      // Step 2: If we need to traverse multiple path points between current and target
-      const targetStationFromTo = stations[nextStationIndex].fromTo;
-
+      // Step 2: Smooth traversal through intermediate path points
       if (nextStationIndex > currentStationIndex) {
         // Moving forward: traverse path points from current to target
         for (
@@ -414,10 +420,13 @@ export default function StudentDashboardPage() {
           pathIndex++
         ) {
           if (pathIndex < path.length) {
-            addAnimationStep(
+            // Use faster, smoother transitions for intermediate points
+            const isLastPoint = pathIndex === targetStationFromTo;
+            addSmoothAnimationStep(
               path[pathIndex].position,
               path[pathIndex].rotation,
-              1.0
+              isLongJump ? (isLastPoint ? 0.8 : 0.5) : 0.8,
+              isLongJump ? "none" : "power1.inOut"
             );
           }
         }
@@ -429,10 +438,13 @@ export default function StudentDashboardPage() {
           pathIndex--
         ) {
           if (pathIndex >= 0) {
-            addAnimationStep(
+            // Use faster, smoother transitions for intermediate points
+            const isLastPoint = pathIndex === targetStationFromTo;
+            addSmoothAnimationStep(
               path[pathIndex].position,
               path[pathIndex].rotation,
-              1.0
+              isLongJump ? (isLastPoint ? 0.8 : 0.5) : 0.8,
+              isLongJump ? "none" : "power1.inOut"
             );
           }
         }
@@ -440,16 +452,17 @@ export default function StudentDashboardPage() {
 
       // Step 3: Go to target station's fromTo path point (if not already there)
       if (targetStationFromTo !== currentStationFromTo) {
-        addAnimationStep(
+        addSmoothAnimationStep(
           path[targetStationFromTo].position,
           path[targetStationFromTo].rotation,
-          1.0
+          isLongJump ? 0.6 : 0.8,
+          "power1.inOut"
         );
       }
 
-      // Step 4: Finally, go to the target station
+      // Step 4: Finally, go to the target station (slower end)
       tl.to(cameraPositionRef.current, {
-        duration: 1.5,
+        duration: isLongJump ? 1.2 : 1.5,
         x: stations[nextStationIndex].position[0],
         y: stations[nextStationIndex].position[1],
         z: stations[nextStationIndex].position[2],
@@ -464,7 +477,7 @@ export default function StudentDashboardPage() {
       }).to(
         cameraRotationRef.current,
         {
-          duration: 1.5,
+          duration: isLongJump ? 1.2 : 1.5,
           x: normalizeRotationDiff(
             cameraRotationRef.current.x,
             stations[nextStationIndex].rotation[0]

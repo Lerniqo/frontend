@@ -17,7 +17,7 @@ export default function SignUpPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
 
   useEffect(() => {
     // Initial animation for the card
@@ -62,7 +62,7 @@ export default function SignUpPage() {
     router.push(`/signup/register?role=${encodeURIComponent(selectedRole.toLowerCase())}`);
   };
 
-  const handleNextStep = () => {
+  const _handleNextStep = () => {
     if (currentStep === 0) {
       animateStepTransition("forward");
       setTimeout(() => {

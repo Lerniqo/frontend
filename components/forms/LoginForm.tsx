@@ -68,7 +68,7 @@ export default function LoginForm({
   const [submitSuccess, setSubmitSuccess] = useState("");
 
   // Hooks
-  const { login, isAuthenticated } = useAuth();
+  const { login: _login, isAuthenticated } = useAuth();
   const router = useRouter();
 
   // Refs for animations

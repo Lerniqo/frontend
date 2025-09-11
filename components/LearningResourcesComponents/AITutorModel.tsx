@@ -111,7 +111,7 @@ export default function AITutorModel({ isOpen, onClose }: AITutorModelProps) {
         }, 800);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, chatMessages.length]);
 
   useEffect(() => {
     // Scroll to bottom when new messages arrive

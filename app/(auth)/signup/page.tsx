@@ -62,23 +62,12 @@ export default function SignUpPage() {
     router.push(`/signup/register?role=${encodeURIComponent(selectedRole.toLowerCase())}`);
   };
 
-  const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
-    // Store the verification data
-    setVerifiedUserId(userData.userId);
-    setUserId(userData.userId); // For backward compatibility
-    
-    // Validate role consistency
-    const normalizedVerifiedRole = userData.role.toLowerCase();
-    const normalizedSelectedRole = userType.toLowerCase();
-    
-    if (normalizedVerifiedRole !== normalizedSelectedRole) {
-      console.warn(
-        `Role mismatch: Selected '${userType}' but verified as '${userData.role}'. Using verified role.`
-      );
-      // Update userType to match verified role for consistency
-      setUserType(userData.role);
-    } else {
-      console.warn(`Role verification successful: ${userData.role}`);
+  const _handleNextStep = () => {
+    if (currentStep === 0) {
+      animateStepTransition("forward");
+      setTimeout(() => {
+        setCurrentStep(1);
+      }, 300);
     }
   };
 

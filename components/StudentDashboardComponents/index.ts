@@ -8,3 +8,4 @@ export { default as KeyboardCameraControls } from './KeyboardCameraControls';
 export { default as StudentNavigation } from './StudentNavigation';
 export { default as DashboardButtons } from './DashboardButtons';
 export { default as AIChatbot } from './AIChatbot';
+export { default as LearningPath } from './LearningPath';

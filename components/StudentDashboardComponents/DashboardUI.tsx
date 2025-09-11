@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import type { DashboardUIProps } from "@/types/dashboard.types";
+import LearningPath from "./LearningPath";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -166,44 +167,9 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
         </div>
       </div>
 
-      {/* Right side stats */}
+      {/* Right side Learning Path */}
       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40">
-        <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl">
-          <div className="p-4">
-            <div className="flex flex-col space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="bg-blue-500/20 border border-blue-500/50 text-blue-400 text-xs px-3 py-1 rounded-full">
-                  Level 12
-                </div>
-                <div className="text-xs text-white/60">Next: 550 XP</div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-white font-bold">2,450</span>
-                </div>
-                <div className="text-xs text-white/60">Total XP</div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-1">
-                  <Target className="w-4 h-4 text-green-400" />
-                  <span className="text-white font-bold">7</span>
-                </div>
-                <div className="text-xs text-white/60">Day Streak</div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-1">
-                  <Award className="w-4 h-4 text-purple-400" />
-                  <span className="text-white font-bold">#247</span>
-                </div>
-                <div className="text-xs text-white/60">Global Rank</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <LearningPath />
       </div>
 
       {/* Bottom Achievement Bar */}

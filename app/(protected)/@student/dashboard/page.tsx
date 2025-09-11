@@ -15,7 +15,12 @@ export default function StudentDashboard() {
   } = useCameraPathNavigation();
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-blue-100 via-green-50 to-white">
+    <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+      {/* Gaming Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-600/5"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
+      
       {/* 3D Canvas */}
       <Canvas
         camera={{

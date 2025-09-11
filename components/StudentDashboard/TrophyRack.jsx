@@ -130,7 +130,7 @@ export default function TrophyRack(props) {
           }}
         >
           <button
-            onClick={() => router.push("/LessonLibrary")}
+            onClick={() => router.push("/lesson-library")}
             className="bg-white hover:bg-gray-50 text-xl rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-green-400 hover:border-blue-400 backdrop-blur-sm"
             style={responsiveButtonStyles}
           >

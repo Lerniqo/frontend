@@ -7,7 +7,7 @@ const LearningPathButton = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push("/Student/LearningPath");
+    router.push("/lesson-library");
   };
 
   return (

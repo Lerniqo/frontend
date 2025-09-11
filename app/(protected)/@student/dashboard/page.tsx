@@ -5,6 +5,9 @@ import { useCameraPathNavigation } from "@/hooks/useCameraPathNavigation";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
 import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
+import '@/app/globals.css';
+import Link from 'next/link';
+import { Target, BookOpen, Store, User } from 'lucide-react';
 
 export default function StudentDashboard() {
   const {

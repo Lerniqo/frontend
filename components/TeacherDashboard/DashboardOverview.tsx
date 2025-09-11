@@ -7,11 +7,13 @@ import AvailabilityManager from './AvailabilityManager';
 import NotificationsPanel from './NotificationsPanel';
 import SharedNavigation from './SharedNavigation';
 import TeacherFooter from './TeacherFooter';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function DashboardOverview() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [loading, setLoading] = useState(true);
+  const { logout } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,8 +89,7 @@ export default function DashboardOverview() {
         notifications={notifications}
         setNotifications={setNotifications}
         onLogout={() => {
-          // Handle logout logic here
-          console.warn('Logout functionality not implemented');
+          logout();
         }}
       />
 

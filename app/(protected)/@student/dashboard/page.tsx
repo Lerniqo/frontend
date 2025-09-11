@@ -4,6 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { useCameraPathNavigation } from "@/hooks/useCameraPathNavigation";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
+import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
 
 export default function StudentDashboard() {
   const {
@@ -41,6 +42,9 @@ export default function StudentDashboard() {
 
       {/* UI Overlay */}
       <DashboardUI currentPathProgress={currentPathProgress} />
+
+      {/* AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 }

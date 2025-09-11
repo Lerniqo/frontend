@@ -85,7 +85,7 @@ export default function RegisterEmail({
       case "medium":
         return "bg-orange-500";
       case "strong":
-        return "bg-green-500";
+        return "bg-purple-500";
       default:
         return "bg-gray-300";
     }
@@ -253,7 +253,7 @@ export default function RegisterEmail({
       className="max-w-md mx-auto p-8 bg-white rounded-2xl border border-blue-200"
     >
       <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
           Create Your Account
         </h2>
         <p className="text-gray-600">Enter your credentials to get started</p>
@@ -365,7 +365,7 @@ export default function RegisterEmail({
                       ? "text-red-500"
                       : passwordStrength === "medium"
                       ? "text-orange-500"
-                      : "text-green-500"
+                      : "text-purple-500"
                   }`}
                 >
                   {passwordStrength}
@@ -446,8 +446,8 @@ export default function RegisterEmail({
         {/* Form Status Indicator */}
         <div className="pt-4">
           {isFormValid && (
-            <div className="text-green-600 text-sm font-medium flex items-center space-x-2">
-              <span className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="text-purple-600 text-sm font-medium flex items-center space-x-2">
+              <span className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs">✓</span>
               </span>
               <span>All fields are valid! Ready to continue.</span>

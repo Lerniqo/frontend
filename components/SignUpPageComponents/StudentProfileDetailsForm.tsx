@@ -34,7 +34,9 @@ export default function StudentProfileDetailsForm({
   const [selectedGrade, setSelectedGrade] = useState<string>(() => {
     // Initialize selectedGrade based on gradeLevel
     if (initialData.gradeLevel !== undefined) {
-      const gradeOption = gradeOptions.find(option => option.numericValue === initialData.gradeLevel);
+      const gradeOption = gradeOptions.find(
+        (option) => option.numericValue === initialData.gradeLevel
+      );
       return gradeOption?.value || "";
     }
     return "";
@@ -154,12 +156,17 @@ export default function StudentProfileDetailsForm({
 
   // Convert grade string to numeric gradeLevel
   const convertGradeToNumeric = (gradeString: string): number | undefined => {
-    const gradeOption = gradeOptions.find(option => option.value === gradeString);
+    const gradeOption = gradeOptions.find(
+      (option) => option.value === gradeString
+    );
     return gradeOption?.numericValue;
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof StudentProfileData, value: StudentProfileData[keyof StudentProfileData]) => {
+  const handleInputChange = (
+    name: keyof StudentProfileData,
+    value: StudentProfileData[keyof StudentProfileData]
+  ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -268,10 +275,12 @@ export default function StudentProfileDetailsForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Complete Your Student Profile
           </h2>
-          <p className="text-gray-600">Tell us more about yourself to personalize your learning experience</p>
+          <p className="text-gray-600">
+            Tell us more about yourself to personalize your learning experience
+          </p>
         </div>
 
         {/* Full Name */}
@@ -283,7 +292,7 @@ export default function StudentProfileDetailsForm({
             type="text"
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
             placeholder="Enter full name"
           />
           {errors.fullName && (
@@ -307,7 +316,7 @@ export default function StudentProfileDetailsForm({
             type="text"
             value={formData.school}
             onChange={(e) => handleInputChange("school", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
             placeholder="Enter school name (optional)"
           />
         </div>
@@ -321,7 +330,7 @@ export default function StudentProfileDetailsForm({
             type="date"
             value={formData.birthday}
             onChange={(e) => handleInputChange("birthday", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
           />
           {errors.birthday && (
             <div
@@ -437,10 +446,7 @@ export default function StudentProfileDetailsForm({
                 <select
                   value={formData.relationship}
                   onChange={(e) =>
-                    handleInputChange(
-                      "relationship",
-                      e.target.value
-                    )
+                    handleInputChange("relationship", e.target.value)
                   }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 >
@@ -499,7 +505,7 @@ export default function StudentProfileDetailsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onMouseEnter={(e) =>
             !isLoading && handleButtonHover(true, e.currentTarget)
           }

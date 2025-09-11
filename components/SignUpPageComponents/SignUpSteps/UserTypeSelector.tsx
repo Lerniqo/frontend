@@ -167,7 +167,7 @@ export default function UserTypeSelector({
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto p-6">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
           Choose Your Role
         </h2>
         <p className="text-gray-600">
@@ -247,7 +247,7 @@ export default function UserTypeSelector({
                 <p
                   className={`
                   text-sm transition-colors duration-200
-                  ${isSelected ? "text-green-600" : "text-gray-500"}
+                  ${isSelected ? "text-purple-600" : "text-gray-500"}
                 `}
                 >
                   {userType.description}
@@ -260,7 +260,7 @@ export default function UserTypeSelector({
                 h-1 w-full transition-all duration-300
                 ${
                   isSelected
-                    ? "bg-gradient-to-r from-green-400 to-blue-400"
+                    ? "bg-gradient-to-r from-purple-400 to-blue-400"
                     : "bg-gray-200"
                 }
               `}
@@ -274,7 +274,7 @@ export default function UserTypeSelector({
         <div className="mt-8 text-center">
           <p className="text-gray-600">
             Selected:{" "}
-            <span className="font-semibold text-green-600 capitalize">
+            <span className="font-semibold text-purple-600 capitalize">
               {selectedRole}
             </span>
           </p>

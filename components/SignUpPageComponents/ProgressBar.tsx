@@ -15,7 +15,10 @@ interface ProgressBarProps {
   stepDescriptions?: string[];
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescriptions = [] }) => {
+const ProgressBar: React.FC<ProgressBarProps> = ({
+  currentStep = 1,
+  stepDescriptions = [],
+}) => {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const circlesRef = useRef<(HTMLDivElement | null)[]>([]);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -28,10 +31,13 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
       return stepDescriptions.map((description, index) => ({
         id: index + 1,
         label: description,
-        shortLabel: description.length > 8 ? description.substring(0, 8) + "..." : description
+        shortLabel:
+          description.length > 8
+            ? description.substring(0, 8) + "..."
+            : description,
       }));
     }
-    
+
     // Default steps if no descriptions provided
     return [
       { id: 1, label: "User Type", shortLabel: "Type" },
@@ -60,11 +66,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
       if (!circle || !label) return;
 
       if (step.id < currentStep) {
-        // Completed steps - teal with checkmark
+        // Completed steps - purple with checkmark
         tl.to(
           circle,
           {
-            backgroundColor: "#0d9488", // bg-teal-600
+            backgroundColor: "#7c3aed", // bg-purple-600
             color: "#ffffff",
             scale: 1.1,
             duration: 0.3,
@@ -84,7 +90,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
           .to(
             label,
             {
-              color: "#0d9488",
+              color: "#7c3aed",
               fontWeight: "600",
               duration: 0.3,
               ease: "power2.out",
@@ -92,11 +98,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
             index * 0.1
           );
       } else if (step.id === currentStep) {
-        // Current step - cyan blue background
+        // Current step - blue background
         tl.to(
           circle,
           {
-            backgroundColor: "#0891b2", // bg-cyan-600
+            backgroundColor: "#2563eb", // bg-blue-600
             color: "#ffffff",
             scale: 1.2,
             duration: 0.5,
@@ -116,7 +122,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
           .to(
             label,
             {
-              color: "#0891b2",
+              color: "#2563eb",
               fontWeight: "700",
               duration: 0.3,
               ease: "power2.out",
@@ -154,11 +160,11 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
       if (!line) return;
 
       if (index < currentStep - 1) {
-        // Completed connections - teal
+        // Completed connections - purple
         tl.to(
           line,
           {
-            backgroundColor: "#0d9488",
+            backgroundColor: "#7c3aed",
             scaleX: 1,
             duration: 0.5,
             ease: "power2.out",
@@ -272,7 +278,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
             {/* Active progress bar */}
             <div
               ref={mobileProgressRef}
-              className="h-full bg-gradient-to-r from-teal-500 to-cyan-600 rounded-full transition-all duration-500 ease-out"
+              className="h-full bg-gradient-to-r from-purple-500 to-blue-600 rounded-full transition-all duration-500 ease-out"
               style={{ width: "0%" }}
             />
           </div>
@@ -284,9 +290,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                     step.id < currentStep
-                      ? "bg-teal-600 text-white"
+                      ? "bg-purple-600 text-white"
                       : step.id === currentStep
-                      ? "bg-cyan-600 text-white"
+                      ? "bg-blue-600 text-white"
                       : "bg-white border-2 border-slate-300 text-slate-500"
                   }`}
                 >
@@ -305,12 +311,12 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep = 1, stepDescript
       <div className="mt-6 text-center">
         <div className="text-xs text-slate-500">
           {currentStep === steps.length ? (
-            <span className="text-teal-600 font-semibold">
+            <span className="text-purple-600 font-semibold">
               🎉 All steps completed!
             </span>
           ) : (
             <>
-              <span className="text-teal-600 font-medium">
+              <span className="text-purple-600 font-medium">
                 {currentStep - 1}
               </span>
               <span> of </span>

@@ -119,7 +119,7 @@ export default function NavigationSection({
           currentStep === 3 ||
           currentStep === 4
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-gradient-to-r from-blue-500 to-green-500 text-white hover:from-blue-600 hover:to-green-600 transform hover:scale-105 shadow-lg"
+            : "bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600 transform hover:scale-105 shadow-lg"
         }`}
       >
         {currentStep === totalSteps

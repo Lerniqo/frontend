@@ -7,7 +7,7 @@ import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
 import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
 import '@/app/globals.css';
 import Link from 'next/link';
-import { Target, BookOpen, Store, User } from 'lucide-react';
+import { Target, BookOpen, Store, User, Trophy } from 'lucide-react';
 
 export default function StudentDashboard() {
   const {

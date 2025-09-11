@@ -1,6 +1,18 @@
+"use client";
+import { useRouter } from "next/navigation";
+
 export default function ProfileNavigationButton() {
+  const router = useRouter();
+
+  const handleProfileClick = () => {
+    router.push("/settings");
+  };
+
   return (
-    <div className="w-full aspect-square bg-gradient-to-br from-purple-800/40 to-blue-900/40 rounded-xl flex flex-col items-center justify-center p-4 backdrop-blur-sm border border-purple-400/30 hover:bg-white/20 transition-all duration-300 cursor-pointer group">
+    <div
+      onClick={handleProfileClick}
+      className="w-full aspect-square bg-gradient-to-br from-purple-800/40 to-blue-900/40 rounded-xl flex flex-col items-center justify-center p-4 backdrop-blur-sm border border-purple-400/30 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+    >
       <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
         <span className="text-white font-bold text-lg">JD</span>
       </div>

@@ -31,7 +31,7 @@ export default function SignUpPage() {
   const progressBarRef = useRef<HTMLDivElement>(null);
   const navigationRef = useRef<HTMLDivElement>(null);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Updated step descriptions for the new two-step flow
   const stepDescriptions = [

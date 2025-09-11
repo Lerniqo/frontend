@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "components/StudentDashboard/RoomModel.jsx",
+    "components/StudentDashboard-Prev/RoomModel.jsx",
     "next-env.d.ts",
     "out/types/**/*.ts"
   ],

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { MediaViewer } from '@/components/MediaViewer';
 import { MediaResource } from '@/types/mediaViewer.types';
 import { Button } from '@/components/ui/button';
@@ -13,19 +13,19 @@ export default function MediaViewerTest() {
   // This will help us track re-renders
   React.useEffect(() => {
     setRenderCount(prev => prev + 1);
-  });
+  }, []);
 
-  const testResource: MediaResource = {
+  const testResource: MediaResource = useMemo(() => ({
     id: 'test-1',
     title: 'Test PDF Document',
     type: 'pdf',
     url: 'https://www.africau.edu/images/default/sample.pdf',
     description: 'A test PDF to verify the infinite re-render fix'
-  };
+  }), []);
 
   const openViewer = useCallback(() => {
     setSelectedResource(testResource);
-  }, []);
+  }, [testResource]);
 
   const closeViewer = useCallback(() => {
     setSelectedResource(null);
@@ -44,7 +44,7 @@ export default function MediaViewerTest() {
           </p>
           <p className="text-blue-200 text-sm">
             If the render count rapidly increases when the viewer is open, 
-            there's still an infinite re-render issue.
+            there&apos;s still an infinite re-render issue.
           </p>
         </div>
 

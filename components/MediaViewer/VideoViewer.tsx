@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Play, 
   Pause, 
@@ -11,7 +10,6 @@ import {
   Maximize2, 
   SkipBack, 
   SkipForward,
-  Settings,
   Download,
   ExternalLink
 } from 'lucide-react';

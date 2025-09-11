@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -16,7 +16,7 @@ import {
   Clock,
   Zap
 } from 'lucide-react';
-import { AIAssistantProps, AIMessage, ViewerContext } from '@/types/mediaViewer.types';
+import { AIAssistantProps, AIMessage } from '@/types/mediaViewer.types';
 import { mediaAIService } from '@/services/mediaAIService';
 
 export default function AIAssistant({ 
@@ -36,7 +36,7 @@ export default function AIAssistant({
     if (isOpen && resourceInfo) {
       loadSuggestions();
     }
-  }, [isOpen, resourceInfo, currentContext]);
+  }, [isOpen, resourceInfo, currentContext, loadSuggestions]);
 
   useEffect(() => {
     // Scroll to bottom when new messages are added
@@ -47,14 +47,14 @@ export default function AIAssistant({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadSuggestions = async () => {
+  const loadSuggestions = useCallback(async () => {
     try {
       const newSuggestions = await mediaAIService.getSuggestions(resourceInfo, currentContext);
       setSuggestions(newSuggestions);
     } catch (error) {
       console.error('Failed to load suggestions:', error);
     }
-  };
+  }, [resourceInfo, currentContext]);
 
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || inputValue.trim();
@@ -144,7 +144,7 @@ export default function AIAssistant({
                   AI Learning Assistant
                 </SheetTitle>
                 <p className="text-sm text-slate-600 mt-1">
-                  Ask questions about "{resourceInfo.title}"
+                  Ask questions about &quot;{resourceInfo.title}&quot;
                 </p>
               </div>
             </div>
@@ -170,10 +170,10 @@ export default function AIAssistant({
                     <Sparkles className="w-8 h-8 text-blue-600" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                    Hi! I'm your AI Learning Assistant
+                    Hi! I&apos;m your AI Learning Assistant
                   </h3>
                   <p className="text-slate-600 text-sm mb-6">
-                    I can help you understand the content, answer questions, and provide explanations about what you're viewing.
+                    I can help you understand the content, answer questions, and provide explanations about what you&apos;re viewing.
                   </p>
 
                   {/* Quick Suggestions */}

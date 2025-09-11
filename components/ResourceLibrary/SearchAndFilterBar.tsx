@@ -41,9 +41,9 @@ const SearchAndFilterBar: React.FC<SearchAndFilterBarProps> = ({
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm]);
+  }, [searchTerm, filters, onSearch]);
 
-  const handleFilterChange = (key: keyof SearchFilters, value: any) => {
+  const handleFilterChange = (key: keyof SearchFilters, value: string | number | boolean | undefined) => {
     const newFilters = {
       ...filters,
       [key]: value

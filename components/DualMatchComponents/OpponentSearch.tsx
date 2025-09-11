@@ -4,14 +4,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, Wifi, Zap, Trophy, Target } from 'lucide-react';
 
-interface Player {
-  id: string;
-  name: string;
-  avatar: string;
-  score: number;
-  isOnline: boolean;
-}
-
 interface OpponentSearchProps {
   progress: number;
   onlineCount: number;

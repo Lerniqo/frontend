@@ -9,7 +9,7 @@ import ProfileDetailsForm from "@/components/SignUpPageComponents/SignUpSteps/Pr
 
 export default function CompleteProfilePage() {
   const [loading, setLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(4); // For ProfileDetailsForm compatibility
+  const [_currentStep, setCurrentStep] = useState(4); // For ProfileDetailsForm compatibility
   
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();

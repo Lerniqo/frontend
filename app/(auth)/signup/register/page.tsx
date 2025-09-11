@@ -69,8 +69,9 @@ export default function RegisterPage() {
       } else {
         setError(result.message || "Registration failed");
       }
-    } catch (error: any) {
-      setError(error.message || "An unexpected error occurred");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

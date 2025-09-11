@@ -136,7 +136,7 @@ export default function ValidateEmail({
       } else {
         setError(result.message || "Failed to resend verification code");
       }
-    } catch (error: any) {
+    } catch (_error: unknown) {
       setError("Network error. Please try again.");
     } finally {
       setIsResending(false);

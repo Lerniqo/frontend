@@ -24,7 +24,7 @@ export default function SignUpPage() {
   const contentRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
 
   // Updated step descriptions for the new two-step flow
   const stepDescriptions = [

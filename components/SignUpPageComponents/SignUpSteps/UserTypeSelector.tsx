@@ -5,7 +5,6 @@ import { gsap } from "gsap";
 import {
   FaChalkboardTeacher,
   FaUserGraduate,
-  FaUserShield,
 } from "react-icons/fa";
 
 interface UserTypeSelectorProps {

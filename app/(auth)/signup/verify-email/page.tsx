@@ -10,7 +10,7 @@ import { VerifyEmailSuccessData } from "@/types/auth.types";
 
 export default function VerifyEmailPage() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, _setError] = useState("");
   
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();

@@ -16,10 +16,12 @@ import {
   Gamepad2,
   Star,
   Award,
-  Target
+  Target,
+  LucideIcon
 } from "lucide-react";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import type { DashboardUIProps } from "@/types/dashboard.types";
+import DualMatchButton from "./DualMatchButton";
 import LearningPath from "./LearningPath";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
@@ -206,20 +208,14 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
         </div>
       </div>
 
-      {/* Gaming Controls Hint */}
+      {/* Dual Match Button */}
       <div className="absolute bottom-6 left-6 z-30">
-        <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-xl">
-          <div className="p-3">
-            <div className="text-xs text-white/60 space-y-1">
-              <p className="text-white font-semibold mb-2 flex items-center space-x-1">
-                <Gamepad2 className="w-3 h-3" />
-                <span>Controls</span>
-              </p>
-              <p>← ↓ Move backward | ↑ → Move forward</p>
-              <p>🖱️ Mouse: Adjust camera view</p>
-            </div>
-          </div>
-        </div>
+        <DualMatchButton 
+          onClick={() => {
+            // Handle dual match logic here
+            console.log("Dual Match clicked!");
+          }}
+        />
       </div>
     </>
   );
@@ -231,7 +227,7 @@ const NavButton = ({
   label, 
   color = "from-blue-500 to-purple-600" 
 }: { 
-  icon: React.ElementType; 
+  icon: LucideIcon; 
   label: string; 
   color?: string; 
 }) => (
@@ -254,7 +250,7 @@ const SideNavButton = ({
   active = false,
   onClick 
 }: { 
-  icon: React.ElementType; 
+  icon: LucideIcon; 
   label: string; 
   active?: boolean;
   onClick?: () => void;
@@ -328,7 +324,7 @@ const AchievementItem = ({
   value, 
   color 
 }: { 
-  icon: React.ElementType; 
+  icon: LucideIcon; 
   label: string; 
   value: string; 
   color: string; 

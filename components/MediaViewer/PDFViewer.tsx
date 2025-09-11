@@ -24,7 +24,6 @@ interface PDFViewerProps {
 
 export default function PDFViewer({ url, title, onContextChange, resourceId }: PDFViewerProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [rotation, setRotation] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -223,7 +222,7 @@ export default function PDFViewer({ url, title, onContextChange, resourceId }: P
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
             <span className="text-sm text-slate-600">
-              Selected: <span className="font-medium text-slate-800">"{selectedText}"</span>
+              Selected: <span className="font-medium text-slate-800">&quot;{selectedText}&quot;</span>
             </span>
           </div>
         </div>

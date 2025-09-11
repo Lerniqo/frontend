@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Users, Trophy, Clock, Zap, Target, Star, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
+import { Trophy, Clock, Zap, Target, ArrowLeft, Volume2, VolumeX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import GlareHover from '@/components/ui/GlareHover';
 import Countdown from './Countdown';
@@ -103,12 +103,54 @@ const DualMatchArena: React.FC = () => {
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Mock opponent data
-  const mockOpponents = [
+  const mockOpponents = useMemo(() => [
     { id: '2', name: 'Alex Chen', avatar: '🎓', score: 0, isOnline: true },
     { id: '3', name: 'Sarah Johnson', avatar: '📚', score: 0, isOnline: true },
     { id: '4', name: 'Mike Rodriguez', avatar: '🔬', score: 0, isOnline: true },
     { id: '5', name: 'Emma Wilson', avatar: '⚗️', score: 0, isOnline: true }
-  ];
+  ], []);
+
+  // Function definitions
+  const endGame = useCallback(() => {
+    const winner = playerScore > opponentScore ? currentPlayer : opponent!;
+    const loser = playerScore > opponentScore ? opponent! : currentPlayer;
+    const playerWon = playerScore > opponentScore;
+    
+    setMatchResult({
+      winner,
+      loser,
+      winnerScore: Math.max(playerScore, opponentScore),
+      loserScore: Math.min(playerScore, opponentScore),
+      totalQuestions: mockQuestions.length
+    });
+    
+    // Play appropriate sound and particles
+    if (soundEnabled) {
+      if (playerWon) {
+        gameSounds.victory();
+      } else {
+        gameSounds.defeat();
+      }
+    }
+    
+    if (playerWon) {
+      setParticleType('victory');
+      setShowParticles(true);
+    }
+    
+    setGameState('finished');
+  }, [currentPlayer, opponent, playerScore, opponentScore, soundEnabled]);
+
+  const handleNextQuestion = useCallback(() => {
+    if (currentQuestionIndex >= mockQuestions.length - 1) {
+      endGame();
+      return;
+    }
+    
+    setCurrentQuestionIndex(prev => prev + 1);
+    setSelectedAnswer(null);
+    setQuestionTimeLeft(15);
+  }, [currentQuestionIndex, endGame]);
 
   // Search for opponent simulation
   useEffect(() => {
@@ -130,7 +172,7 @@ const DualMatchArena: React.FC = () => {
 
       return () => clearInterval(interval);
     }
-  }, [gameState]);
+  }, [gameState, mockOpponents, soundEnabled]);
 
   // Countdown timer
   useEffect(() => {
@@ -148,7 +190,7 @@ const DualMatchArena: React.FC = () => {
 
       return () => clearInterval(interval);
     }
-  }, [gameState]);
+  }, [gameState, soundEnabled]);
 
   const handleCountdownComplete = () => {
     setGameState('playing');
@@ -171,7 +213,7 @@ const DualMatchArena: React.FC = () => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [gameState, timeLeft]);
+  }, [gameState, timeLeft, endGame]);
 
   // Question timer
   useEffect(() => {
@@ -189,7 +231,7 @@ const DualMatchArena: React.FC = () => {
       }, 1000);
       return () => clearInterval(timer);
     }
-  }, [gameState, questionTimeLeft, currentQuestionIndex, soundEnabled]);
+  }, [gameState, questionTimeLeft, handleNextQuestion, soundEnabled]);
 
   const handleAnswerSelect = (answerIndex: number) => {
     if (selectedAnswer !== null) return;
@@ -219,47 +261,6 @@ const DualMatchArena: React.FC = () => {
       handleNextQuestion();
       setShowParticles(false);
     }, 2000);
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuestionIndex >= mockQuestions.length - 1) {
-      endGame();
-      return;
-    }
-    
-    setCurrentQuestionIndex(prev => prev + 1);
-    setSelectedAnswer(null);
-    setQuestionTimeLeft(15);
-  };
-
-  const endGame = () => {
-    const winner = playerScore > opponentScore ? currentPlayer : opponent!;
-    const loser = playerScore > opponentScore ? opponent! : currentPlayer;
-    const playerWon = playerScore > opponentScore;
-    
-    setMatchResult({
-      winner,
-      loser,
-      winnerScore: Math.max(playerScore, opponentScore),
-      loserScore: Math.min(playerScore, opponentScore),
-      totalQuestions: mockQuestions.length
-    });
-    
-    // Play appropriate sound and particles
-    if (soundEnabled) {
-      if (playerWon) {
-        gameSounds.victory();
-      } else {
-        gameSounds.defeat();
-      }
-    }
-    
-    if (playerWon) {
-      setParticleType('victory');
-      setShowParticles(true);
-    }
-    
-    setGameState('finished');
   };
 
   const formatTime = (seconds: number) => {

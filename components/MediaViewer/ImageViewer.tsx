@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   ZoomIn, 
   ZoomOut, 
@@ -221,6 +220,7 @@ export default function ImageViewer({ url, title, onContextChange, resourceId }:
             }}
             onMouseDown={handleMouseDown}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={url}
               alt={title}

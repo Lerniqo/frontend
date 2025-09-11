@@ -222,7 +222,7 @@ const ResourceLibrary: React.FC = () => {
               </div>
               <h3 className="text-3xl font-bold text-white mb-4">No Resources Found</h3>
               <p className="text-slate-400 text-lg mb-8 max-w-md mx-auto">
-                Try adjusting your search terms or filters to find the resources you're looking for.
+                Try adjusting your search terms or filters to find the resources you&apos;re looking for.
               </p>
               <button
                 onClick={() => handleSearch({

@@ -3,25 +3,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
-import { 
-  EyeIcon, 
-  EyeSlashIcon, 
+import {
+  EyeIcon,
+  EyeSlashIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
   EnvelopeIcon,
   LockClosedIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
-import { handleLoginResponse } from "@/utils/authRedirect";
 
 // LoginForm component props interface
 interface LoginFormProps {
-  onSubmit?: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  onSubmit?: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message: string }>;
   isLoading?: boolean;
   className?: string;
   showSignUpLink?: boolean;
-  redirectPath?: string;
 }
 
 // Form validation state interface
@@ -44,22 +45,21 @@ interface FormState {
   password: string;
 }
 
-export default function LoginForm({ 
-  onSubmit, 
-  isLoading = false, 
-  className = "", 
+export default function LoginForm({
+  onSubmit,
+  isLoading = false,
+  className = "",
   showSignUpLink = true,
-  redirectPath = "/dashboard"
 }: LoginFormProps) {
   // State management
   const [formData, setFormData] = useState<FormState>({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [validation, setValidation] = useState<ValidationState>({
     email: { isValid: false, message: "", touched: false },
-    password: { isValid: false, message: "", touched: false }
+    password: { isValid: false, message: "", touched: false },
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -81,25 +81,32 @@ export default function LoginForm({
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirectPath);
+      router.push("/dashboard");
     }
-  }, [isAuthenticated, router, redirectPath]);
+  }, [isAuthenticated, router]);
 
   // Animation entrance effect
   useEffect(() => {
     if (formRef.current) {
       const tl = gsap.timeline();
-      
+
       // Set initial states
-      gsap.set([emailFieldRef.current, passwordFieldRef.current, submitButtonRef.current], {
-        opacity: 0,
-        y: 20
-      });
+      gsap.set(
+        [
+          emailFieldRef.current,
+          passwordFieldRef.current,
+          submitButtonRef.current,
+        ],
+        {
+          opacity: 0,
+          y: 20,
+        }
+      );
 
       gsap.set(formRef.current, {
         opacity: 0,
         y: 30,
-        scale: 0.95
+        scale: 0.95,
       });
 
       // Animation sequence
@@ -108,54 +115,69 @@ export default function LoginForm({
         y: 0,
         scale: 1,
         duration: 0.8,
-        ease: "power2.out"
+        ease: "power2.out",
       })
-      .to([emailFieldRef.current, passwordFieldRef.current], {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out"
-      }, "-=0.4")
-      .to(submitButtonRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out"
-      }, "-=0.3");
+        .to(
+          [emailFieldRef.current, passwordFieldRef.current],
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "power2.out",
+          },
+          "-=0.4"
+        )
+        .to(
+          submitButtonRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+          },
+          "-=0.3"
+        );
     }
   }, []);
 
   // Validation functions
-  const validateEmail = (email: string): { isValid: boolean; message: string } => {
+  const validateEmail = (
+    email: string
+  ): { isValid: boolean; message: string } => {
     if (!email) {
       return { isValid: false, message: "Email is required" };
     }
-    
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return { isValid: false, message: "Please enter a valid email address" };
     }
-    
+
     return { isValid: true, message: "" };
   };
 
-  const validatePassword = (password: string): { isValid: boolean; message: string } => {
+  const validatePassword = (
+    password: string
+  ): { isValid: boolean; message: string } => {
     if (!password) {
       return { isValid: false, message: "Password is required" };
     }
-    
+
     if (password.length < 6) {
-      return { isValid: false, message: "Password must be at least 6 characters" };
+      return {
+        isValid: false,
+        message: "Password must be at least 6 characters",
+      };
     }
-    
+
     return { isValid: true, message: "" };
   };
 
   // Handle input changes with validation
   const handleInputChange = (field: keyof FormState, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
     // Validate field
     let fieldValidation;
     if (field === "email") {
@@ -163,21 +185,22 @@ export default function LoginForm({
     } else {
       fieldValidation = validatePassword(value);
     }
-    
-    setValidation(prev => ({
+
+    setValidation((prev) => ({
       ...prev,
       [field]: {
         ...fieldValidation,
-        touched: prev[field].touched || value.length > 0
-      }
+        touched: prev[field].touched || value.length > 0,
+      },
     }));
 
     // Animate error message
     const errorRef = errorRefs.current[field];
     if (errorRef) {
       if (!fieldValidation.isValid && fieldValidation.message) {
-        gsap.fromTo(errorRef, 
-          { opacity: 0, y: -10 }, 
+        gsap.fromTo(
+          errorRef,
+          { opacity: 0, y: -10 },
           { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
         );
       } else {
@@ -185,7 +208,7 @@ export default function LoginForm({
           opacity: 0,
           y: -10,
           duration: 0.2,
-          ease: "power2.in"
+          ease: "power2.in",
         });
       }
     }
@@ -198,9 +221,9 @@ export default function LoginForm({
 
   // Handle input blur
   const handleInputBlur = (field: keyof FormState) => {
-    setValidation(prev => ({
+    setValidation((prev) => ({
       ...prev,
-      [field]: { ...prev[field], touched: true }
+      [field]: { ...prev[field], touched: true },
     }));
   };
 
@@ -210,7 +233,7 @@ export default function LoginForm({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid || isSubmitting) return;
 
     setIsSubmitting(true);
@@ -219,20 +242,17 @@ export default function LoginForm({
 
     try {
       let result;
-      
+
       if (onSubmit) {
         result = await onSubmit(formData.email, formData.password);
       } else {
-        // Use the new authentication flow
-        result = await handleLoginResponse({
-          email: formData.email,
-          password: formData.password
-        });
+        // Use the auth context login directly instead of handleLoginResponse
+        result = await _login(formData.email, formData.password);
       }
 
       if (result.success) {
         setSubmitSuccess(result.message || "Login successful!");
-        
+
         // Animate success
         if (submitButtonRef.current) {
           gsap.to(submitButtonRef.current, {
@@ -240,18 +260,12 @@ export default function LoginForm({
             duration: 0.2,
             yoyo: true,
             repeat: 1,
-            ease: "power2.inOut"
+            ease: "power2.inOut",
           });
         }
 
-        // Redirect based on user state
-        setTimeout(() => {
-          if ('redirectPath' in result && typeof result.redirectPath === 'string') {
-            router.push(result.redirectPath);
-          } else {
-            router.push(redirectPath);
-          }
-        }, 1000);
+        // Let the AuthContext and useAuth hook handle the redirect
+        // No manual redirect needed here
       } else {
         setSubmitError(result.message || "Login failed");
       }
@@ -264,12 +278,13 @@ export default function LoginForm({
 
   // Get input field classes based on validation state
   const getInputClasses = (field: keyof FormState) => {
-    const baseClasses = "w-full pl-10 sm:pl-12 md:pl-14 pr-4 py-2.5 sm:py-3 md:py-4 border-2 rounded-lg md:rounded-xl transition-all duration-300 focus:outline-none focus:ring-0 placeholder-gray-500 md:placeholder-gray-400 text-sm sm:text-base md:text-lg font-medium";
-    
+    const baseClasses =
+      "w-full pl-10 sm:pl-12 md:pl-14 pr-4 py-2.5 sm:py-3 md:py-4 border-2 rounded-lg md:rounded-xl transition-all duration-300 focus:outline-none focus:ring-0 placeholder-gray-500 md:placeholder-gray-400 text-sm sm:text-base md:text-lg font-medium";
+
     if (!validation[field].touched) {
       return `${baseClasses} border-white/30 focus:border-blue-400/60 focus:shadow-lg focus:shadow-blue-500/20`;
     }
-    
+
     if (validation[field].isValid) {
       return `${baseClasses} border-green-400/60 shadow-lg shadow-green-500/20`;
     } else {
@@ -279,12 +294,14 @@ export default function LoginForm({
 
   return (
     <div className={`mx-auto ${className}`}>
-      <div 
+      <div
         ref={formRef}
         className="p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl w-full backdrop-blur-xl border border-white/20"
         style={{
-          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.1) 100%)',
-          boxShadow: '0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.2) inset'
+          background:
+            "linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.1) 100%)",
+          boxShadow:
+            "0 25px 45px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1) inset, 0 1px 0 rgba(255, 255, 255, 0.2) inset",
         }}
       >
         {/* Header */}
@@ -301,7 +318,10 @@ export default function LoginForm({
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Email Field */}
           <div ref={emailFieldRef} className="space-y-1.5 sm:space-y-2">
-            <label htmlFor="email" className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
+            <label
+              htmlFor="email"
+              className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md"
+            >
               Email Address
             </label>
             <div className="relative">
@@ -316,10 +336,12 @@ export default function LoginForm({
                 placeholder="Enter your email address"
                 autoComplete="email"
                 disabled={isSubmitting}
-                aria-describedby={validation.email.message ? "email-error" : undefined}
+                aria-describedby={
+                  validation.email.message ? "email-error" : undefined
+                }
                 style={{
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(10px)'
+                  background: "rgba(255, 255, 255, 0.9)",
+                  backdropFilter: "blur(10px)",
                 }}
               />
               {validation.email.touched && (
@@ -333,8 +355,10 @@ export default function LoginForm({
               )}
             </div>
             {validation.email.message && validation.email.touched && (
-              <div 
-                ref={(el) => { errorRefs.current.email = el; }}
+              <div
+                ref={(el) => {
+                  errorRefs.current.email = el;
+                }}
                 id="email-error"
                 className="text-red-200 md:text-red-100 text-xs sm:text-sm md:text-base font-medium flex items-center space-x-1 drop-shadow-md"
                 role="alert"
@@ -347,7 +371,10 @@ export default function LoginForm({
 
           {/* Password Field */}
           <div ref={passwordFieldRef} className="space-y-1.5 sm:space-y-2">
-            <label htmlFor="password" className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md">
+            <label
+              htmlFor="password"
+              className="block text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-white/95 sm:text-white/90 md:text-white/85 drop-shadow-md"
+            >
               Password
             </label>
             <div className="relative">
@@ -362,10 +389,12 @@ export default function LoginForm({
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 disabled={isSubmitting}
-                aria-describedby={validation.password.message ? "password-error" : undefined}
+                aria-describedby={
+                  validation.password.message ? "password-error" : undefined
+                }
                 style={{
-                  background: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(10px)'
+                  background: "rgba(255, 255, 255, 0.9)",
+                  backdropFilter: "blur(10px)",
                 }}
               />
               <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-1 sm:space-x-2">
@@ -393,8 +422,10 @@ export default function LoginForm({
               </div>
             </div>
             {validation.password.message && validation.password.touched && (
-              <div 
-                ref={(el) => { errorRefs.current.password = el; }}
+              <div
+                ref={(el) => {
+                  errorRefs.current.password = el;
+                }}
                 id="password-error"
                 className="text-red-200 md:text-red-100 text-xs sm:text-sm md:text-base font-medium flex items-center space-x-1 drop-shadow-md"
                 role="alert"
@@ -421,7 +452,9 @@ export default function LoginForm({
             <div className="p-3 sm:p-4 bg-red-500/20 border border-red-300/30 rounded-lg backdrop-blur-sm">
               <div className="flex items-center space-x-2">
                 <ExclamationCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-red-300" />
-                <p className="text-red-100 text-xs sm:text-sm md:text-base font-medium drop-shadow-sm">{submitError}</p>
+                <p className="text-red-100 text-xs sm:text-sm md:text-base font-medium drop-shadow-sm">
+                  {submitError}
+                </p>
               </div>
             </div>
           )}
@@ -431,7 +464,9 @@ export default function LoginForm({
             <div className="p-3 sm:p-4 bg-green-500/20 border border-green-300/30 rounded-lg backdrop-blur-sm">
               <div className="flex items-center space-x-2">
                 <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-green-300" />
-                <p className="text-green-100 text-xs sm:text-sm md:text-base font-medium drop-shadow-sm">{submitSuccess}</p>
+                <p className="text-green-100 text-xs sm:text-sm md:text-base font-medium drop-shadow-sm">
+                  {submitSuccess}
+                </p>
               </div>
             </div>
           )}
@@ -444,7 +479,9 @@ export default function LoginForm({
             className="w-full py-2.5 sm:py-3 md:py-4 px-4 md:px-6 rounded-lg md:rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 hover:from-blue-700 hover:via-purple-700 hover:to-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 text-sm sm:text-base md:text-lg lg:text-xl drop-shadow-lg"
           >
             {isSubmitting || isLoading ? (
-              <>                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 border-b-2 border-white"></div>
+              <>
+                {" "}
+                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 border-b-2 border-white"></div>
                 <span>Signing In...</span>
               </>
             ) : (

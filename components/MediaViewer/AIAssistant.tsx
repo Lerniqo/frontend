@@ -31,6 +31,15 @@ export default function AIAssistant({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const loadSuggestions = useCallback(async () => {
+    try {
+      const newSuggestions = await mediaAIService.getSuggestions(resourceInfo, currentContext);
+      setSuggestions(newSuggestions);
+    } catch (error) {
+      console.error('Failed to load suggestions:', error);
+    }
+  }, [resourceInfo, currentContext]);
+
   useEffect(() => {
     // Load suggestions when context changes
     if (isOpen && resourceInfo) {
@@ -46,15 +55,6 @@ export default function AIAssistant({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const loadSuggestions = useCallback(async () => {
-    try {
-      const newSuggestions = await mediaAIService.getSuggestions(resourceInfo, currentContext);
-      setSuggestions(newSuggestions);
-    } catch (error) {
-      console.error('Failed to load suggestions:', error);
-    }
-  }, [resourceInfo, currentContext]);
 
   const handleSendMessage = async (messageText?: string) => {
     const text = messageText || inputValue.trim();

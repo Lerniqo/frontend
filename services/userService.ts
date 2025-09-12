@@ -20,7 +20,7 @@ import {
   TeachersListResponse,
 } from '@/types/auth.types';
 
-// Token management functions using localStorage
+// Token and user management functions using localStorage
 const setStoredToken = (token: string): void => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('accessToken', token);
@@ -37,6 +37,26 @@ const getStoredToken = (): string | null => {
 const removeStoredToken = (): void => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('accessToken');
+  }
+};
+
+const setStoredUser = (user: User): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('userData', JSON.stringify(user));
+  }
+};
+
+const getStoredUser = (): User | null => {
+  if (typeof window !== 'undefined') {
+    const userData = localStorage.getItem('userData');
+    return userData ? JSON.parse(userData) : null;
+  }
+  return null;
+};
+
+const removeStoredUser = (): void => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('userData');
   }
 };
 
@@ -106,6 +126,29 @@ const verifyEmail = async (code: string, email: string): Promise<ApiResponse<Ver
     return {
       success: false,
       message: error.response?.data?.message || error.message || 'Email verification failed',
+      error: error.response?.data?.error || error.message || 'Unknown error',
+    };
+  }
+};
+
+/**
+ * Resend verification code
+ */
+const resendVerificationCode = async (email: string): Promise<ApiResponse> => {
+  try {
+    const response = await apiClient.post<{ success: boolean; message: string }>(
+      '/user-service/users/resend-verification',
+      { email }
+    );
+
+    return {
+      success: response.data.success,
+      message: response.data.message
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message || 'Failed to resend verification code',
       error: error.response?.data?.error || error.message || 'Unknown error',
     };
   }
@@ -253,26 +296,35 @@ const completeProfile = async (
  */
 const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
   try {
-    const response = await apiClient.post<ApiResponse<AuthResponse>>(
+    const response = await apiClient.post(
       '/user-service/users/login',
       data,
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
     
-    if(!response.data.data?.accessToken) {
-      throw new Error('No access token returned from login API');
-    }
+    // Handle the new backend response format: { success: true, data: { accessToken, user }, message }
+    if (response.data?.success && response.data?.data?.accessToken && response.data?.data?.user) {
+      const { accessToken, user } = response.data.data;
+      
+      console.log('✅ Login successful:', response.data);
 
-    console.log('✅ Login successful:', response);
+      // Store both token and user data
+      setStoredToken(accessToken);
+      setStoredUser(user);
 
-    setStoredToken(response.data.data?.accessToken)
-
-    return {
-      success: true,
-      message: response.data.message,
-      data: response.data.data
+      return {
+        success: true,
+        message: response.data.message || 'Login successful',
+        data: {
+          accessToken,
+          user
+        }
+      };
+    } else {
+      throw new Error('Invalid login response format');
     }
   } catch (error: any) {
+    console.error('❌ Login failed:', error);
     return {
       success: false,
       message: error.response?.data?.message || error.message || 'Login failed',
@@ -286,12 +338,86 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
  */
 const getCurrentUser = async (): Promise<ApiResponse<User>> => {
   try {
-    const response = await apiClient.get<ApiResponse<User>>('/user-service/users/me');
-    return response.data;
+    const response = await apiClient.get('/user-service/users/me');
+    
+    // Handle direct user data response (not wrapped in ApiResponse)
+    if (response.data && response.data.userId) {
+      return {
+        success: true,
+        message: 'User profile retrieved successfully',
+        data: response.data
+      };
+    } else {
+      throw new Error('Invalid user profile response format');
+    }
   } catch (error: any) {
+    // If 401, try to refresh token
+    if (error.response?.status === 401) {
+      const refreshSuccess = await refreshToken();
+      if (refreshSuccess.success) {
+        // Retry the request
+        try {
+          const response = await apiClient.get('/user-service/users/me');
+          if (response.data && response.data.userId) {
+            return {
+              success: true,
+              message: 'User profile retrieved successfully',
+              data: response.data
+            };
+          }
+        } catch (retryError) {
+          // If retry fails, clear auth
+          clearAuth();
+        }
+      } else {
+        // Refresh failed, clear auth
+        clearAuth();
+      }
+    }
+    
     return {
       success: false,
       message: error.response?.data?.message || error.message || 'Failed to get user profile',
+      error: error.response?.data?.error || error.message || 'Unknown error',
+    };
+  }
+};
+
+/**
+ * Refresh access token using HTTP-only refresh token cookie
+ */
+const refreshToken = async (): Promise<ApiResponse<AuthResponse>> => {
+  try {
+    const response = await apiClient.post(
+      '/user-service/users/refresh-token',
+      {},
+      { withCredentials: true }
+    );
+    
+    // Handle the backend response format: { success: true, data: { accessToken, user }, message }
+    if (response.data?.success && response.data?.data?.accessToken && response.data?.data?.user) {
+      const { accessToken, user } = response.data.data;
+      
+      // Update stored token and user data
+      setStoredToken(accessToken);
+      setStoredUser(user);
+      
+      return {
+        success: true,
+        message: response.data.message || 'Token refreshed successfully',
+        data: {
+          accessToken,
+          user
+        }
+      };
+    } else {
+      throw new Error('Invalid refresh token response format');
+    }
+  } catch (error: any) {
+    console.error('❌ Token refresh failed:', error);
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message || 'Token refresh failed',
       error: error.response?.data?.error || error.message || 'Unknown error',
     };
   }
@@ -318,17 +444,20 @@ const updateProfile = async (data: UpdateProfileData): Promise<ApiResponse<User>
  */
 const logout = async (): Promise<ApiResponse> => {
   try {
-    const response = await apiClient.post<ApiResponse>(
+    const response = await apiClient.post(
       '/user-service/users/logout',
       {},
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
 
-    removeStoredToken();
-    return response.data;
+    clearAuth();
+    return {
+      success: true,
+      message: response.data?.message || 'Logout successful'
+    };
   } catch (error: any) {
-    // Always remove token even if logout fails
-    removeStoredToken();
+    // Always remove token and user data even if logout fails
+    clearAuth();
     
     return {
       success: false,
@@ -429,7 +558,7 @@ const uploadPhoto = async (data: UploadPhotoData): Promise<ApiResponse<{ photoUr
  * Check if user is authenticated
  */
 const isAuthenticated = (): boolean => {
-  return !!getStoredToken();
+  return !!getStoredToken() && !!getStoredUser();
 };
 
 /**
@@ -440,19 +569,29 @@ const getToken = (): string | null => {
 };
 
 /**
+ * Get stored user data
+ */
+const getUser = (): User | null => {
+  return getStoredUser();
+};
+
+/**
  * Clear authentication state
  */
 const clearAuth = (): void => {
   removeStoredToken();
+  removeStoredUser();
 };
 
 // Export a singleton-like object with the same API shape as before
 export const userService = {
   basicRegister,
   verifyEmail,
+  resendVerificationCode,
   completeProfile,
   login,
   getCurrentUser,
+  refreshToken,
   updateProfile,
   logout,
   getTeachers,
@@ -461,6 +600,7 @@ export const userService = {
   uploadPhoto,
   isAuthenticated,
   getToken,
+  getUser,
   clearAuth,
 };
 

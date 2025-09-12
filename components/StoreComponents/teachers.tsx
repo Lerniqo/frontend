@@ -173,7 +173,7 @@ export default function TeachersStore() {
   };
 
   const handleBackToDashboard = () => {
-    router.push("/Student/Dashboard");
+    router.push("/dashboard");
   };
 
   const handleHireTeacher = (teacherId: string) => {

@@ -10,7 +10,7 @@ export default function ChooseCategory({ setCategory }: ChooseCategoryProps) {
   const router = useRouter();
 
   const handleBackToDashboard = () => {
-    router.push("/Student/Dashboard");
+    router.push("/dashboard");
   };
 
   return (

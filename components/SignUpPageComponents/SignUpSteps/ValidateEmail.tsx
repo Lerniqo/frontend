@@ -114,12 +114,30 @@ export default function ValidateEmail({
     setError(null);
 
     try {
-      // Note: The new API doesn't have a resend endpoint, so we'll show a message
-      // In a real implementation, you might want to handle this differently
-      setError("Please check your email for the verification code. If you don't see it, check your spam folder.");
-      setResendTimer(30);
-    } catch {
-      setError("Unable to resend code. Please check your email or contact support.");
+      const result = await userService.resendVerificationCode(email);
+      
+      if (result.success) {
+        // Show success message and reset timer
+        setResendTimer(60); // 60 seconds cooldown
+        // Show a temporary success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'text-green-600 text-sm text-center mt-2';
+        successDiv.textContent = 'New verification code sent!';
+        
+        const form = formRef.current;
+        if (form) {
+          form.appendChild(successDiv);
+          setTimeout(() => {
+            if (form.contains(successDiv)) {
+              form.removeChild(successDiv);
+            }
+          }, 3000);
+        }
+      } else {
+        setError(result.message || "Failed to resend verification code");
+      }
+    } catch (_error: unknown) {
+      setError("Network error. Please try again.");
     } finally {
       setIsResending(false);
     }
@@ -140,7 +158,7 @@ export default function ValidateEmail({
         <div className="relative z-10">
           {/* Header */}
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Verify Your Email
             </h2>
             <p className="text-gray-600">We&apos;ve sent a 6-digit code to</p>
@@ -197,9 +215,9 @@ export default function ValidateEmail({
 
           {/* Success Message */}
           <div ref={successRef} className="mb-4 opacity-0">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center">
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 flex items-center">
               <svg
-                className="w-5 h-5 text-green-500 mr-2 flex-shrink-0"
+                className="w-5 h-5 text-purple-500 mr-2 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -209,7 +227,7 @@ export default function ValidateEmail({
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-green-700 text-sm">
+              <span className="text-purple-700 text-sm">
                 Email verified successfully!
               </span>
             </div>
@@ -222,7 +240,7 @@ export default function ValidateEmail({
             className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 transform ${
               !isValidCode || isLoading
                 ? "bg-gray-300 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
+                : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
             }`}
           >
             {isLoading ? (
@@ -242,7 +260,7 @@ export default function ValidateEmail({
             </p>
 
             {resendTimer > 0 ? (
-              <p className="text-blue-600 text-sm">
+              <p className="text-purple-600 text-sm">
                 Resend available in{" "}
                 <span className="font-semibold">{resendTimer}s</span>
               </p>
@@ -250,7 +268,7 @@ export default function ValidateEmail({
               <button
                 onClick={handleResendCode}
                 disabled={isResending}
-                className="text-blue-600 hover:text-blue-800 font-semibold text-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-purple-600 hover:text-purple-800 font-semibold text-sm transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isResending ? "Sending..." : "Resend Code"}
               </button>

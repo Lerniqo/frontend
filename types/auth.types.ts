@@ -258,4 +258,5 @@ export interface AuthContextType {
   register: (data: any) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
+  refreshToken?: () => Promise<{ success: boolean; message?: string }>;
 }

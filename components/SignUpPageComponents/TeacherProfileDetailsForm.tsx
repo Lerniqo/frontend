@@ -40,7 +40,7 @@ export default function TeacherProfileDetailsForm({
 
   // Education level options
   const educationLevelOptions = [
-    { value: "", label: "Select Education Level (Optional)" },
+    { value: "", label: "Select Education Level" },
     { value: "Bachelor's Degree", label: "Bachelor's Degree" },
     { value: "Master's Degree", label: "Master's Degree" },
     { value: "PhD in Chemistry", label: "PhD/Doctorate" },
@@ -68,7 +68,7 @@ export default function TeacherProfileDetailsForm({
     }
   }, []);
 
-  // Input validation - only fullName is required
+  // Input validation - required fields based on backend
   const validateField = (
     name: keyof TeacherProfileData,
     value: TeacherProfileData[keyof TeacherProfileData]
@@ -76,17 +76,54 @@ export default function TeacherProfileDetailsForm({
     switch (name) {
       case "fullName":
         return !(value as string)?.trim() ? "Full name is required" : "";
-      case "phoneNumber":
-        if (value && (value as string).trim()) {
-          const phoneRegex =
-            /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
-          if (!phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))) {
-            return "Please enter a valid phone number";
-          }
+      case "birthday":
+        if (!(value as string)?.trim()) {
+          return "Birthday is required";
+        }
+        // Age validation (21-80 years)
+        const birthDate = new Date(value as string);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        
+        if (age < 21 || age > 80) {
+          return "Teacher age must be between 21 and 80 years";
         }
         return "";
+      case "address":
+        return !(value as string)?.trim() ? "Address is required" : "";
+      case "phoneNumber":
+        if (!(value as string)?.trim()) {
+          return "Phone number is required";
+        }
+        const phoneRegex =
+          /^[\+]?[1-9][\d]{0,15}$|^[\(]?[\d]{3}[\)]?[\s\-]?[\d]{3}[\s\-]?[\d]{4}$/;
+        if (!phoneRegex.test((value as string).replace(/[\s\-\(\)]/g, ""))) {
+          return "Please enter a valid phone number";
+        }
+        return "";
+      case "nationalIdPassport":
+        return !(value as string)?.trim() ? "National ID/Passport is required" : "";
+      case "yearsOfExperience":
+        if (value === undefined || value === null) {
+          return "Years of experience is required";
+        }
+        if (typeof value === 'number' && value < 0) {
+          return "Years of experience cannot be negative";
+        }
+        return "";
+      case "highestEducationLevel":
+        return !(value as string)?.trim() ? "Highest education level is required" : "";
       case "shortBio":
-        if (value && (value as string).trim() && (value as string).length > 300) {
+        if (
+          value &&
+          (value as string).trim() &&
+          (value as string).length > 300
+        ) {
           return "Bio must be 300 characters or less";
         }
         return "";
@@ -96,7 +133,10 @@ export default function TeacherProfileDetailsForm({
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof TeacherProfileData, value: TeacherProfileData[keyof TeacherProfileData]) => {
+  const handleInputChange = (
+    name: keyof TeacherProfileData,
+    value: TeacherProfileData[keyof TeacherProfileData]
+  ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -198,10 +238,12 @@ export default function TeacherProfileDetailsForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Complete Your Teacher Profile
           </h2>
-          <p className="text-gray-600">Tell us more about yourself to enhance your teaching profile</p>
+          <p className="text-gray-600">
+            Tell us more about yourself to enhance your teaching profile
+          </p>
         </div>
 
         {/* Personal Information Section */}
@@ -238,7 +280,7 @@ export default function TeacherProfileDetailsForm({
             {/* Birthday */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Birthday
+                Birthday *
               </label>
               <input
                 type="date"
@@ -246,28 +288,48 @@ export default function TeacherProfileDetailsForm({
                 onChange={(e) => handleInputChange("birthday", e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               />
+              {errors.birthday && (
+                <div
+                  ref={(el) => {
+                    errorRefs.current.birthday = el;
+                  }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.birthday}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Address */}
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Address
+              Address *
             </label>
             <input
               type="text"
               value={formData.address}
               onChange={(e) => handleInputChange("address", e.target.value)}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              placeholder="Enter your address (optional)"
+              placeholder="Enter your full address"
             />
+            {errors.address && (
+              <div
+                ref={(el) => {
+                  errorRefs.current.address = el;
+                }}
+                className="text-red-500 text-sm mt-1"
+              >
+                {errors.address}
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             {/* Phone Number */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
+                Phone Number *
               </label>
               <input
                 type="tel"
@@ -276,7 +338,7 @@ export default function TeacherProfileDetailsForm({
                   handleInputChange("phoneNumber", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="Enter phone number (optional)"
+                placeholder="Enter your phone number"
               />
               {errors.phoneNumber && (
                 <div
@@ -293,7 +355,7 @@ export default function TeacherProfileDetailsForm({
             {/* National ID / Passport */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                National ID / Passport Number
+                National ID / Passport Number *
               </label>
               <input
                 type="text"
@@ -302,8 +364,18 @@ export default function TeacherProfileDetailsForm({
                   handleInputChange("nationalIdPassport", e.target.value)
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="Enter ID or passport number (optional)"
+                placeholder="Enter your ID or passport number"
               />
+              {errors.nationalIdPassport && (
+                <div
+                  ref={(el) => {
+                    errorRefs.current.nationalIdPassport = el;
+                  }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.nationalIdPassport}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -318,7 +390,7 @@ export default function TeacherProfileDetailsForm({
             {/* Years of Experience */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Years of Experience
+                Years of Experience *
               </label>
               <input
                 type="number"
@@ -331,14 +403,24 @@ export default function TeacherProfileDetailsForm({
                   )
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                placeholder="Enter years of experience (optional)"
+                placeholder="Enter years of experience"
               />
+              {errors.yearsOfExperience && (
+                <div
+                  ref={(el) => {
+                    errorRefs.current.yearsOfExperience = el;
+                  }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.yearsOfExperience}
+                </div>
+              )}
             </div>
 
             {/* Education Level */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Highest Education Level
+                Highest Education Level *
               </label>
               <select
                 value={formData.highestEducationLevel}
@@ -353,6 +435,16 @@ export default function TeacherProfileDetailsForm({
                   </option>
                 ))}
               </select>
+              {errors.highestEducationLevel && (
+                <div
+                  ref={(el) => {
+                    errorRefs.current.highestEducationLevel = el;
+                  }}
+                  className="text-red-500 text-sm mt-1"
+                >
+                  {errors.highestEducationLevel}
+                </div>
+              )}
             </div>
           </div>
 
@@ -379,9 +471,7 @@ export default function TeacherProfileDetailsForm({
             </label>
             <textarea
               value={formData.shortBio}
-              onChange={(e) =>
-                handleInputChange("shortBio", e.target.value)
-              }
+              onChange={(e) => handleInputChange("shortBio", e.target.value)}
               maxLength={300}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
@@ -407,7 +497,7 @@ export default function TeacherProfileDetailsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onMouseEnter={(e) =>
             !isLoading && handleButtonHover(true, e.currentTarget)
           }

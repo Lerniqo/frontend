@@ -34,7 +34,9 @@ export default function StudentProfileDetailsForm({
   const [selectedGrade, setSelectedGrade] = useState<string>(() => {
     // Initialize selectedGrade based on gradeLevel
     if (initialData.gradeLevel !== undefined) {
-      const gradeOption = gradeOptions.find(option => option.numericValue === initialData.gradeLevel);
+      const gradeOption = gradeOptions.find(
+        (option) => option.numericValue === initialData.gradeLevel
+      );
       return gradeOption?.value || "";
     }
     return "";
@@ -51,7 +53,7 @@ export default function StudentProfileDetailsForm({
 
   // Grade options with numeric mapping
   const gradeOptions = [
-    { value: "", label: "Select Grade (Optional)", numericValue: undefined },
+    { value: "", label: "Select Grade", numericValue: undefined },
     { value: "kindergarten", label: "Kindergarten", numericValue: 0 },
     { value: "1", label: "1st Grade", numericValue: 1 },
     { value: "2", label: "2nd Grade", numericValue: 2 },
@@ -68,7 +70,7 @@ export default function StudentProfileDetailsForm({
   ];
 
   const genderOptions = [
-    { value: "", label: "Select Gender (Optional)" },
+    { value: "", label: "Select Gender" },
     { value: "male", label: "Male" },
     { value: "female", label: "Female" },
     { value: "other", label: "Other" },
@@ -104,7 +106,7 @@ export default function StudentProfileDetailsForm({
     }
   }, []);
 
-  // Input validation - only fullName is required
+  // Input validation - required fields based on backend
   const validateField = (
     name: keyof StudentProfileData,
     value: StudentProfileData[keyof StudentProfileData]
@@ -112,6 +114,28 @@ export default function StudentProfileDetailsForm({
     switch (name) {
       case "fullName":
         return !(value as string)?.trim() ? "Full name is required" : "";
+      case "birthday":
+        if (!(value as string)?.trim()) {
+          return "Birthday is required";
+        }
+        // Age validation (5-25 years)
+        const birthDate = new Date(value as string);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+        }
+        
+        if (age < 5 || age > 25) {
+          return "Student age must be between 5 and 25 years";
+        }
+        return "";
+      case "gradeLevel":
+        return value === undefined ? "Grade level is required" : "";
+      case "gender":
+        return !(value as string)?.trim() ? "Gender is required" : "";
       case "parentContact":
         if (value && (value as string).trim()) {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -132,12 +156,17 @@ export default function StudentProfileDetailsForm({
 
   // Convert grade string to numeric gradeLevel
   const convertGradeToNumeric = (gradeString: string): number | undefined => {
-    const gradeOption = gradeOptions.find(option => option.value === gradeString);
+    const gradeOption = gradeOptions.find(
+      (option) => option.value === gradeString
+    );
     return gradeOption?.numericValue;
   };
 
   // Handle input changes
-  const handleInputChange = (name: keyof StudentProfileData, value: StudentProfileData[keyof StudentProfileData]) => {
+  const handleInputChange = (
+    name: keyof StudentProfileData,
+    value: StudentProfileData[keyof StudentProfileData]
+  ) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
@@ -246,10 +275,12 @@ export default function StudentProfileDetailsForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-2">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Complete Your Student Profile
           </h2>
-          <p className="text-gray-600">Tell us more about yourself to personalize your learning experience</p>
+          <p className="text-gray-600">
+            Tell us more about yourself to personalize your learning experience
+          </p>
         </div>
 
         {/* Full Name */}
@@ -261,7 +292,7 @@ export default function StudentProfileDetailsForm({
             type="text"
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
             placeholder="Enter full name"
           />
           {errors.fullName && (
@@ -285,7 +316,7 @@ export default function StudentProfileDetailsForm({
             type="text"
             value={formData.school}
             onChange={(e) => handleInputChange("school", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
             placeholder="Enter school name (optional)"
           />
         </div>
@@ -293,21 +324,31 @@ export default function StudentProfileDetailsForm({
         {/* Birthday */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Birthday
+            Birthday *
           </label>
           <input
             type="date"
             value={formData.birthday}
             onChange={(e) => handleInputChange("birthday", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200"
           />
+          {errors.birthday && (
+            <div
+              ref={(el) => {
+                errorRefs.current.birthday = el;
+              }}
+              className="text-red-500 text-sm mt-1"
+            >
+              {errors.birthday}
+            </div>
+          )}
         </div>
 
         {/* Grade and Gender Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Grade
+              Grade *
             </label>
             <select
               value={selectedGrade}
@@ -320,11 +361,21 @@ export default function StudentProfileDetailsForm({
                 </option>
               ))}
             </select>
+            {errors.gradeLevel && (
+              <div
+                ref={(el) => {
+                  errorRefs.current.gradeLevel = el;
+                }}
+                className="text-red-500 text-sm mt-1"
+              >
+                {errors.gradeLevel}
+              </div>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Gender
+              Gender *
             </label>
             <select
               value={formData.gender}
@@ -337,6 +388,16 @@ export default function StudentProfileDetailsForm({
                 </option>
               ))}
             </select>
+            {errors.gender && (
+              <div
+                ref={(el) => {
+                  errorRefs.current.gender = el;
+                }}
+                className="text-red-500 text-sm mt-1"
+              >
+                {errors.gender}
+              </div>
+            )}
           </div>
         </div>
 
@@ -385,10 +446,7 @@ export default function StudentProfileDetailsForm({
                 <select
                   value={formData.relationship}
                   onChange={(e) =>
-                    handleInputChange(
-                      "relationship",
-                      e.target.value
-                    )
+                    handleInputChange("relationship", e.target.value)
                   }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 >
@@ -447,7 +505,7 @@ export default function StudentProfileDetailsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           onMouseEnter={(e) =>
             !isLoading && handleButtonHover(true, e.currentTarget)
           }

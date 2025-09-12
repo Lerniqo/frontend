@@ -6,6 +6,7 @@ import { X, Trophy, Users, BookOpen, Star, MapPin, Clock, CheckCircle } from "lu
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import StudentContestsPage from "@/components/StudentContests/StudentContestsPage";
 import ResourceLibrary from "@/components/ResourceLibrary/ResourceLibrary";
 import { DetailedTeacherProfile, TeacherProfile } from "@/types/auth.types";
@@ -227,9 +228,11 @@ const TeachersPageWrapper = ({ onDataLoad }: { onDataLoad?: (teachers: DetailedT
                   {/* Teacher Avatar */}
                   <div className="relative mx-auto mb-4 w-20 h-20">
                     {teacher.profileImage ? (
-                      <img 
+                      <Image 
                         src={teacher.profileImage} 
                         alt={teacher.fullName}
+                        width={80}
+                        height={80}
                         className="w-full h-full rounded-full object-cover border-2 border-white/20 group-hover:border-purple-400/50 transition-all duration-300"
                       />
                     ) : (

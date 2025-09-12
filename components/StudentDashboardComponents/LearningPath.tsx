@@ -8,14 +8,11 @@ import {
   Lock, 
   Star, 
   Trophy, 
-  BookOpen, 
   Target,
   Play,
   Clock,
-  Crown,
   Gem,
-  Sparkles,
-  Zap
+  Sparkles
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";

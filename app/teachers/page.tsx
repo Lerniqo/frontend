@@ -160,7 +160,7 @@ export default function TeachersPage(): React.ReactElement {
       fullName: teacher.fullName,
       profileImage: teacher.profileImage,
       isVerified: teacher.isVerified,
-      profileCompleted: teacher.profileCompleted,
+      isProfileCompleted: teacher.isProfileCompleted,
       createdAt: teacher.createdAt,
       updatedAt: teacher.updatedAt,
 

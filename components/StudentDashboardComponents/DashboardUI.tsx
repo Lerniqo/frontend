@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { 
   Search, 
   Trophy, 
@@ -42,6 +43,7 @@ import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import GlareHover from "@/components/reactbits/GlareHover";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeNav, setActiveNav] = useState('dashboard');
@@ -242,7 +244,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
       <div className="absolute bottom-6 left-6 z-30">
         <DualMatchButton 
           onClick={() => {
-            console.log("Battle mode activated!");
+            router.push('/dual-match');
           }}
         />
       </div>

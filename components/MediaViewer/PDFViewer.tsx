@@ -24,6 +24,7 @@ interface PDFViewerProps {
 
 export default function PDFViewer({ url, title, onContextChange, resourceId }: PDFViewerProps) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [rotation, setRotation] = useState(0);
   const [isLoading, setIsLoading] = useState(true);

@@ -33,6 +33,7 @@ interface NavigationItem {
 interface PremiumNavigationProps {
   activeNav: string;
   onNavChange: (nav: string) => void;
+  onOpenModal?: (content: 'contests' | 'teachers' | 'resource-library') => void;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -85,9 +86,26 @@ const navigationItems: NavigationItem[] = [
 
 const PremiumNavigation: React.FC<PremiumNavigationProps> = ({ 
   activeNav, 
-  onNavChange 
+  onNavChange,
+  onOpenModal
 }) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+
+  const handleItemClick = (item: NavigationItem) => {
+    const navKey = item.label.toLowerCase().replace(' ', '-');
+    onNavChange(navKey);
+    
+    // Open modal for specific navigation items
+    if (onOpenModal) {
+      if (item.label === "Elite Contests") {
+        onOpenModal('contests');
+      } else if (item.label === "Expert Teachers") {
+        onOpenModal('teachers');
+      } else if (item.label === "Resource Library") {
+        onOpenModal('resource-library');
+      }
+    }
+  };
 
   return (
     <SpotlightCard 
@@ -132,7 +150,7 @@ const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
               isActive={activeNav === item.label.toLowerCase().replace(' ', '-')}
               isHovered={hoveredItem === item.label}
               onHover={setHoveredItem}
-              onClick={() => onNavChange(item.label.toLowerCase().replace(' ', '-'))}
+              onClick={() => handleItemClick(item)}
             />
           ))}
         </div>

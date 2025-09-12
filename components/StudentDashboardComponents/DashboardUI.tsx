@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   Search, 
   Trophy, 
@@ -21,7 +21,16 @@ import {
   Library,
   Calendar,
   HelpCircle,
-  Crown
+  Crown,
+  Bell,
+  User,
+  LogOut,
+  CreditCard,
+  Mail,
+  Check,
+  X,
+  BellRing,
+  Sparkles
 } from "lucide-react";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import type { DashboardUIProps } from "@/types/dashboard.types";
@@ -29,12 +38,35 @@ import DualMatchButton from "./DualMatchButton";
 import LearningPath from "./LearningPath";
 import PremiumNavigation from "./PremiumNavigation";
 import FloatingActionButton from "./FloatingActionButton";
+import SpotlightCard from "@/components/reactbits/SpotlightCard";
+import GlareHover from "@/components/reactbits/GlareHover";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeNav, setActiveNav] = useState('dashboard');
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
   const progressPercentage = (currentPathProgress / (CAMERA_PATH.length - 1) * 100).toFixed(1);
+
+  // Close popups when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
+        setIsAvatarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const navigationItems = [
     { 
@@ -95,7 +127,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
           <div className="relative p-4">
             <div className="flex justify-between items-center">
               {/* Left side - Premium Logo/Brand */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-4 flex-shrink-0">
                 <div className="relative">
                   <div className="w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-2xl flex items-center justify-center border-2 border-white/20 shadow-lg shadow-blue-500/25">
                     <Gamepad2 className="text-white w-7 h-7" />
@@ -110,27 +142,28 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
                 </div>
               </div>
 
-              {/* Center - Enhanced Navigation Menu */}
-              <div className="flex items-center space-x-3">
-                {navigationItems.map((item, index) => (
-                  <NavButton 
-                    key={index}
-                    icon={item.icon} 
-                    label={item.label} 
-                    color={item.gradient} 
-                  />
-                ))}
-              </div>
-
-              {/* Right side - Premium User Profile & Search */}
-              <div className="flex items-center space-x-4">
-                <PremiumSearchBar 
+              {/* Center - Enhanced Search Bar */}
+              <div className="flex-1 max-w-2xl mx-8">
+                <CenteredSearchBar 
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   isSearchFocused={isSearchFocused}
                   setIsSearchFocused={setIsSearchFocused}
                 />
-                <PremiumUserAvatar />
+              </div>
+
+              {/* Right side - Notifications & Avatar */}
+              <div className="flex items-center space-x-4 flex-shrink-0">
+                <NotificationButton 
+                  ref={notificationRef}
+                  isOpen={isNotificationOpen}
+                  setIsOpen={setIsNotificationOpen}
+                />
+                <PremiumUserAvatarWithPopup 
+                  ref={avatarRef}
+                  isOpen={isAvatarOpen}
+                  setIsOpen={setIsAvatarOpen}
+                />
               </div>
             </div>
           </div>
@@ -534,3 +567,305 @@ const PremiumAchievementItem = ({
     )}
   </div>
 );
+
+// Centered Search Bar Component
+const CenteredSearchBar = ({ 
+  searchQuery, 
+  setSearchQuery, 
+  isSearchFocused, 
+  setIsSearchFocused 
+}: {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  isSearchFocused: boolean;
+  setIsSearchFocused: (focused: boolean) => void;
+}) => (
+  <div className="relative group">
+    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
+      isSearchFocused ? 'opacity-100 scale-105' : 'opacity-0 group-hover:opacity-50'
+    }`} />
+    <div className="relative">
+      <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+        isSearchFocused ? 'text-blue-400' : 'text-white/60 group-hover:text-white/80'
+      }`} />
+      <input
+        type="text"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        onFocus={() => setIsSearchFocused(true)}
+        onBlur={() => setIsSearchFocused(false)}
+        placeholder="Search premium resources, courses, and materials..."
+        className={`w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 
+          focus:outline-none focus:border-blue-500/50 focus:bg-white/15 backdrop-blur-sm 
+          transition-all duration-300 hover:bg-white/15 hover:border-white/30
+          ${isSearchFocused ? 'shadow-lg shadow-blue-500/10' : ''}
+        `}
+      />
+      {/* Premium Glow Effect */}
+      <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 pointer-events-none ${
+        isSearchFocused ? 'opacity-100' : 'opacity-0'
+      }`} />
+    </div>
+    
+    {searchQuery && (
+      <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
+        <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+          Quick results for "{searchQuery}"
+        </div>
+        <div className="max-h-48 overflow-y-auto">
+          <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
+            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">Mathematics - Advanced Calculus</div>
+            <div className="text-xs text-white/60 mt-1">Chapter 3: Derivatives & Applications</div>
+          </div>
+          <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
+            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">Physics - Quantum Mechanics</div>
+            <div className="text-xs text-white/60 mt-1">Premium Course by Dr. Smith</div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+// Notification Button Component
+const NotificationButton = React.forwardRef<
+  HTMLDivElement,
+  { isOpen: boolean; setIsOpen: (open: boolean) => void }
+>(({ isOpen, setIsOpen }, ref) => {
+  const notifications = [
+    {
+      id: 1,
+      title: "New Assignment Available",
+      message: "Advanced Calculus - Integration Techniques",
+      time: "2 mins ago",
+      type: "assignment",
+      unread: true
+    },
+    {
+      id: 2,
+      title: "Quiz Results Published",
+      message: "You scored 95% in Physics Quiz #5",
+      time: "1 hour ago",
+      type: "result",
+      unread: true
+    },
+    {
+      id: 3,
+      title: "Study Group Invitation",
+      message: "Join the Machine Learning study group",
+      time: "3 hours ago",
+      type: "social",
+      unread: false
+    },
+    {
+      id: 4,
+      title: "Course Update",
+      message: "New materials added to Chemistry course",
+      time: "1 day ago",
+      type: "update",
+      unread: false
+    }
+  ];
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <GlareHover
+        className="relative group bg-white/10 hover:bg-white/15 border border-white/20 hover:border-blue-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm cursor-pointer"
+        background="transparent"
+        borderRadius="12px"
+        glareColor="#3b82f6"
+        glareOpacity={0.3}
+        width="auto"
+        height="auto"
+      >
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-3 w-full h-full relative"
+        >
+          {/* Attractive Notification Icon with gradient and glow */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+            <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-1">
+              <BellRing className="w-4 h-4 text-white" />
+            </div>
+            {/* Sparkle effect */}
+            <Sparkles className="absolute -top-1 -right-1 w-3 h-3 text-yellow-400 animate-pulse" />
+          </div>
+          {unreadCount > 0 && (
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-xs font-bold text-white animate-bounce">
+              {unreadCount}
+            </div>
+          )}
+        </button>
+      </GlareHover>
+
+      {/* Notification Popup - Positioned relative to button */}
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-3 z-[100]">
+          <SpotlightCard
+            className="w-80 bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden"
+            spotlightColor="rgba(59, 130, 246, 0.15)"
+            spotlightSize={150}
+            intensity={0.4}
+          >
+          <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-white font-semibold">Notifications</h3>
+              <span className="text-xs text-blue-400 bg-blue-500/20 px-2 py-1 rounded-lg">
+                {unreadCount} new
+              </span>
+            </div>
+          </div>
+          <div className="max-h-80 overflow-y-auto">
+            {notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={`p-4 border-b border-white/10 hover:bg-white/10 cursor-pointer transition-colors group ${
+                  notification.unread ? 'bg-blue-500/5' : ''
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h4 className="text-white font-medium group-hover:text-blue-300 transition-colors">
+                        {notification.title}
+                      </h4>
+                      {notification.unread && (
+                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                      )}
+                    </div>
+                    <p className="text-white/60 text-sm mt-1">{notification.message}</p>
+                    <p className="text-white/40 text-xs mt-2">{notification.time}</p>
+                  </div>
+                  <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all">
+                    <X className="w-4 h-4 text-white/60" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-3 border-t border-white/10 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+            <button className="w-full text-center text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+              View All Notifications
+            </button>
+          </div>
+        </SpotlightCard>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Premium User Avatar with Popup Component
+const PremiumUserAvatarWithPopup = React.forwardRef<
+  HTMLDivElement,
+  { isOpen: boolean; setIsOpen: (open: boolean) => void }
+>(({ isOpen, setIsOpen }, ref) => {
+  const menuItems = [
+    { icon: User, label: "Profile Settings", description: "Manage your account" },
+    { icon: Crown, label: "Premium Plan", description: "Upgrade your experience" },
+    { icon: Settings, label: "Preferences", description: "Customize your dashboard" },
+    { icon: Trophy, label: "Achievements", description: "View your progress" },
+    { icon: HelpCircle, label: "Help & Support", description: "Get assistance" },
+    { icon: LogOut, label: "Sign Out", description: "Leave your session" }
+  ];
+
+  return (
+    <div ref={ref} className="relative flex-shrink-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="group relative focus:outline-none"
+      >
+        {/* Glow Ring */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full blur-lg group-hover:blur-xl transition-all duration-300 animate-pulse" />
+        
+        {/* Main Avatar */}
+        <div className="relative w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full flex items-center justify-center border-2 border-white/30 group-hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg shadow-blue-500/25 group-hover:scale-110">
+          <span className="text-white font-bold text-lg drop-shadow-lg">JD</span>
+        </div>
+        
+        {/* Status Indicator */}
+        <div className="absolute top-0 right-0 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-lg shadow-green-500/25" />
+        
+        {/* Premium Badge */}
+        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border border-slate-900">
+          <Crown className="w-3 h-3 text-white" />
+        </div>
+        
+        {/* Hover Sparkles */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-blue-300 rounded-full animate-ping"
+              style={{
+                left: `${20 + i * 15}%`,
+                top: `${20 + (i % 2) * 40}%`,
+                animationDelay: `${i * 0.2}s`
+              }}
+            />
+          ))}
+        </div>
+      </button>
+
+      {/* Avatar Popup - Positioned relative to button */}
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-3 z-[100]">
+          <SpotlightCard
+            className="w-72 bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden"
+            spotlightColor="rgba(147, 51, 234, 0.15)"
+            spotlightSize={150}
+            intensity={0.4}
+          >
+          {/* Header */}
+          <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20">
+                <span className="text-white font-bold">JD</span>
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">John Doe</h3>
+                <p className="text-white/60 text-sm">Premium Student</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Menu Items */}
+          <div className="py-2">
+            {menuItems.map((item, index) => (
+              <button
+                key={index}
+                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 transition-colors group"
+              >
+                <div className={`p-2 rounded-lg ${
+                  item.label === 'Premium Plan' 
+                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20' 
+                    : item.label === 'Sign Out'
+                    ? 'bg-red-500/20'
+                    : 'bg-blue-500/20'
+                }`}>
+                  <item.icon className={`w-4 h-4 ${
+                    item.label === 'Premium Plan' 
+                      ? 'text-yellow-400' 
+                      : item.label === 'Sign Out'
+                      ? 'text-red-400'
+                      : 'text-blue-400'
+                  }`} />
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="text-white font-medium group-hover:text-blue-300 transition-colors">
+                    {item.label}
+                  </div>
+                  <div className="text-white/60 text-xs">{item.description}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </SpotlightCard>
+        </div>
+      )}
+    </div>
+  );
+});

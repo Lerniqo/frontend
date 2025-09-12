@@ -65,6 +65,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       if (response.success && response.data) {
         setUser(response.data.user);
+        
+        // After successful login, redirect to dashboard
+        // The protected route will handle role-based routing
+        router.push('/dashboard');
+        
         return { success: true, message: response.message };
       } else {
         return { success: false, message: response.message || 'Login failed' };

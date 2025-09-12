@@ -37,10 +37,14 @@ export const checkAuthState = async (): Promise<AuthState> => {
 
     const user = currentUser.data;
     
+    // If user has a fullName, assume profile is completed
+    // This is a safeguard in case the backend doesn't properly set profileCompleted
+    const hasCompletedProfile = Boolean(user.profileCompleted || (user.fullName && user.fullName.trim().length > 0));
+    
     return {
       isLoggedIn: true,
       isEmailVerified: user.isVerified,
-      isProfileComplete: user.profileCompleted,
+      isProfileComplete: hasCompletedProfile,
       user: {
         userId: user.userId,
         email: user.email,
@@ -49,6 +53,7 @@ export const checkAuthState = async (): Promise<AuthState> => {
       },
     };
   } catch (error) {
+    console.error('Auth state check error:', error);
     return {
       isLoggedIn: false,
       isEmailVerified: false,
@@ -70,7 +75,20 @@ export const getRedirectPath = (authState: AuthState): string => {
     return `/signup/complete-profile?userId=${encodeURIComponent(authState.user.userId)}&role=${encodeURIComponent(authState.user.role)}`;
   }
   
-  // User is fully authenticated and verified
+  // User is fully authenticated and verified - redirect to role-based dashboard
+  if (authState.user) {
+    switch (authState.user.role) {
+      case 'Student':
+        return '/dashboard'; // Will be routed to @student slot
+      case 'Teacher':
+        return '/dashboard'; // Will be routed to @teacher slot
+      case 'Admin':
+        return '/dashboard'; // Will be routed to @admin slot
+      default:
+        return '/dashboard';
+    }
+  }
+  
   return '/dashboard';
 };
 
@@ -90,6 +108,10 @@ export const handleLoginResponse = async (loginData: { email: string; password: 
   // After successful login, check the user's current state
   const authState = await checkAuthState();
   const redirectPath = getRedirectPath(authState);
+  
+  // Log for debugging
+  console.log('Login successful, auth state:', authState);
+  console.log('Redirect path:', redirectPath);
   
   return {
     success: true,

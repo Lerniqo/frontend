@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Bot, Send, X, Sparkles, Zap, MessageCircle, Plus, History, MoreVertical, Trash2, Edit3, Target } from "lucide-react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { Bot, Send, X, Sparkles, Zap, MessageCircle, Plus, History, Trash2, Edit3, Target } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import ClickSpark from "@/components/reactbits/ClickSpark";
@@ -44,7 +44,7 @@ export default function AIChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const currentSession = chatSessions.find(session => session.id === currentSessionId);
-  const messages = currentSession?.messages || [];
+  const messages = useMemo(() => currentSession?.messages || [], [currentSession]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,7 +54,7 @@ export default function AIChatbot() {
     scrollToBottom();
   }, [messages]);
 
-  const createNewChat = () => {
+  const createNewChat = useCallback(() => {
     const newSessionId = Date.now().toString();
     const newSession: ChatSession = {
       id: newSessionId,
@@ -72,7 +72,7 @@ export default function AIChatbot() {
     setChatSessions(prev => [newSession, ...prev]);
     setCurrentSessionId(newSessionId);
     setShowHistory(false);
-  };
+  }, [chatSessions.length]);
 
   const deleteChat = (sessionId: string) => {
     if (chatSessions.length <= 1) {
@@ -190,7 +190,7 @@ export default function AIChatbot() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, inputMessage, showHistory]);
+  }, [isOpen, inputMessage, showHistory, createNewChat]);
 
   // Prevent background scrolling when modal is open
   useEffect(() => {

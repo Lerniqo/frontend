@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Zap, Plus, Sparkles } from "lucide-react";
+import { Zap } from "lucide-react";
 
 interface FloatingActionButtonProps {
   onClick?: () => void;

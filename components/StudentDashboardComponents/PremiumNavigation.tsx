@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Library, 
@@ -10,8 +10,6 @@ import {
   MessageCircle, 
   HelpCircle,
   Sparkles,
-  Star,
-  Zap,
   Crown,
   Gem,
   LucideIcon

@@ -10,25 +10,14 @@ import {
   GraduationCap, 
   Zap, 
   Settings,
-  Home,
-  TrendingUp,
-  Bot,
-  MessageCircle,
   Gamepad2,
   Star,
-  Award,
   Target,
   LucideIcon,
-  Library,
-  Calendar,
   HelpCircle,
   Crown,
-  Bell,
   User,
   LogOut,
-  CreditCard,
-  Mail,
-  Check,
   X,
   BellRing,
   Sparkles
@@ -82,7 +71,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
     };
   }, []);
 
-  const navigationItems = [
+  const _navigationItems = [
     { 
       icon: Zap, 
       label: "Dual Match", 
@@ -233,7 +222,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
                 label="Perfect Scores" 
                 value="23" 
                 color="from-purple-400 to-pink-500"
-                count={23}
+                _count={23}
               />
             </div>
           </div>
@@ -260,7 +249,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 }
 
 // Navigation Button Component
-const NavButton = ({ 
+const _NavButton = ({ 
   icon: Icon, 
   label, 
   color = "from-blue-500 to-purple-600" 
@@ -282,7 +271,7 @@ const NavButton = ({
 );
 
 // Side Navigation Button Component
-const SideNavButton = ({ 
+const _SideNavButton = ({ 
   icon: Icon, 
   label, 
   active = false,
@@ -307,18 +296,18 @@ const SideNavButton = ({
 );
 
 // Simple Navigation Button Component - Matching LearningPath Style
-const SimpleNavButton = ({ 
+const _SimpleNavButton = ({ 
   icon: Icon, 
   label, 
   active = false,
   onClick,
-  gradient = "from-blue-500 to-purple-600"
+  _gradient = "from-blue-500 to-purple-600"
 }: { 
   icon: LucideIcon; 
   label: string; 
   active?: boolean;
   onClick?: () => void;
-  gradient?: string;
+  _gradient?: string;
 }) => (
   <div 
     onClick={onClick}
@@ -372,15 +361,15 @@ const SimpleNavButton = ({
 );
 
 // Search Bar Component
-const SearchBar = ({ 
+const _SearchBar = ({ 
   searchQuery, 
   setSearchQuery, 
-  isSearchFocused, 
+  _isSearchFocused, 
   setIsSearchFocused 
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  isSearchFocused: boolean;
+  _isSearchFocused: boolean;
   setIsSearchFocused: (focused: boolean) => void;
 }) => (
   <div className="relative">
@@ -397,7 +386,7 @@ const SearchBar = ({
     {searchQuery && (
       <div className="absolute top-full mt-2 w-full bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden z-50">
         <div className="p-3 text-sm text-white/80 border-b border-white/10">
-          Quick results for "{searchQuery}"
+          Quick results for &quot;{searchQuery}&quot;
         </div>
         <div className="max-h-48 overflow-y-auto">
           <div className="p-3 hover:bg-white/10 cursor-pointer transition-colors">
@@ -411,7 +400,7 @@ const SearchBar = ({
 );
 
 // User Avatar Component
-const UserAvatar = () => (
+const _UserAvatar = () => (
   <div className="group relative">
     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20 group-hover:border-white/40 transition-all duration-300 cursor-pointer">
       <span className="text-white font-bold text-lg">JD</span>
@@ -421,7 +410,7 @@ const UserAvatar = () => (
 );
 
 // Achievement Item Component
-const AchievementItem = ({ 
+const _AchievementItem = ({ 
   icon: Icon, 
   label, 
   value, 
@@ -442,7 +431,7 @@ const AchievementItem = ({
 );
 
 // Premium Search Bar Component
-const PremiumSearchBar = ({ 
+const _PremiumSearchBar = ({ 
   searchQuery, 
   setSearchQuery, 
   isSearchFocused, 
@@ -483,7 +472,7 @@ const PremiumSearchBar = ({
     {searchQuery && (
       <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
         <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-          Quick results for "{searchQuery}"
+          Quick results for &quot;{searchQuery}&quot;
         </div>
         <div className="max-h-48 overflow-y-auto">
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
@@ -501,7 +490,7 @@ const PremiumSearchBar = ({
 );
 
 // Premium User Avatar Component
-const PremiumUserAvatar = () => (
+const _PremiumUserAvatar = () => (
   <div className="group relative">
     {/* Glow Ring */}
     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full blur-lg group-hover:blur-xl transition-all duration-300 animate-pulse" />
@@ -541,7 +530,7 @@ const PremiumAchievementItem = ({
   value, 
   color,
   progress,
-  count,
+  _count,
   isMultiplier = false
 }: { 
   icon: LucideIcon; 
@@ -549,7 +538,7 @@ const PremiumAchievementItem = ({
   value: string; 
   color: string;
   progress?: number;
-  count?: number;
+  _count?: number;
   isMultiplier?: boolean;
 }) => (
   <div className="group relative flex items-center space-x-4 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300">
@@ -630,7 +619,7 @@ const CenteredSearchBar = ({
     {searchQuery && (
       <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
         <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-          Quick results for "{searchQuery}"
+          Quick results for &quot;{searchQuery}&quot;
         </div>
         <div className="max-h-48 overflow-y-auto">
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
@@ -778,6 +767,8 @@ const NotificationButton = React.forwardRef<
   );
 });
 
+NotificationButton.displayName = 'NotificationButton';
+
 // Premium User Avatar with Popup Component
 const PremiumUserAvatarWithPopup = React.forwardRef<
   HTMLDivElement,
@@ -889,3 +880,4 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
     </div>
   );
 });
+PremiumUserAvatarWithPopup.displayName = 'PremiumUserAvatarWithPopup';

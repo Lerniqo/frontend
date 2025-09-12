@@ -1,7 +1,7 @@
 'use client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const Protected = ({
     teacher,
@@ -19,7 +19,9 @@ const Protected = ({
 
     if (isLoading) return <div>Loading...</div>
 
-    if (!user || !isAuthenticated) return router.push('/login');
+    if (!user || !isAuthenticated) {
+        return <div>Redirecting to login...</div>;
+    }
 
     if (user.role === 'Teacher') return teacher;
 

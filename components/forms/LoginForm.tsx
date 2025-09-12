@@ -81,9 +81,9 @@ export default function LoginForm({
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirectPath);
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, router, redirectPath]);
+  }, [isAuthenticated, router]);
 
   // Animation entrance effect
   useEffect(() => {
@@ -223,11 +223,8 @@ export default function LoginForm({
       if (onSubmit) {
         result = await onSubmit(formData.email, formData.password);
       } else {
-        // Use the new authentication flow
-        result = await handleLoginResponse({
-          email: formData.email,
-          password: formData.password
-        });
+        // Use the auth context login directly instead of handleLoginResponse
+        result = await _login(formData.email, formData.password);
       }
 
       if (result.success) {
@@ -244,14 +241,8 @@ export default function LoginForm({
           });
         }
 
-        // Redirect based on user state
-        setTimeout(() => {
-          if ('redirectPath' in result && typeof result.redirectPath === 'string') {
-            router.push(result.redirectPath);
-          } else {
-            router.push(redirectPath);
-          }
-        }, 1000);
+        // Let the AuthContext and useAuth hook handle the redirect
+        // No manual redirect needed here
       } else {
         setSubmitError(result.message || "Login failed");
       }

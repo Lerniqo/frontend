@@ -37,7 +37,6 @@ import type { DashboardUIProps } from "@/types/dashboard.types";
 import DualMatchButton from "./DualMatchButton";
 import LearningPath from "./LearningPath";
 import PremiumNavigation from "./PremiumNavigation";
-import FloatingActionButton from "./FloatingActionButton";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import GlareHover from "@/components/reactbits/GlareHover";
 
@@ -225,14 +224,12 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
         </div>
       </div>
 
-      {/* Premium Floating Action Button */}
+      {/* Battle Button for Dual Match */}
       <div className="absolute bottom-6 left-6 z-30">
-        <FloatingActionButton 
+        <DualMatchButton 
           onClick={() => {
-            console.log("Premium action activated!");
+            console.log("Battle mode activated!");
           }}
-          variant="primary"
-          size="lg"
         />
       </div>
     </>

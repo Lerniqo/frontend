@@ -303,13 +303,17 @@ const DualMatchArena: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between mb-8"
         >
-          <button
+          <motion.button
             onClick={handleBackToDashboard}
-            className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group flex items-center space-x-3 bg-gradient-to-r from-red-500/20 to-pink-500/20 hover:from-red-500/30 hover:to-pink-500/30 backdrop-blur-md border border-red-400/30 hover:border-red-400/50 text-white/90 hover:text-white px-4 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            <ArrowLeft className="w-5 h-5" />
-            <span>Back to Dashboard</span>
-          </button>
+            <div className="bg-gradient-to-r from-red-500 to-pink-500 p-1.5 rounded-lg group-hover:from-red-400 group-hover:to-pink-400 transition-all duration-300">
+              <ArrowLeft className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-semibold">Exit Arena</span>
+          </motion.button>
           
           <div className="flex items-center space-x-3 text-white">
             <Target className="w-8 h-8 text-blue-400" />

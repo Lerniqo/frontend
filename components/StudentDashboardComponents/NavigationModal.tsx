@@ -1,25 +1,160 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trophy, Users, BookOpen } from "lucide-react";
+import { X, Trophy, Users, BookOpen, Star, MapPin, Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 import StudentContestsPage from "@/components/StudentContests/StudentContestsPage";
 import ResourceLibrary from "@/components/ResourceLibrary/ResourceLibrary";
+import { DetailedTeacherProfile, TeacherProfile } from "@/types/auth.types";
+import { userService } from "@/services/userService";
+import SpotlightCard from "@/components/reactbits/SpotlightCard";
 
-// Teachers component wrapper - using dynamic import
-const TeachersPageWrapper = () => {
+// Teachers component wrapper - now fetches real data from API
+const TeachersPageWrapper = ({ onDataLoad }: { onDataLoad?: (teachers: DetailedTeacherProfile[], total: number) => void }) => {
+  const router = useRouter();
+  const [teachers, setTeachers] = useState<DetailedTeacherProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalTeachers, setTotalTeachers] = useState(0);
+
+  const handleViewProfile = useCallback((teacherId: string) => {
+    // Navigate to teacher profile page using dynamic route
+    router.push(`/teachers/${teacherId}`);
+  }, [router]);
+
+  // Transformation function to convert TeacherProfile to DetailedTeacherProfile
+  const transformTeacherProfile = useCallback((teacher: TeacherProfile): DetailedTeacherProfile => {
+    // Determine experience level based on years of experience
+    const getExperienceLevel = (years: number): 'beginner' | 'intermediate' | 'advanced' | 'expert' => {
+      if (years < 2) return 'beginner';
+      if (years < 5) return 'intermediate';
+      if (years < 10) return 'advanced';
+      return 'expert';
+    };
+
+    // Generate subjects taught (this might come from a separate API call in the future)
+    const subjects = ['Mathematics', 'Science', 'English', 'History', 'Physics', 'Chemistry', 'Biology', 'Geography', 'Computer Science', 'Arts'];
+    const subjectsTaught = subjects.slice(0, Math.floor(Math.random() * 3) + 1);
+
+    return {
+      // Core user fields
+      userId: teacher.userId,
+      email: teacher.email,
+      role: teacher.role,
+      fullName: teacher.fullName,
+      profileImage: teacher.profileImage,
+      isVerified: teacher.isVerified,
+      isProfileCompleted: teacher.isProfileCompleted,
+      createdAt: teacher.createdAt,
+      updatedAt: teacher.updatedAt,
+
+      // Teacher-specific fields
+      birthday: teacher.birthday,
+      address: teacher.address,
+      phoneNumber: teacher.phoneNumber,
+      nationalIdPassport: teacher.nationalIdPassport,
+      yearsOfExperience: teacher.yearsOfExperience || 0,
+      highestEducationLevel: teacher.highestEducationLevel,
+      qualifications: teacher.qualifications,
+      shortBio: teacher.shortBio,
+
+      // Additional UI fields
+      experienceLevel: getExperienceLevel(teacher.yearsOfExperience || 0),
+      subjectsTaught,
+      bioOrTeachingPhilosophy: teacher.shortBio,
+
+      // Status
+      isOnline: Math.random() > 0.5, // This could come from a real-time API
+      availability: {
+        status: Math.random() > 0.3 ? 'available' : 'busy',
+        nextAvailable: Math.random() > 0.5 ? 'Available in 2 hours' : undefined
+      },
+
+      // Metrics (these might come from separate API endpoints)
+      rating: Math.floor(Math.random() * 15 + 35) / 10, // Random rating between 3.5-5.0
+      totalStudents: Math.floor(Math.random() * 200) + 10,
+      totalLessons: Math.floor(Math.random() * 500) + 50,
+      responseTime: ['Usually responds in 1 hour', 'Usually responds in 2 hours', 'Usually responds in 4 hours'][Math.floor(Math.random() * 3)],
+
+      // Professional Details
+      hourlyRate: Math.floor(Math.random() * 80) + 20,
+      currency: 'USD',
+      languages: [], // Not implemented yet
+      timezone: 'EST',
+
+      // Metadata
+      joinDate: teacher.createdAt,
+      lastActive: teacher.updatedAt,
+
+      // Additional Features
+      badges: [],
+      specializations: subjectsTaught.slice(0, Math.floor(Math.random() * 2) + 1),
+      teachingStyle: ['Interactive', 'Visual', 'Hands-on', 'Discussion-based'].slice(0, Math.floor(Math.random() * 2) + 1)
+    };
+  }, []);
+
+  // Load teachers data from API
+  const loadTeachers = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await userService.getTeachers(1, 12);
+
+      if (response.success && response.data) {
+        const transformedTeachers = response.data.teachers.map(transformTeacherProfile);
+        setTeachers(transformedTeachers);
+        setTotalTeachers(response.data.total || transformedTeachers.length);
+        
+        // Notify parent component of data load
+        if (onDataLoad) {
+          onDataLoad(transformedTeachers, response.data.total || transformedTeachers.length);
+        }
+      } else {
+        throw new Error(response.message || 'Failed to load teachers');
+      }
+    } catch (err) {
+      console.error('Failed to load teachers:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load teachers');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [transformTeacherProfile, onDataLoad]);
 
   useEffect(() => {
-    // Simulate loading delay for now - in real implementation this would be the dynamic import
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+    loadTeachers();
+  }, [loadTeachers]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const getExperienceLevelVariant = (level: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (level) {
+      case 'beginner':
+        return 'outline';
+      case 'intermediate':
+        return 'secondary';
+      case 'advanced':
+        return 'default';
+      case 'expert':
+        return 'destructive';
+      default:
+        return 'outline';
+    }
+  };
+
+  const getAvailabilityVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+    switch (status) {
+      case 'available':
+        return 'default';
+      case 'busy':
+        return 'secondary';
+      case 'offline':
+        return 'outline';
+      default:
+        return 'outline';
+    }
+  };
 
   if (isLoading) {
     return (
@@ -37,7 +172,6 @@ const TeachersPageWrapper = () => {
     );
   }
 
-  // For now, show a placeholder - in real implementation, render the imported teachers page
   return (
     <div className="space-y-8">
       {/* Header Section */}
@@ -57,79 +191,168 @@ const TeachersPageWrapper = () => {
       {/* Stats Bar */}
       <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-400">8</div>
+          <div className="text-2xl font-bold text-blue-400">{totalTeachers}</div>
           <div className="text-xs text-white/60">Expert Teachers</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-purple-400">247</div>
+          <div className="text-2xl font-bold text-purple-400">{teachers.reduce((sum, t) => sum + (t.totalStudents || 0), 0)}</div>
           <div className="text-xs text-white/60">Students Taught</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-400">4.9</div>
+          <div className="text-2xl font-bold text-blue-400">
+            {teachers.length > 0 ? (teachers.reduce((sum, t) => sum + t.rating, 0) / teachers.length).toFixed(1) : '0.0'}
+          </div>
           <div className="text-xs text-white/60">Average Rating</div>
         </div>
       </div>
         
       {/* Teacher Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <motion.div 
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="group relative"
-          >
-            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-purple-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
-              {/* Teacher Avatar */}
-              <div className="relative mx-auto mb-4 w-20 h-20">
-                <div className="w-full h-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20 group-hover:border-purple-400/50 transition-all duration-300">
-                  <span className="text-white font-bold text-lg">T{i}</span>
-                </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-950 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                </div>
-              </div>
+        {teachers.map((teacher, index) => {
+          return (
+            <motion.div 
+              key={teacher.userId}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="group relative"
+            >
+              <SpotlightCard
+                className="rounded-2xl"
+                spotlightColor="rgba(139, 92, 246, 0.3)"
+                spotlightSize={250}
+                intensity={0.4}
+              >
+                <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-purple-400/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10 w-full h-full">
+                  {/* Teacher Avatar */}
+                  <div className="relative mx-auto mb-4 w-20 h-20">
+                    {teacher.profileImage ? (
+                      <img 
+                        src={teacher.profileImage} 
+                        alt={teacher.fullName}
+                        className="w-full h-full rounded-full object-cover border-2 border-white/20 group-hover:border-purple-400/50 transition-all duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-r from-purple-500 via-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20 group-hover:border-purple-400/50 transition-all duration-300">
+                        <span className="text-white font-bold text-lg">
+                          {teacher.fullName
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')
+                            .substring(0, 2)}
+                        </span>
+                      </div>
+                    )}
+                    {teacher.isOnline && (
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-950 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                      </div>
+                    )}
+                  </div>
 
-              {/* Teacher Info */}
-              <div className="text-center space-y-2">
-                <h4 className="text-white font-semibold text-lg group-hover:text-purple-300 transition-colors">
-                  Dr. Teacher {i}
-                </h4>
-                <p className="text-purple-400/80 text-sm font-medium">
-                  {i % 3 === 0 ? 'Mathematics' : i % 2 === 0 ? 'Physics' : 'Chemistry'} Expert
-                </p>
-                <div className="flex items-center justify-center space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <div key={star} className="w-3 h-3 bg-yellow-400 rounded-full opacity-80" />
-                  ))}
-                  <span className="text-white/60 text-xs ml-2">4.9</span>
+                  {/* Teacher Info */}
+                  <div className="text-center space-y-3">
+                    <div className="space-y-1">
+                      <h4 className="text-white font-semibold text-lg group-hover:text-purple-300 transition-colors flex items-center justify-center gap-2">
+                        {teacher.fullName}
+                        {teacher.isVerified && (
+                          <CheckCircle className="w-4 h-4 text-purple-400" />
+                        )}
+                      </h4>
+                      <p className="text-purple-400/80 text-sm font-medium">
+                        {teacher.subjectsTaught.slice(0, 2).join(', ')} Expert
+                      </p>
+                    </div>
+                    
+                    {/* Rating */}
+                    <div className="flex items-center justify-center space-x-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star 
+                          key={star} 
+                          className={`w-3 h-3 ${star <= Math.floor(teacher.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-500'}`} 
+                        />
+                      ))}
+                      <span className="text-white/60 text-xs ml-2">{teacher.rating.toFixed(1)}</span>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex items-center justify-center space-x-4 text-xs">
+                      <div className="flex items-center space-x-1 text-white/60">
+                        <Users className="w-3 h-3" />
+                        <span>{teacher.totalStudents} students</span>
+                      </div>
+                      <div className="flex items-center space-x-1 text-white/60">
+                        <Clock className="w-3 h-3" />
+                        <span>{teacher.yearsOfExperience}y exp</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Experience & Availability Badges */}
+                  <div className="mt-4 flex flex-wrap justify-center gap-2">
+                    <Badge 
+                      variant={getExperienceLevelVariant(teacher.experienceLevel)}
+                      className="text-xs font-medium bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    >
+                      {teacher.experienceLevel.charAt(0).toUpperCase() + teacher.experienceLevel.slice(1)}
+                    </Badge>
+                    <Badge 
+                      variant={getAvailabilityVariant(teacher.availability.status)}
+                      className={`text-xs font-medium ${
+                        teacher.availability.status === 'available' 
+                          ? 'bg-green-500/20 text-green-300 border-green-400/30' 
+                          : teacher.availability.status === 'busy'
+                          ? 'bg-orange-500/20 text-orange-300 border-orange-400/30'
+                          : 'bg-gray-500/20 text-gray-300 border-gray-400/30'
+                      }`}
+                    >
+                      {teacher.availability.status.charAt(0).toUpperCase() + teacher.availability.status.slice(1)}
+                    </Badge>
+                  </div>
+
+                  {/* Location & Rate */}
+                  {(teacher.address || teacher.hourlyRate) && (
+                    <div className="mt-3 text-center space-y-1">
+                      {teacher.address && (
+                        <div className="flex items-center justify-center space-x-1 text-white/60 text-xs">
+                          <MapPin className="w-3 h-3" />
+                          <span>{teacher.address.split(',')[0]}</span>
+                        </div>
+                      )}
+                      {teacher.hourlyRate && (
+                        <div className="text-purple-400 text-sm font-semibold">
+                          ${teacher.hourlyRate}/hr
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Action Button */}
+                  <button 
+                    onClick={() => handleViewProfile(teacher.userId)}
+                    className="w-full mt-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 transform hover:scale-[1.02]"
+                  >
+                    View Profile
+                  </button>
                 </div>
-              </div>
-
-              {/* Experience Badge */}
-              <div className="mt-4 text-center">
-                <span className="inline-block bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 px-3 py-1 rounded-full text-xs text-blue-300">
-                  {5 + i} years experience
-                </span>
-              </div>
-
-              {/* Action Button */}
-              <button className="w-full mt-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 transform hover:scale-[1.02]">
-                View Profile
-              </button>
-            </div>
-          </motion.div>
-        ))}
+              </SpotlightCard>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Load More Button */}
-      <div className="text-center">
-        <button className="inline-flex items-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-purple-400/30 rounded-xl text-white transition-all duration-300">
-          <span>Load More Teachers</span>
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-        </button>
-      </div>
+      {teachers.length > 0 && (
+        <div className="text-center">
+          <button 
+            onClick={() => router.push('/teachers')}
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-purple-400/30 rounded-xl text-white transition-all duration-300"
+          >
+            <span>View All Teachers</span>
+            <Users className="w-4 h-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -146,6 +369,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
   activeContent
 }) => {
   const [currentContent, setCurrentContent] = useState<'contests' | 'teachers' | 'resource-library' | null>(activeContent);
+  const [teachersData, setTeachersData] = useState<{ teachers: DetailedTeacherProfile[]; total: number }>({ teachers: [], total: 0 });
 
   useEffect(() => {
     if (activeContent) {
@@ -153,12 +377,16 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
     }
   }, [activeContent]);
 
+  const handleTeachersDataLoad = useCallback((teachers: DetailedTeacherProfile[], total: number) => {
+    setTeachersData({ teachers, total });
+  }, []);
+
   const renderContent = () => {
     switch (currentContent) {
       case 'contests':
         return <StudentContestsPage />;
       case 'teachers':
-        return <TeachersPageWrapper />;
+        return <TeachersPageWrapper onDataLoad={handleTeachersDataLoad} />;
       case 'resource-library':
         return <ResourceLibrary />;
       default:
@@ -269,7 +497,7 @@ const NavigationModal: React.FC<NavigationModalProps> = ({
                     <div className="hidden md:flex items-center space-x-4 ml-8">
                       <div className="text-center">
                         <div className="text-sm font-bold text-white">
-                          {currentContent === 'contests' ? '12' : currentContent === 'teachers' ? '8' : '156'}
+                          {currentContent === 'contests' ? '12' : currentContent === 'teachers' ? teachersData.total : '156'}
                         </div>
                         <div className="text-xs text-white/60">
                           {currentContent === 'contests' ? 'Active' : currentContent === 'teachers' ? 'Available' : 'Resources'}

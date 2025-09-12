@@ -5,23 +5,9 @@ import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import {
   BookOpen,
-  FolderOpen,
-  File,
-  Video,
-  FileText,
-  Brain,
-  Users,
-  Star,
-  Calendar,
-  Clock,
   Award,
-  TrendingUp,
   Search,
-  Filter,
-  MoreVertical,
-  ExternalLink,
   Play,
-  Download,
   Eye,
   ChevronRight,
   ChevronDown,
@@ -477,10 +463,6 @@ const LessonLibraryManager: React.FC<LessonLibraryManagerProps> = ({
     } else {
       router.push(`/concept-page?conceptId=${id}`);
     }
-  };
-
-  const handleViewLessonLibrary = () => {
-    router.push("/lesson-library");
   };
 
   const handleSearchItemClick = (item: SearchableItem) => {

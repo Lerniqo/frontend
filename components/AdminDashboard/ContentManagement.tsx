@@ -15,7 +15,6 @@ import {
   User,
   Calendar,
   Award,
-  TrendingUp,
   XCircle,
 } from "lucide-react";
 import LessonLibraryManager from "./LessonLibraryManager";

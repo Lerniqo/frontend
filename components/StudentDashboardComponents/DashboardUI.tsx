@@ -37,6 +37,7 @@ import type { DashboardUIProps } from "@/types/dashboard.types";
 import DualMatchButton from "./DualMatchButton";
 import LearningPath from "./LearningPath";
 import PremiumNavigation from "./PremiumNavigation";
+import NavigationModal from "./NavigationModal";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import GlareHover from "@/components/reactbits/GlareHover";
 
@@ -46,9 +47,21 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<'contests' | 'teachers' | 'resource-library' | null>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
   const progressPercentage = (currentPathProgress / (CAMERA_PATH.length - 1) * 100).toFixed(1);
+
+  const handleOpenModal = (content: 'contests' | 'teachers' | 'resource-library') => {
+    setModalContent(content);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+  };
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -174,6 +187,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
         <PremiumNavigation 
           activeNav={activeNav}
           onNavChange={setActiveNav}
+          onOpenModal={handleOpenModal}
         />
       </div>
 
@@ -232,6 +246,13 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
           }}
         />
       </div>
+
+      {/* Navigation Modal */}
+      <NavigationModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        activeContent={modalContent}
+      />
     </>
   );
 }

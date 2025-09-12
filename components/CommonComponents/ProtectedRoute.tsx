@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { Loading } from '@/components/CommonComponents/Loading';
-import { checkAuthState, getRedirectPath } from '@/utils/authRedirect';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { Loading } from "@/components/CommonComponents/Loading";
+import { checkAuthState, getRedirectPath } from "@/utils/authRedirect";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -21,7 +21,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       if (isLoading) return;
 
       if (!isAuthenticated) {
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
@@ -29,19 +29,22 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       try {
         const authState = await checkAuthState();
         const redirectPath = getRedirectPath(authState);
-        
+
         // Only redirect if user is not on dashboard and needs to complete verification/profile
-        if (redirectPath !== '/dashboard' && !window.location.pathname.includes('dashboard')) {
+        if (
+          redirectPath !== "/dashboard" &&
+          !window.location.pathname.includes("dashboard")
+        ) {
           // User needs to complete verification or profile
           router.push(redirectPath);
           return;
         }
-        
+
         setAuthCheckComplete(true);
         setShouldRender(true);
       } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/login');
+        console.error("Auth check failed:", error);
+        router.push("/login");
       }
     };
 

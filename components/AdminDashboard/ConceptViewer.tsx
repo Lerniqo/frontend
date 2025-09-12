@@ -10,14 +10,10 @@ import {
   HelpCircle,
   FileText,
   Eye,
-  Play,
   BarChart3,
   Tags,
   Zap,
-  GraduationCap,
-  Share,
   Bookmark,
-  ExternalLink,
 } from "lucide-react";
 
 interface ConceptViewerProps {
@@ -73,20 +69,6 @@ const ConceptViewer: React.FC<ConceptViewerProps> = ({ conceptId, onBack }) => {
       );
     }
   }, [loading, conceptData]);
-
-  const handlePrerequisiteClick = (prerequisiteId: string) => {
-    // Navigation disabled - stay on current page
-    console.log(`Prerequisite clicked: ${prerequisiteId}`);
-  };
-
-  const handleResourceClick = (resource: {
-    resourceId: string;
-    type: string;
-    url: string;
-  }) => {
-    // Navigation disabled - stay on current page
-    console.log(`Resource clicked: ${resource.resourceId}`);
-  };
 
   const handleGoBack = () => {
     setGoingBack(true);

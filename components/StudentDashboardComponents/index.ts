@@ -10,3 +10,5 @@ export { default as DashboardButtons } from './DashboardButtons';
 export { default as AIChatbot } from './AIChatbot';
 export { default as LearningPath } from './LearningPath';
 export { default as DualMatchButton } from './DualMatchButton';
+export { default as PremiumNavigation } from './PremiumNavigation';
+export { default as FloatingActionButton } from './FloatingActionButton';

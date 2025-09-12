@@ -295,7 +295,13 @@ const TreeItem: React.FC<TreeItemProps> = ({
   );
 };
 
-const LessonLibraryManager = () => {
+interface LessonLibraryManagerProps {
+  onConceptClick?: (conceptId: string) => void;
+}
+
+const LessonLibraryManager: React.FC<LessonLibraryManagerProps> = ({
+  onConceptClick,
+}) => {
   const router = useRouter();
   const [syllabusData, setSyllabusData] = useState<SyllabusResponse | null>(
     null
@@ -458,11 +464,19 @@ const LessonLibraryManager = () => {
   }, [loading, syllabusData]);
 
   const handleItemClick = (id: string) => {
-    router.push(`/concept-page?conceptId=${id}`);
+    if (onConceptClick) {
+      onConceptClick(id);
+    } else {
+      router.push(`/concept-page?conceptId=${id}`);
+    }
   };
 
   const handleViewDetails = (id: string) => {
-    router.push(`/concept-page?conceptId=${id}`);
+    if (onConceptClick) {
+      onConceptClick(id);
+    } else {
+      router.push(`/concept-page?conceptId=${id}`);
+    }
   };
 
   const handleViewLessonLibrary = () => {
@@ -681,16 +695,8 @@ const LessonLibraryManager = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
         <div className="relative backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500">
           <div ref={headerRef}>
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6">
               <h3 className="text-2xl font-bold text-white">Knowledge Graph</h3>
-              <button
-                onClick={handleViewLessonLibrary}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-xl border border-blue-500/30 hover:bg-blue-500/30 transition-all duration-300"
-              >
-                <Globe className="w-4 h-4" />
-                <span>View Full Graph</span>
-                <ExternalLink className="w-4 h-4" />
-              </button>
             </div>
 
             {/* Search Bar */}

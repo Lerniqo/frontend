@@ -19,6 +19,7 @@ import {
   XCircle,
 } from "lucide-react";
 import LessonLibraryManager from "./LessonLibraryManager";
+import ConceptViewer from "./ConceptViewer";
 
 interface ContentItem {
   id: number;
@@ -33,6 +34,10 @@ interface ContentItem {
 const ContentManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedConceptId, setSelectedConceptId] = useState<string | null>(
+    null
+  );
+  const [showConceptViewer, setShowConceptViewer] = useState(false);
 
   const recentContent: ContentItem[] = [
     {
@@ -105,6 +110,16 @@ const ContentManagement = () => {
 
   const handleContentAction = (_id: number, _action: string) => {
     // console.log(`Content ${id} ${action}`)
+  };
+
+  const handleConceptView = (conceptId: string) => {
+    setSelectedConceptId(conceptId);
+    setShowConceptViewer(true);
+  };
+
+  const handleBackToKnowledgeGraph = () => {
+    setShowConceptViewer(false);
+    setSelectedConceptId(null);
   };
 
   return (
@@ -349,8 +364,15 @@ const ContentManagement = () => {
         </div>
       </div>
 
-      {/* Knowledge Graph Management */}
-      <LessonLibraryManager />
+      {/* Knowledge Graph Management / Concept Viewer */}
+      {showConceptViewer && selectedConceptId ? (
+        <ConceptViewer
+          conceptId={selectedConceptId}
+          onBack={handleBackToKnowledgeGraph}
+        />
+      ) : (
+        <LessonLibraryManager onConceptClick={handleConceptView} />
+      )}
 
       {/* Content Quality */}
       <div className="group relative">

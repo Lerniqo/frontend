@@ -2,6 +2,8 @@ import StudentProfileDetailsForm from "../StudentProfileDetailsForm";
 import TeacherProfileDetailsForm from "../TeacherProfileDetailsForm";
 import { userService } from "../../../services/userService";
 import { StudentProfileData, TeacherProfileData } from "@/types/auth.types";
+import useTracker from "@/hooks/useTracker";
+import { TrackingEventType, SignupEventData } from "@/types/tracking.types";
 
 export default function ProfileDetailsForm({
   setLoading,
@@ -14,6 +16,8 @@ export default function ProfileDetailsForm({
   userType: string;
   userId: string;
 }) {
+  const trackEvent = useTracker();
+
   const handleSubmit = async (data: StudentProfileData | TeacherProfileData) => {
     try {
       // Handle form submission logic here
@@ -30,6 +34,17 @@ export default function ProfileDetailsForm({
       }
 
       if (response.success) {
+        // Track successful profile completion
+        await trackEvent<SignupEventData>({
+          type: TrackingEventType.SIGNUP,
+          data: {
+            userRole: userType as 'Student' | 'Teacher',
+            isSuccessful: true,
+            completedProfile: true,
+          },
+          userId: userId,
+        });
+
         // Success - proceed to next step
         setCurrentStep(5);
       } else {

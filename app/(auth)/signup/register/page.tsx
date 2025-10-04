@@ -7,6 +7,8 @@ import Loading from "@/components/CommonComponents/Loading";
 import PublicRoute from "@/components/CommonComponents/PublicRoute";
 import RegisterEmail from "@/components/SignUpPageComponents/SignUpSteps/RegisterEmail";
 import { userService } from "@/services/userService";
+import useTracker from "@/hooks/useTracker";
+import { TrackingEventType, SignupEventData } from "@/types/tracking.types";
 
 function RegisterPageContent() {
   const [isValid, setIsValid] = useState(false);
@@ -22,6 +24,7 @@ function RegisterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const role = searchParams.get('role') || '';
+  const trackEvent = useTracker();
 
   useEffect(() => {
     // Validate role parameter
@@ -64,13 +67,44 @@ function RegisterPageContent() {
       });
 
       if (result.success) {
+        // Track successful signup
+        await trackEvent<SignupEventData>({
+          type: TrackingEventType.SIGNUP,
+          data: {
+            userRole: role as 'Student' | 'Teacher',
+            isSuccessful: true,
+            completedProfile: false, // Profile completion happens in next step
+          },
+        });
+
         // Redirect to email verification with email parameter
         router.push(`/signup/verify-email?email=${encodeURIComponent(formData.email)}&role=${encodeURIComponent(role)}`);
       } else {
+        // Track failed signup
+        await trackEvent<SignupEventData>({
+          type: TrackingEventType.SIGNUP,
+          data: {
+            userRole: role as 'Student' | 'Teacher',
+            isSuccessful: false,
+            completedProfile: false,
+          },
+        });
+
         setError(result.message || "Registration failed");
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      
+      // Track failed signup
+      await trackEvent<SignupEventData>({
+        type: TrackingEventType.SIGNUP,
+        data: {
+          userRole: role as 'Student' | 'Teacher',
+          isSuccessful: false,
+          completedProfile: false,
+        },
+      });
+
       setError(errorMessage);
     } finally {
       setLoading(false);

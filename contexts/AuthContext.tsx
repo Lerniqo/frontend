@@ -10,6 +10,8 @@ import React, {
 import { useRouter } from "next/navigation";
 import { AuthContextType, User } from "@/types/auth.types";
 import { userService } from "@/services/userService";
+import useTracker from "@/hooks/useTracker";
+import { TrackingEventType, LoginEventData } from "@/types/tracking.types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -21,6 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const trackEvent = useTracker();
 
   useEffect(() => {
     // Check if user is authenticated on initial load
@@ -75,15 +78,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success && response.data) {
         setUser(response.data.user);
 
+        // Track successful login
+        await trackEvent<LoginEventData>({
+          type: TrackingEventType.LOGIN,
+          data: {
+            loginMethod: 'email',
+            deviceType: navigator.userAgent,
+            browser: navigator.userAgent.split(' ').pop() || 'unknown',
+            isSuccessful: true,
+          },
+          userId: response.data.user.userId,
+        });
+
         // After successful login, redirect to dashboard
         // The protected route will handle role-based routing
         router.push("/dashboard");
 
         return { success: true, message: response.message };
       } else {
+        // Track failed login attempt
+        await trackEvent<LoginEventData>({
+          type: TrackingEventType.LOGIN,
+          data: {
+            loginMethod: 'email',
+            deviceType: navigator.userAgent,
+            browser: navigator.userAgent.split(' ').pop() || 'unknown',
+            isSuccessful: false,
+            failureReason: response.message || 'Unknown error',
+          },
+        });
+
         return { success: false, message: response.message || "Login failed" };
       }
     } catch (error) {
+      // Track failed login attempt
+      await trackEvent<LoginEventData>({
+        type: TrackingEventType.LOGIN,
+        data: {
+          loginMethod: 'email',
+          deviceType: navigator.userAgent,
+          browser: navigator.userAgent.split(' ').pop() || 'unknown',
+          isSuccessful: false,
+          failureReason: error instanceof Error ? error.message : 'Unknown error',
+        },
+      });
+
       return {
         success: false,
         message: error instanceof Error ? error.message : "Login failed",

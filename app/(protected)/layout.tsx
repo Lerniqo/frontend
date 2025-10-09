@@ -20,7 +20,7 @@ const Protected = ({
       router.push("/login");
     }
   }, [user, isAuthenticated, isLoading, router]);
-
+    // return student;
   if (isLoading) return <div>Loading...</div>;
 
   if (!user || !isAuthenticated) {

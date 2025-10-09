@@ -3,6 +3,7 @@ import LearningPathButton from "./LearningPathButton";
 import EventsButton from "./EventsButton";
 import ForumButton from "./ForumButton";
 import StoreButton from "./StoreButton";
+import ResourceLibraryButton from "./ResourceLibraryButton";
 
 export default function StudentDashboardNavigation() {
   return (
@@ -12,8 +13,8 @@ export default function StudentDashboardNavigation() {
     >
       <div className="flex flex-row gap-2">
         <StoreButton />
+        <ResourceLibraryButton />
         <EventsButton />
-
         <ForumButton />
       </div>
       <div className="flex flex-row gap-3">

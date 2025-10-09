@@ -263,7 +263,7 @@ const completeProfile = async (
             role: responseData.role as 'Student' | 'Teacher' | 'Admin',
             fullName: responseData.fullName,
             isVerified: true,
-            profileCompleted: true,
+            isProfileCompleted: true,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           },

@@ -81,7 +81,7 @@ export default function LoginForm({
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.push('/dashboard');
     }
   }, [isAuthenticated, router]);
 

@@ -21,12 +21,11 @@ const Protected = ({
     }
   }, [user, isAuthenticated, isLoading, router]);
     // return student;
-
   if (isLoading) return <div>Loading...</div>;
 
-    if (!user || !isAuthenticated) {
-        return <div>Redirecting to login...</div>;
-    }
+  if (!user || !isAuthenticated) {
+    return <div>Redirecting to login...</div>;
+  }
 
   if (user.role === "Teacher") return teacher;
 

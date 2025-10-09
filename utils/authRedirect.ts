@@ -36,18 +36,11 @@ export const checkAuthState = async (): Promise<AuthState> => {
     }
 
     const user = currentUser.data;
-
-    // If user has a fullName, assume profile is completed
-    // This is a safeguard in case the backend doesn't properly set profileCompleted
-    const hasCompletedProfile = Boolean(
-      user.profileCompleted ||
-        (user.fullName && user.fullName.trim().length > 0)
-    );
-
+    
     return {
       isLoggedIn: true,
       isEmailVerified: user.isVerified,
-      isProfileComplete: hasCompletedProfile,
+      isProfileComplete: user.isProfileCompleted,
       user: {
         userId: user.userId,
         email: user.email,

@@ -1,4 +1,4 @@
-import type { CameraPathPoint } from '@/types/dashboard.types';
+import type { CameraPathPoint } from "@/types/dashboard.types";
 
 /**
  * Camera path positions for the student dashboard 3D navigation

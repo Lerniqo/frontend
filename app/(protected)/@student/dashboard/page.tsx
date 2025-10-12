@@ -5,7 +5,7 @@ import { useCameraPathNavigation } from "@/hooks/useCameraPathNavigation";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
 import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
-import '@/app/globals.css';
+import "@/app/globals.css";
 
 export default function StudentDashboard() {
   const {
@@ -22,7 +22,7 @@ export default function StudentDashboard() {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-600/5"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.1),transparent_50%)]"></div>
-      
+
       {/* 3D Canvas */}
       <Canvas
         camera={{
@@ -38,6 +38,9 @@ export default function StudentDashboard() {
           mouseOffset={mouseOffset}
           getInterpolatedPosition={getInterpolatedPosition}
           getLookDirection={getLookDirection}
+          characters={[
+            1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 32,
+          ]} // Example character IDs to render
         />
       </Canvas>
 

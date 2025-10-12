@@ -1,4 +1,4 @@
-import apiClient from '@/services/apiClient';
+import apiClient from "@/services/apiClient";
 import {
   User,
   StudentProfile,
@@ -18,52 +18,54 @@ import {
   BasicRegisterResponse,
   AuthResponse,
   TeachersListResponse,
-} from '@/types/auth.types';
+} from "@/types/auth.types";
 
 // Token and user management functions using localStorage
 const setStoredToken = (token: string): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('accessToken', token);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("accessToken", token);
   }
 };
 
 const getStoredToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('accessToken');
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("accessToken");
   }
   return null;
 };
 
 const removeStoredToken = (): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('accessToken');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("accessToken");
   }
 };
 
 const setStoredUser = (user: User): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('userData', JSON.stringify(user));
+  if (typeof window !== "undefined") {
+    localStorage.setItem("userData", JSON.stringify(user));
   }
 };
 
 const getStoredUser = (): User | null => {
-  if (typeof window !== 'undefined') {
-    const userData = localStorage.getItem('userData');
+  if (typeof window !== "undefined") {
+    const userData = localStorage.getItem("userData");
     return userData ? JSON.parse(userData) : null;
   }
   return null;
 };
 
 const removeStoredUser = (): void => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('userData');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("userData");
   }
 };
 
 /**
  * Step 1: Basic registration (email, password, role only)
  */
-const basicRegister = async (data: BasicRegisterData): Promise<ApiResponse<BasicRegisterResponse>> => {
+const basicRegister = async (
+  data: BasicRegisterData
+): Promise<ApiResponse<BasicRegisterResponse>> => {
   try {
     const apiData = {
       ...data,
@@ -72,7 +74,7 @@ const basicRegister = async (data: BasicRegisterData): Promise<ApiResponse<Basic
 
     // Backend returns direct BasicRegisterResponse, not wrapped in ApiResponse
     const response = await apiClient.post<BasicRegisterResponse>(
-      '/user-service/users/register',
+      "/user-service/users/register",
       apiData
     );
 
@@ -80,16 +82,17 @@ const basicRegister = async (data: BasicRegisterData): Promise<ApiResponse<Basic
     return {
       success: true,
       message: response.data.message,
-      data: response.data
+      data: response.data,
     };
   } catch (error: any) {
-    const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+    const errorMessage =
+      error.response?.data?.message || error.message || "Registration failed";
     alert(`Registration Error: ${errorMessage}`);
-    
+
     return {
       success: false,
       message: errorMessage,
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -97,19 +100,26 @@ const basicRegister = async (data: BasicRegisterData): Promise<ApiResponse<Basic
 /**
  * Step 2: Email verification
  */
-const verifyEmail = async (code: string, email: string): Promise<ApiResponse<VerifyEmailSuccessData>> => {
+const verifyEmail = async (
+  code: string,
+  email: string
+): Promise<ApiResponse<VerifyEmailSuccessData>> => {
   try {
     const payload: VerifyEmailData = { code, email };
 
     // The API returns a direct response format: {message, userId, role}
     const response = await apiClient.post<VerifyEmailResponse>(
-      '/user-service/users/verify-email',
+      "/user-service/users/verify-email",
       payload
     );
 
     // Validate the response structure
-    if (!response.data.userId || !response.data.role || !response.data.message) {
-      throw new Error('Invalid verification response format');
+    if (
+      !response.data.userId ||
+      !response.data.role ||
+      !response.data.message
+    ) {
+      throw new Error("Invalid verification response format");
     }
 
     // Return standardized format with extracted data
@@ -119,14 +129,17 @@ const verifyEmail = async (code: string, email: string): Promise<ApiResponse<Ver
       data: {
         userId: response.data.userId,
         role: response.data.role,
-        message: response.data.message
-      }
+        message: response.data.message,
+      },
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Email verification failed',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Email verification failed",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -136,20 +149,23 @@ const verifyEmail = async (code: string, email: string): Promise<ApiResponse<Ver
  */
 const resendVerificationCode = async (email: string): Promise<ApiResponse> => {
   try {
-    const response = await apiClient.post<{ success: boolean; message: string }>(
-      '/user-service/users/resend-verification',
-      { email }
-    );
+    const response = await apiClient.post<{
+      success: boolean;
+      message: string;
+    }>("/user-service/users/resend-verification", { email });
 
     return {
       success: response.data.success,
-      message: response.data.message
+      message: response.data.message,
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to resend verification code',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to resend verification code",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -157,19 +173,23 @@ const resendVerificationCode = async (email: string): Promise<ApiResponse> => {
 /**
  * Format student profile data for backend submission
  */
-const formatStudentProfileData = (data: StudentProfileData): StudentProfileData => {
-  const formatOptionalString = (value: string | undefined): string | undefined => {
-    if (!value || value.trim() === '') return undefined;
+const formatStudentProfileData = (
+  data: StudentProfileData
+): StudentProfileData => {
+  const formatOptionalString = (
+    value: string | undefined
+  ): string | undefined => {
+    if (!value || value.trim() === "") return undefined;
     return value.trim();
   };
 
   const formatGender = (gender: string | undefined): string | undefined => {
-    if (!gender || gender.trim() === '') return undefined;
+    if (!gender || gender.trim() === "") return undefined;
     const genderMap: Record<string, string> = {
-      'male': 'Male',
-      'female': 'Female',
-      'other': 'Other',
-      'prefer-not-to-say': 'Prefer not to say'
+      male: "Male",
+      female: "Female",
+      other: "Other",
+      "prefer-not-to-say": "Prefer not to say",
     };
     return genderMap[gender.toLowerCase()] || gender;
   };
@@ -184,16 +204,20 @@ const formatStudentProfileData = (data: StudentProfileData): StudentProfileData 
     relationship: formatOptionalString(data.relationship),
     parentContact: formatOptionalString(data.parentContact),
     addressCity: formatOptionalString(data.addressCity),
-    learningGoals: formatOptionalString(data.learningGoals)
+    learningGoals: formatOptionalString(data.learningGoals),
   };
 };
 
 /**
  * Format teacher profile data for backend submission
  */
-const formatTeacherProfileData = (data: TeacherProfileData): TeacherProfileData => {
-  const formatOptionalString = (value: string | undefined): string | undefined => {
-    if (!value || value.trim() === '') return undefined;
+const formatTeacherProfileData = (
+  data: TeacherProfileData
+): TeacherProfileData => {
+  const formatOptionalString = (
+    value: string | undefined
+  ): string | undefined => {
+    if (!value || value.trim() === "") return undefined;
     return value.trim();
   };
 
@@ -206,7 +230,7 @@ const formatTeacherProfileData = (data: TeacherProfileData): TeacherProfileData 
     yearsOfExperience: data.yearsOfExperience,
     highestEducationLevel: formatOptionalString(data.highestEducationLevel),
     qualifications: formatOptionalString(data.qualifications),
-    shortBio: formatOptionalString(data.shortBio)
+    shortBio: formatOptionalString(data.shortBio),
   };
 };
 
@@ -218,23 +242,30 @@ const completeProfile = async (
   userId: string
 ): Promise<ApiResponse<AuthResponse>> => {
   try {
-    console.log('🔄 Starting profile completion for userId:', userId);
-    console.log('📝 Raw profile data:', profileData);
+    console.log("🔄 Starting profile completion for userId:", userId);
+    console.log("📝 Raw profile data:", profileData);
 
     // Format data based on the profile type
     let formattedData: StudentProfileData | TeacherProfileData;
-    
+
     // Check if the data has student-specific fields to determine type
-    if ('gradeLevel' in profileData || 'parentGuardianName' in profileData) {
-      formattedData = formatStudentProfileData(profileData as StudentProfileData);
-      console.log('👨‍🎓 Formatted as Student profile:', formattedData);
+    if ("gradeLevel" in profileData || "parentGuardianName" in profileData) {
+      formattedData = formatStudentProfileData(
+        profileData as StudentProfileData
+      );
+      console.log("👨‍🎓 Formatted as Student profile:", formattedData);
     } else {
-      formattedData = formatTeacherProfileData(profileData as TeacherProfileData);
-      console.log('👨‍🏫 Formatted as Teacher profile:', formattedData);
+      formattedData = formatTeacherProfileData(
+        profileData as TeacherProfileData
+      );
+      console.log("👨‍🏫 Formatted as Teacher profile:", formattedData);
     }
 
     const endpoint = `/user-service/users/complete-profile/${userId}`;
-    console.log('🎯 API Endpoint:', `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`);
+    console.log(
+      "🎯 API Endpoint:",
+      `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`
+    );
 
     // Backend returns CompleteProfileResponse directly, not wrapped
     const response = await apiClient.post<CompleteProfileResponse>(
@@ -242,16 +273,18 @@ const completeProfile = async (
       formattedData
     );
 
-    console.log('✅ Profile completion response:', response.data);
+    console.log("✅ Profile completion response:", response.data);
 
     // Handle the actual backend response format
     const responseData = response.data;
-    
+
     // The backend returns: { message, userId, email, role, fullName }
     // It does NOT return a token - user needs to login after profile completion
     if (responseData.message && responseData.userId) {
-      console.log('🔐 Profile completed successfully - user will need to login');
-      
+      console.log(
+        "🔐 Profile completed successfully - user will need to login"
+      );
+
       // Return standardized format indicating success but no token
       return {
         success: true,
@@ -260,33 +293,36 @@ const completeProfile = async (
           user: {
             userId: responseData.userId,
             email: responseData.email,
-            role: responseData.role as 'Student' | 'Teacher' | 'Admin',
+            role: responseData.role as "Student" | "Teacher" | "Admin",
             fullName: responseData.fullName,
             isVerified: true,
             isProfileCompleted: true,
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            updatedAt: new Date().toISOString(),
           },
-          accessToken: ''
-        }
+          accessToken: "",
+        },
       };
     } else {
-      throw new Error('Invalid response format from complete-profile API');
+      throw new Error("Invalid response format from complete-profile API");
     }
   } catch (error: any) {
-    console.error('❌ Profile completion failed:', {
+    console.error("❌ Profile completion failed:", {
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,
       message: error.message,
       userId,
-      profileData
+      profileData,
     });
-    
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Profile completion failed',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Profile completion failed",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -297,16 +333,20 @@ const completeProfile = async (
 const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
   try {
     const response = await apiClient.post(
-      '/user-service/users/login',
+      "/user-service/users/login",
       data,
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
-    
+
     // Handle the new backend response format: { success: true, data: { accessToken, user }, message }
-    if (response.data?.success && response.data?.data?.accessToken && response.data?.data?.user) {
+    if (
+      response.data?.success &&
+      response.data?.data?.accessToken &&
+      response.data?.data?.user
+    ) {
       const { accessToken, user } = response.data.data;
-      
-      console.log('✅ Login successful:', response.data);
+
+      console.log("✅ Login successful:", response.data);
 
       // Store both token and user data
       setStoredToken(accessToken);
@@ -314,21 +354,21 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
 
       return {
         success: true,
-        message: response.data.message || 'Login successful',
+        message: response.data.message || "Login successful",
         data: {
           accessToken,
-          user
-        }
+          user,
+        },
       };
     } else {
-      throw new Error('Invalid login response format');
+      throw new Error("Invalid login response format");
     }
   } catch (error: any) {
-    console.error('❌ Login failed:', error);
+    console.error("❌ Login failed:", error);
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Login failed',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message: error.response?.data?.message || error.message || "Login failed",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -338,17 +378,17 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
  */
 const getCurrentUser = async (): Promise<ApiResponse<User>> => {
   try {
-    const response = await apiClient.get('/user-service/users/me');
-    
+    const response = await apiClient.get("/user-service/users/me");
+
     // Handle direct user data response (not wrapped in ApiResponse)
     if (response.data && response.data.userId) {
       return {
         success: true,
-        message: 'User profile retrieved successfully',
-        data: response.data
+        message: "User profile retrieved successfully",
+        data: response.data,
       };
     } else {
-      throw new Error('Invalid user profile response format');
+      throw new Error("Invalid user profile response format");
     }
   } catch (error: any) {
     // If 401, try to refresh token
@@ -357,12 +397,12 @@ const getCurrentUser = async (): Promise<ApiResponse<User>> => {
       if (refreshSuccess.success) {
         // Retry the request
         try {
-          const response = await apiClient.get('/user-service/users/me');
+          const response = await apiClient.get("/user-service/users/me");
           if (response.data && response.data.userId) {
             return {
               success: true,
-              message: 'User profile retrieved successfully',
-              data: response.data
+              message: "User profile retrieved successfully",
+              data: response.data,
             };
           }
         } catch (retryError) {
@@ -374,11 +414,14 @@ const getCurrentUser = async (): Promise<ApiResponse<User>> => {
         clearAuth();
       }
     }
-    
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to get user profile',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to get user profile",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -389,36 +432,43 @@ const getCurrentUser = async (): Promise<ApiResponse<User>> => {
 const refreshToken = async (): Promise<ApiResponse<AuthResponse>> => {
   try {
     const response = await apiClient.post(
-      '/user-service/users/refresh-token',
+      "/user-service/users/refresh-token",
       {},
       { withCredentials: true }
     );
-    
+
     // Handle the backend response format: { success: true, data: { accessToken, user }, message }
-    if (response.data?.success && response.data?.data?.accessToken && response.data?.data?.user) {
+    if (
+      response.data?.success &&
+      response.data?.data?.accessToken &&
+      response.data?.data?.user
+    ) {
       const { accessToken, user } = response.data.data;
-      
+
       // Update stored token and user data
       setStoredToken(accessToken);
       setStoredUser(user);
-      
+
       return {
         success: true,
-        message: response.data.message || 'Token refreshed successfully',
+        message: response.data.message || "Token refreshed successfully",
         data: {
           accessToken,
-          user
-        }
+          user,
+        },
       };
     } else {
-      throw new Error('Invalid refresh token response format');
+      throw new Error("Invalid refresh token response format");
     }
   } catch (error: any) {
-    console.error('❌ Token refresh failed:', error);
+    console.error("❌ Token refresh failed:", error);
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Token refresh failed',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Token refresh failed",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -426,15 +476,23 @@ const refreshToken = async (): Promise<ApiResponse<AuthResponse>> => {
 /**
  * Update current user profile
  */
-const updateProfile = async (data: UpdateProfileData): Promise<ApiResponse<User>> => {
+const updateProfile = async (
+  data: UpdateProfileData
+): Promise<ApiResponse<User>> => {
   try {
-    const response = await apiClient.put<ApiResponse<User>>('/user-service/users/me', data);
+    const response = await apiClient.put<ApiResponse<User>>(
+      "/user-service/users/me",
+      data
+    );
     return response.data;
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to update profile',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update profile",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -445,7 +503,7 @@ const updateProfile = async (data: UpdateProfileData): Promise<ApiResponse<User>
 const logout = async (): Promise<ApiResponse> => {
   try {
     const response = await apiClient.post(
-      '/user-service/users/logout',
+      "/user-service/users/logout",
       {},
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
@@ -453,16 +511,17 @@ const logout = async (): Promise<ApiResponse> => {
     clearAuth();
     return {
       success: true,
-      message: response.data?.message || 'Logout successful'
+      message: response.data?.message || "Logout successful",
     };
   } catch (error: any) {
     // Always remove token and user data even if logout fails
     clearAuth();
-    
+
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Logout failed',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message || error.message || "Logout failed",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -470,7 +529,10 @@ const logout = async (): Promise<ApiResponse> => {
 /**
  * Get list of all teachers (public)
  */
-const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiResponse<TeachersListResponse>> => {
+const getTeachers = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<ApiResponse<TeachersListResponse>> => {
   try {
     const response = await apiClient.get<ApiResponse<TeachersListResponse>>(
       `/user-service/users/teachers?page=${page}&limit=${limit}`
@@ -479,13 +541,16 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
     return {
       message: response.data.message,
       data: response.data.data,
-      success: true
-    }
+      success: true,
+    };
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to get teachers list',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to get teachers list",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -493,19 +558,26 @@ const getTeachers = async (page: number = 1, limit: number = 10): Promise<ApiRes
 /**
  * Get specific teacher profile (public)
  */
-const getTeacherProfile = async (teacherId: string): Promise<ApiResponse<TeacherProfile>> => {
+const getTeacherProfile = async (
+  teacherId: string
+): Promise<ApiResponse<TeacherProfile>> => {
   try {
-    const response = await apiClient.get<ApiResponse<TeacherProfile>>(`/user-service/users/teachers/${teacherId}`);
+    const response = await apiClient.get<ApiResponse<TeacherProfile>>(
+      `/user-service/users/teachers/${teacherId}`
+    );
     return {
       success: true,
       data: response.data.data,
       message: response.data.message,
-    }
+    };
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to get teacher profile',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to get teacher profile",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -513,15 +585,23 @@ const getTeacherProfile = async (teacherId: string): Promise<ApiResponse<Teacher
 /**
  * Change password
  */
-const changePassword = async (data: ChangePasswordData): Promise<ApiResponse> => {
+const changePassword = async (
+  data: ChangePasswordData
+): Promise<ApiResponse> => {
   try {
-    const response = await apiClient.put<ApiResponse>('/user-service/user/change-password', data);
+    const response = await apiClient.put<ApiResponse>(
+      "/user-service/user/change-password",
+      data
+    );
     return response.data;
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to change password',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to change password",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };
@@ -529,17 +609,19 @@ const changePassword = async (data: ChangePasswordData): Promise<ApiResponse> =>
 /**
  * Upload profile photo
  */
-const uploadPhoto = async (data: UploadPhotoData): Promise<ApiResponse<{ photoUrl: string }>> => {
+const uploadPhoto = async (
+  data: UploadPhotoData
+): Promise<ApiResponse<{ photoUrl: string }>> => {
   try {
     const formData = new FormData();
-    formData.append('photo', data.photo);
+    formData.append("photo", data.photo);
 
     const response = await apiClient.post<ApiResponse<{ photoUrl: string }>>(
-      '/user-service/user/upload-photo',
+      "/user-service/user/upload-photo",
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -548,8 +630,11 @@ const uploadPhoto = async (data: UploadPhotoData): Promise<ApiResponse<{ photoUr
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || error.message || 'Failed to upload photo',
-      error: error.response?.data?.error || error.message || 'Unknown error',
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to upload photo",
+      error: error.response?.data?.error || error.message || "Unknown error",
     };
   }
 };

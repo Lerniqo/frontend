@@ -3,8 +3,236 @@
 import { Suspense } from "react";
 import { OrbitControls, Environment } from "@react-three/drei";
 import ModelRenderer from "@/components/StudentDashboardComponents/ModelRenderer";
+import Character from "./Character";
 import PathCameraController from "@/components/StudentDashboardComponents/PathCameraController";
-import type { Scene3DProps } from "@/types/dashboard.types";
+import type { Scene3DProps, CharacterModel } from "@/types/dashboard.types";
+
+const positionsOfCharacters: CharacterModel[] = [
+  {
+    id: 1,
+    position: [4, 0, 126],
+    rotation: [0, -2.5, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 2,
+    position: [-4, 0, 138],
+    rotation: [0, -3.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 3,
+    position: [-8, 0, 144],
+    rotation: [0, -3.9, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 4,
+    position: [-10, 0, 152],
+    rotation: [0, -3.9, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 5,
+    position: [-8, 0, 162],
+    rotation: [0, -4.0, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 6,
+    position: [6, 0, 174],
+    rotation: [0, -2.2, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 7,
+    position: [6, 0, 186],
+    rotation: [0, -2.2, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 8,
+    position: [6, 0, 194],
+    rotation: [0, -2.2, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 9,
+    position: [-6, 0, 208],
+    rotation: [0, -3.7, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 10,
+    position: [4, 0, 222],
+    rotation: [0, -2.5, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 11,
+    position: [-4, 0, 236],
+    rotation: [0, -3.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 12,
+    position: [-8, 0, 244],
+    rotation: [0, -3.8, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 13,
+    position: [-8, 0, 254],
+    rotation: [0, -3.8, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 14,
+    position: [8, 0, 266],
+    rotation: [0, -2.3, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 15,
+    position: [8, 0, 280],
+    rotation: [0, -2.3, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 16,
+    position: [-6, 0, 296],
+    rotation: [0, -3.7, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 17,
+    position: [6, 0, 308],
+    rotation: [0, -2.3, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 18,
+    position: [6, 0, 318],
+    rotation: [0, -2.3, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 19,
+    position: [6, 0, 328],
+    rotation: [0, -2.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 20,
+    position: [6, 0, 340],
+    rotation: [0, -2.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 21,
+    position: [-10, 0, 352],
+    rotation: [0, -3.7, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 22,
+    position: [8, 0, 364],
+    rotation: [0, -2.4, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 23,
+    position: [8, 0, 374],
+    rotation: [0, -2.2, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 24,
+    position: [8, 0, 384],
+    rotation: [0, -2.2, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 25,
+    position: [-8, 0, 392],
+    rotation: [0, -3.8, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 26,
+    position: [-8, 0, 408],
+    rotation: [0, -4.0, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 27,
+    position: [8, 0, 418],
+    rotation: [0, -2.3, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 28,
+    position: [2, 0, 428],
+    rotation: [0, -2.8, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 29,
+    position: [4, 0, 440],
+    rotation: [0, -2.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 30,
+    position: [2, 0, 448],
+    rotation: [0, -2.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 31,
+    position: [-4, 0, 456],
+    rotation: [0, -3.1, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+  {
+    id: 32,
+    position: [-46, 0, 454],
+    rotation: [0, -4.6, 0],
+    scale: [3.343155108481974, 3.343155108481974, 3.343155108481974],
+    modelName: "LuffyAnimation.glb",
+  },
+];
 
 export default function Scene3D({
   currentPathProgress,
@@ -12,12 +240,14 @@ export default function Scene3D({
   mouseOffset,
   getInterpolatedPosition,
   getLookDirection,
+  enableOrbitControls = true,
+  characters = [],
 }: Scene3DProps) {
   return (
     <>
       {/* Camera Controller */}
-      <PathCameraController 
-        currentPathProgress={currentPathProgress} 
+      <PathCameraController
+        currentPathProgress={currentPathProgress}
         setCurrentPathProgress={setCurrentPathProgress}
         mouseOffset={mouseOffset}
         getInterpolatedPosition={getInterpolatedPosition}
@@ -40,11 +270,29 @@ export default function Scene3D({
 
       {/* 3D Model */}
       <Suspense fallback={null}>
+        {/* Render characters based on the characters prop */}
+        {characters.map((characterId) => {
+          const characterData = positionsOfCharacters.find(
+            (char) => char.id === characterId
+          );
+          if (!characterData) return null;
+          console.log(characterData.id);
+          return (
+            <Character
+              key={characterData.id}
+              modelName={characterData.modelName}
+              position={characterData.position}
+              rotation={characterData.rotation}
+              scale={characterData.scale}
+              animation="AnimationProgressing"
+            />
+          );
+        })}
         <ModelRenderer />
       </Suspense>
 
-      {/* Camera Controls - disabled since we're handling camera manually */}
-      <OrbitControls enabled={false} />
+      {/* Camera Controls - enable for testing by toggling prop */}
+      {/* <OrbitControls enabled={enableOrbitControls} /> */}
     </>
   );
 }

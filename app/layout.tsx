@@ -1,22 +1,22 @@
-import '@/app/globals.css';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { AuthProvider } from '@/contexts/AuthContext';
+import "@/app/globals.css";
+import { Geist, Geist_Mono } from "next/font/google";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap',
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-  display: 'swap',
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata = {
-  title: 'Next.js Authentication App',
-  description: 'Next.js app with authentication',
+  title: "Next.js Authentication App",
+  description: "Next.js app with authentication",
 };
 
 export default function RootLayout({
@@ -26,10 +26,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+      >
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Group, Vector3 } from "three";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js"; // important!
 import { useRouter } from "next/navigation";
+import TalkBubble from "./TalkBubble";
 
 type GLTFResult = {
   scene: Group;
@@ -117,89 +118,9 @@ export default function Character({
   const renderStationContent = () => {
     if (!conceptProp) return null;
 
-    const isStartingStation = conceptProp.conceptName === "Start Learning Path";
-
-    if (isStartingStation) {
-      // Starting Station Logic
-      switch (conceptProp.status) {
-        case "waiting":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-slate-800 border-2 border-blue-500 min-w-[300px] text-center">
-              <div className="text-white text-sm mb-3">
-                Hi there! I'm here to guide you. Let's create a personalized
-                learning path together so you can master this step by step.
-              </div>
-              <button
-                onClick={() => handleButtonClick("learning-path-quiz")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-              >
-                Let's Go!
-              </button>
-            </div>
-          );
-        case "progressing":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-amber-900 border-2 border-amber-500 min-w-[300px] text-center">
-              <div className="text-white text-sm">
-                Welcome back! Let's continue your learning path and make more
-                progress together.
-              </div>
-            </div>
-          );
-        case "done":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-green-900 border-2 border-green-500 min-w-[300px] text-center">
-              <div className="text-white text-sm">
-                Awesome! You've finished all the steps. Keep up the great work!
-              </div>
-            </div>
-          );
-        default:
-          return null;
-      }
-    } else {
-      // Regular Station Logic
-      switch (conceptProp.status) {
-        case "progressing":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-amber-900 border-2 border-amber-500 min-w-[300px] text-center">
-              <div className="text-white text-sm mb-3">
-                Hi there! In this station, you'll learn about{" "}
-                {conceptProp.conceptName}. Let's explore it together and master
-                it step by step!
-              </div>
-              <button
-                onClick={() =>
-                  handleButtonClick("concept", conceptProp.conceptId)
-                }
-                className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-              >
-                Go
-              </button>
-            </div>
-          );
-        case "done":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-green-900 border-2 border-green-500 min-w-[300px] text-center">
-              <div className="text-white text-sm">
-                Great job! You've completed {conceptProp.conceptName}. Let's
-                move on to the next concept!
-              </div>
-            </div>
-          );
-        case "waiting":
-          return (
-            <div className="px-4 py-3 rounded-lg shadow-lg bg-gray-700 border-2 border-gray-500 min-w-[300px] text-center">
-              <div className="text-white text-sm">
-                Hold on! You need to complete all previous concepts before
-                learning {conceptProp.conceptName}. Let's go step by step!
-              </div>
-            </div>
-          );
-        default:
-          return null;
-      }
-    }
+    return (
+      <TalkBubble conceptProp={conceptProp} onButtonClick={handleButtonClick} />
+    );
   };
 
   return (
@@ -214,7 +135,7 @@ export default function Character({
       {/* Display concept information using Html */}
       {conceptProp && isVisibleHTML && (
         <Html
-          position={[position[0]+2, position[1] + 5, position[2]]}
+          position={[position[0] + 2, position[1] + 5, position[2]]}
           center
           distanceFactor={15}
           occlude

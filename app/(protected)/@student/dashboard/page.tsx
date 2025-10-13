@@ -4,7 +4,13 @@ import { Canvas } from "@react-three/fiber";
 import { useCameraPathNavigation } from "@/hooks/useCameraPathNavigation";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
+import { positionsOfCharacters } from "@/components/StudentDashboardComponents/Scene3D";
 import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
+import {
+  getLearningPath,
+  LearningPathConcept,
+} from "@/services/contentService";
+import { useState, useEffect } from "react";
 import "@/app/globals.css";
 
 export default function StudentDashboard() {
@@ -15,6 +21,89 @@ export default function StudentDashboard() {
     getInterpolatedPosition,
     getLookDirection,
   } = useCameraPathNavigation();
+
+  const [learningPath, setLearningPath] = useState<LearningPathConcept[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch learning path data on component mount
+  useEffect(() => {
+    const fetchLearningPath = async () => {
+      try {
+        const data = await getLearningPath();
+        setLearningPath(data);
+      } catch (error) {
+        console.error("Failed to fetch learning path:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLearningPath();
+  }, []);
+
+  function generateEvenlySpacedList(
+    n: number,
+    numberOfAllPositions: number
+  ): number[] {
+    if (n <= 1) return [1];
+    if (n === 2) return [1, numberOfAllPositions];
+
+    const result: number[] = [];
+    const gap = (numberOfAllPositions - 1) / (n - 1); // exact step
+
+    for (let i = 0; i < n; i++) {
+      const value = Math.round(1 + i * gap); // round to nearest integer
+      result.push(value);
+    }
+
+    // Ensure first and last positions are correct
+    result[0] = 1;
+    result[result.length - 1] = numberOfAllPositions;
+
+    // Fix duplicates caused by rounding
+    for (let i = 1; i < result.length; i++) {
+      if (result[i] <= result[i - 1]) {
+        result[i] = result[i - 1] + 1;
+      }
+    }
+
+    // Clip values exceeding maximum
+    for (let i = 0; i < result.length; i++) {
+      if (result[i] > numberOfAllPositions) {
+        result[i] = numberOfAllPositions;
+      }
+    }
+
+    return result;
+  }
+
+  // Example:
+  console.log(generateEvenlySpacedList(5, 10));
+  // Output: [1, 3, 5, 8, 10]
+
+  // Create extended learning path with starting station
+  // const extendedLearningPath = [
+  //   {
+  //     conceptName: "Start Learning Path",
+  //     conceptId: "Starting Station",
+  //     status: "progressing" as const,
+  //   },
+  //   ...learningPath,
+  // ];
+
+  // Generate character positions based on learning path length + 1
+  const characterPositions = generateEvenlySpacedList(
+    learningPath.length,
+    positionsOfCharacters.length
+  );
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="text-white text-xl">Loading learning path...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
@@ -38,9 +127,8 @@ export default function StudentDashboard() {
           mouseOffset={mouseOffset}
           getInterpolatedPosition={getInterpolatedPosition}
           getLookDirection={getLookDirection}
-          characters={[
-            1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 32,
-          ]} // Example character IDs to render
+          characters={characterPositions}
+          learningPath={learningPath}
         />
       </Canvas>
 

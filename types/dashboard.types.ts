@@ -50,4 +50,9 @@ export interface CharacterModel {
 export interface Scene3DProps extends PathCameraControllerProps {
   enableOrbitControls?: boolean;
   characters?: number[];
+  learningPath?: Array<{
+    conceptName: string;
+    conceptId: string;
+    status: "done" | "progressing" | "waiting";
+  }>;
 }

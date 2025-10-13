@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { gsap } from "gsap";
 import {
   getInitialQuizz,
   setInitialQuizzResult,
@@ -10,12 +11,13 @@ import {
 } from "@/services/contentService";
 import QuizzGoalInputComponent from "@/components/StudentLearningPathComponents/QuizzGoalInputComponent";
 import QuizzQuestionComponent from "@/components/CommonComponents/QuizzQuestionComponent";
+import WelcomeLearningPathGeneration from "@/components/StudentLearningPathComponents/WelcomeLearningPathGeneration";
 
-type QuizPhase = "goal" | "quiz" | "results" | "generating";
+type QuizPhase = "welcome" | "goal" | "quiz" | "results" | "generating";
 
 export default function LearningPathQuizPage() {
   const router = useRouter();
-  const [phase, setPhase] = useState<QuizPhase>("goal");
+  const [phase, setPhase] = useState<QuizPhase>("welcome");
   const [quizQuestions, setQuizQuestions] = useState<InitialQuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<InitialQuizQuestion[]>([]);
@@ -23,10 +25,56 @@ export default function LearningPathQuizPage() {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
 
+  // Refs for GSAP animations
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
   // Load quiz questions when component mounts
   useEffect(() => {
     loadQuizQuestions();
   }, []);
+
+  // GSAP animations when phase changes
+  useEffect(() => {
+    if (phase !== "welcome") {
+      // Reset elements to initial state
+      gsap.set([titleRef.current, subtitleRef.current, contentRef.current], {
+        opacity: 0,
+        y: 30,
+      });
+
+      // Animate title and subtitle
+      const tl = gsap.timeline();
+
+      tl.to(titleRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: "power2.out",
+      })
+        .to(
+          subtitleRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+          },
+          "-=0.4"
+        )
+        .to(
+          contentRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+          },
+          "-=0.2"
+        );
+    }
+  }, [phase]);
 
   const loadQuizQuestions = async () => {
     try {
@@ -35,6 +83,10 @@ export default function LearningPathQuizPage() {
     } catch (error) {
       console.error("Error loading quiz questions:", error);
     }
+  };
+
+  const handlePresentationComplete = () => {
+    setPhase("goal");
   };
 
   const handleGoalSet = () => {
@@ -91,6 +143,8 @@ export default function LearningPathQuizPage() {
 
   const getTitle = () => {
     switch (phase) {
+      case "welcome":
+        return "";
       case "goal":
         return "Generating The Learning Path";
       case "quiz":
@@ -106,6 +160,8 @@ export default function LearningPathQuizPage() {
 
   const getSubtitle = () => {
     switch (phase) {
+      case "welcome":
+        return "";
       case "goal":
         return "Tell us what you want to achieve, and we'll map out the way.";
       case "quiz":
@@ -121,6 +177,13 @@ export default function LearningPathQuizPage() {
 
   const renderContent = () => {
     switch (phase) {
+      case "welcome":
+        return (
+          <WelcomeLearningPathGeneration
+            onPresentationComplete={handlePresentationComplete}
+          />
+        );
+
       case "goal":
         return <QuizzGoalInputComponent onGoalSet={handleGoalSet} />;
 
@@ -231,6 +294,11 @@ export default function LearningPathQuizPage() {
     }
   };
 
+  // Handle welcome phase differently - full screen presentation
+  if (phase === "welcome") {
+    return renderContent();
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white flex items-center justify-center p-4">
       <div className="max-w-4xl w-full flex justify-center">
@@ -238,14 +306,21 @@ export default function LearningPathQuizPage() {
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full">
           {/* Header inside white div */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            <h1
+              ref={titleRef}
+              className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4"
+            >
               {getTitle()}
             </h1>
-            <p className="text-lg text-gray-600">{getSubtitle()}</p>
+            <p ref={subtitleRef} className="text-lg text-gray-600">
+              {getSubtitle()}
+            </p>
           </div>
 
           {/* Content */}
-          <div className="flex justify-center">{renderContent()}</div>
+          <div ref={contentRef} className="flex justify-center">
+            {renderContent()}
+          </div>
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ const startingPoint: CharacterModel = {
 const startingConceptProp: ConceptProp = {
   conceptName: "Start Learning Path",
   conceptId: "Starting Station",
-  status: "progressing",
+  status: "waiting",
 };
 
 export const positionsOfCharacters: CharacterModel[] = [

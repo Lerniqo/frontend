@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 interface QuizzQuestionComponentProps {
   question: string;
@@ -23,12 +24,80 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
   const [showResult, setShowResult] = useState(false);
   const [isAnswered, setIsAnswered] = useState(false);
 
+  // Refs for GSAP animations
+  const containerRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const questionRef = useRef<HTMLDivElement>(null);
+  const choicesRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+
   // Reset state when question changes
   useEffect(() => {
     setSelectedChoice(null);
     setShowResult(false);
     setIsAnswered(false);
   }, [question, questionNumber]);
+
+  // GSAP animations on component mount and question change
+  useEffect(() => {
+    if (containerRef.current) {
+      // Set initial state
+      gsap.set([progressRef.current, questionRef.current, choicesRef.current], {
+        opacity: 0,
+        y: 30,
+      });
+
+      // Animate elements in sequence
+      const tl = gsap.timeline();
+      tl.to(progressRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      })
+        .to(
+          questionRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "power2.out",
+          },
+          "-=0.3"
+        )
+        .to(
+          choicesRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "back.out(1.7)",
+          },
+          "-=0.4"
+        );
+    }
+  }, [question, questionNumber]);
+
+  // Animate result feedback when it appears
+  useEffect(() => {
+    if (showResult && resultRef.current) {
+      gsap.fromTo(
+        resultRef.current,
+        {
+          opacity: 0,
+          scale: 0.9,
+          y: 20,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "back.out(1.7)",
+        }
+      );
+    }
+  }, [showResult]);
 
   const handleChoiceSelect = (choice: string) => {
     if (isAnswered) return;
@@ -65,9 +134,9 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
   };
 
   return (
-    <div className="max-w-4xl w-full">
+    <div ref={containerRef} className="max-w-4xl w-full">
       {/* Progress indicator */}
-      <div className="mb-6">
+      <div ref={progressRef} className="mb-6">
         <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
           <span>
             Question {questionNumber} of {totalQuestions}
@@ -85,14 +154,14 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
       </div>
 
       {/* Question */}
-      <div className="mb-8">
+      <div ref={questionRef} className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 leading-relaxed">
           {question}
         </h2>
       </div>
 
       {/* Choices */}
-      <div className="grid gap-4 mb-6">
+      <div ref={choicesRef} className="grid gap-4 mb-6">
         {choices.map((choice, index) => (
           <button
             key={index}
@@ -114,7 +183,10 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
 
       {/* Result feedback */}
       {showResult && (
-        <div className="mt-6 p-4 rounded-lg bg-gray-50 border-l-4 border-purple-500">
+        <div
+          ref={resultRef}
+          className="mt-6 p-4 rounded-lg bg-gray-50 border-l-4 border-purple-500"
+        >
           <div className="flex items-center space-x-2">
             {selectedChoice === answer ? (
               <>

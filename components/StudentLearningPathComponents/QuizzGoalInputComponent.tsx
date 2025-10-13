@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import { setGoal } from "@/services/contentService";
 
 interface QuizzGoalInputComponentProps {
@@ -12,6 +13,52 @@ const QuizzGoalInputComponent: React.FC<QuizzGoalInputComponentProps> = ({
 }) => {
   const [goal, setGoalText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Refs for GSAP animations
+  const formRef = useRef<HTMLFormElement>(null);
+  const labelRef = useRef<HTMLLabelElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // GSAP animations on component mount
+  useEffect(() => {
+    if (formRef.current) {
+      // Set initial state
+      gsap.set([labelRef.current, textareaRef.current, buttonRef.current], {
+        opacity: 0,
+        y: 20,
+      });
+
+      // Animate elements in sequence
+      const tl = gsap.timeline();
+      tl.to(labelRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      })
+        .to(
+          textareaRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
+          },
+          "-=0.3"
+        )
+        .to(
+          buttonRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "back.out(1.7)",
+          },
+          "-=0.3"
+        );
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,15 +77,17 @@ const QuizzGoalInputComponent: React.FC<QuizzGoalInputComponentProps> = ({
 
   return (
     <div className="max-w-2xl w-full">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label
+            ref={labelRef}
             htmlFor="goal"
             className="block text-lg font-medium text-gray-700 mb-3"
           >
             What do you want to achieve?
           </label>
           <textarea
+            ref={textareaRef}
             id="goal"
             value={goal}
             onChange={(e) => setGoalText(e.target.value)}
@@ -51,6 +100,7 @@ const QuizzGoalInputComponent: React.FC<QuizzGoalInputComponentProps> = ({
 
         <div className="flex justify-center">
           <button
+            ref={buttonRef}
             type="submit"
             disabled={!goal.trim() || isLoading}
             className={`px-8 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${

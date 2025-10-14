@@ -7,7 +7,7 @@ import { TeacherProfile as TeacherProfileType } from '@/types/auth.types';
 import { useEffect, useState } from 'react';
 import { userService } from '@/services/userService';
 import Loading from '@/components/CommonComponents/Loading';
-import NavBar from '@/components/LandingPageComponents/NavBar';
+// import NavBar from '@/components/LandingPageComponents/NavBar';
 import Footer from '@/components/LandingPageComponents/Footer';
 
 interface TeacherProfileClientWrapperProps {
@@ -67,7 +67,7 @@ export default function TeacherProfileClientWrapper({ teacherId, teacher: initia
   if (error) {
     return (
       <>
-        <NavBar />
+        {/* <NavBar /> */}
         <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-blue-50 flex items-center justify-center p-4">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-12 max-w-md w-full text-center">
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -93,7 +93,7 @@ export default function TeacherProfileClientWrapper({ teacherId, teacher: initia
   if (!teacher) {
     return (
       <>
-        <NavBar />
+        {/* <NavBar /> */}
         <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-blue-50 flex items-center justify-center p-4">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/50 p-12 max-w-md w-full text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -118,7 +118,7 @@ export default function TeacherProfileClientWrapper({ teacherId, teacher: initia
 
   return (
     <>
-      <NavBar />
+      {/* <NavBar /> */}
       <TeacherProfile 
         teacher={teacher}
         onGoBack={handleGoBack}

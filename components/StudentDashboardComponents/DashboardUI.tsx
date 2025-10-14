@@ -28,7 +28,6 @@ import type { DashboardUIProps } from "@/types/dashboard.types";
 import DualMatchButton from "./DualMatchButton";
 import LearningPath from "./LearningPath";
 import PremiumNavigation from "./PremiumNavigation";
-import NavigationModal from "./NavigationModal";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import GlareHover from "@/components/reactbits/GlareHover";
 
@@ -39,28 +38,12 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<
-    "contests" | "teachers" | "resource-library" | null
-  >(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
   const progressPercentage = (
     (currentPathProgress / (CAMERA_PATH.length - 1)) *
     100
   ).toFixed(1);
-
-  const handleOpenModal = (
-    content: "contests" | "teachers" | "resource-library"
-  ) => {
-    setModalContent(content);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-  };
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -191,11 +174,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Premium Left Navigation */}
       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40">
-        <PremiumNavigation
-          activeNav={activeNav}
-          onNavChange={setActiveNav}
-          onOpenModal={handleOpenModal}
-        />
+        <PremiumNavigation activeNav={activeNav} onNavChange={setActiveNav} />
       </div>
 
       {/* Right side Learning Path */}
@@ -253,321 +232,10 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
           }}
         />
       </div>
-
-      {/* Navigation Modal */}
-      <NavigationModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        activeContent={modalContent}
-      />
     </>
   );
 }
 
-// Navigation Button Component
-const _NavButton = ({
-  icon: Icon,
-  label,
-  color = "from-blue-500 to-purple-600",
-}: {
-  icon: LucideIcon;
-  label: string;
-  color?: string;
-}) => (
-  <div className="group cursor-pointer">
-    <button className="flex items-center space-x-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm">
-      <div className={`p-1.5 rounded-lg bg-gradient-to-r ${color}`}>
-        <Icon className="w-4 h-4 text-white" />
-      </div>
-      <span className="text-sm font-medium text-white group-hover:text-blue-400 transition-colors">
-        {label}
-      </span>
-    </button>
-  </div>
-);
-
-// Side Navigation Button Component
-const _SideNavButton = ({
-  icon: Icon,
-  label,
-  active = false,
-  onClick,
-}: {
-  icon: LucideIcon;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
-}) => (
-  <button
-    onClick={onClick}
-    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
-      active
-        ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
-        : "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 text-white hover:text-purple-400"
-    }`}
-  >
-    <Icon className="w-4 h-4" />
-    <span className="text-sm font-medium">{label}</span>
-  </button>
-);
-
-// Simple Navigation Button Component - Matching LearningPath Style
-const _SimpleNavButton = ({
-  icon: Icon,
-  label,
-  active = false,
-  onClick,
-  _gradient = "from-blue-500 to-purple-600",
-}: {
-  icon: LucideIcon;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
-  _gradient?: string;
-}) => (
-  <div
-    onClick={onClick}
-    className="group relative flex items-start space-x-2.5 p-2 rounded-lg border border-transparent cursor-pointer transition-all duration-300 hover:bg-white/5 hover:border-white/10"
-  >
-    {/* Premium Hover Background Effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-
-    {/* Step Icon */}
-    <div className="flex-shrink-0 relative z-10">
-      <div
-        className={`p-1.5 rounded-full border transition-all duration-300 group-hover:shadow-md ${
-          active
-            ? "border-blue-400/50 bg-blue-500/20 text-blue-400 group-hover:border-blue-400/70 group-hover:bg-blue-500/30"
-            : "border-purple-400/50 bg-purple-500/20 text-purple-400 group-hover:border-purple-400/70 group-hover:bg-purple-500/30"
-        }`}
-      >
-        <Icon className="w-4 h-4 stroke-[2.5] group-hover:stroke-[3]" />
-      </div>
-
-      {active && (
-        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
-      )}
-    </div>
-
-    {/* Step Content */}
-    <div className="flex-1 min-w-0 relative z-10">
-      <div className="flex items-start justify-between">
-        <div>
-          <h4
-            className={`text-sm font-medium transition-colors duration-300 ${
-              active
-                ? "text-white group-hover:text-blue-100"
-                : "text-white/90 group-hover:text-white"
-            }`}
-          >
-            {label}
-          </h4>
-          <p className="text-xs text-white/60 mt-0.5 group-hover:text-white/70 transition-colors duration-300">
-            {active ? "Active" : "Available"}
-          </p>
-        </div>
-
-        {active && (
-          <div className="flex items-center space-x-1">
-            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full group-hover:bg-blue-300 transition-colors duration-300" />
-          </div>
-        )}
-      </div>
-    </div>
-
-    {/* Premium Hover Border Glow */}
-    <div
-      className={`absolute inset-0 rounded-lg border border-transparent group-hover:border-blue-400/20 transition-all duration-300 ${
-        active ? "border-blue-400/30" : ""
-      }`}
-    />
-  </div>
-);
-
-// Search Bar Component
-const _SearchBar = ({
-  searchQuery,
-  setSearchQuery,
-  _isSearchFocused,
-  setIsSearchFocused,
-}: {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  _isSearchFocused: boolean;
-  setIsSearchFocused: (focused: boolean) => void;
-}) => (
-  <div className="relative">
-    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/60" />
-    <input
-      type="text"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      onFocus={() => setIsSearchFocused(true)}
-      onBlur={() => setIsSearchFocused(false)}
-      placeholder="Quick search resources..."
-      className="w-64 pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:border-blue-500/50 focus:bg-white/15 backdrop-blur-sm transition-all duration-300"
-    />
-    {searchQuery && (
-      <div className="absolute top-full mt-2 w-full bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl overflow-hidden z-50">
-        <div className="p-3 text-sm text-white/80 border-b border-white/10">
-          Quick results for &quot;{searchQuery}&quot;
-        </div>
-        <div className="max-h-48 overflow-y-auto">
-          <div className="p-3 hover:bg-white/10 cursor-pointer transition-colors">
-            <div className="text-white font-medium">Mathematics - Calculus</div>
-            <div className="text-xs text-white/60">Chapter 3: Derivatives</div>
-          </div>
-        </div>
-      </div>
-    )}
-  </div>
-);
-
-// User Avatar Component
-const _UserAvatar = () => (
-  <div className="group relative">
-    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20 group-hover:border-white/40 transition-all duration-300 cursor-pointer">
-      <span className="text-white font-bold text-lg">JD</span>
-    </div>
-    <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse" />
-  </div>
-);
-
-// Achievement Item Component
-const _AchievementItem = ({
-  icon: Icon,
-  label,
-  value,
-  color,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  color: string;
-}) => (
-  <div className="flex items-center space-x-2 text-center">
-    <Icon className={`w-5 h-5 ${color}`} />
-    <div>
-      <div className={`text-lg font-bold ${color}`}>{value}</div>
-      <div className="text-white/60 text-xs uppercase tracking-wider">
-        {label}
-      </div>
-    </div>
-  </div>
-);
-
-// Premium Search Bar Component
-const _PremiumSearchBar = ({
-  searchQuery,
-  setSearchQuery,
-  isSearchFocused,
-  setIsSearchFocused,
-}: {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  isSearchFocused: boolean;
-  setIsSearchFocused: (focused: boolean) => void;
-}) => (
-  <div className="relative group">
-    <div
-      className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
-        isSearchFocused
-          ? "opacity-100 scale-105"
-          : "opacity-0 group-hover:opacity-50"
-      }`}
-    />
-    <div className="relative">
-      <Search
-        className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-          isSearchFocused
-            ? "text-blue-400"
-            : "text-white/60 group-hover:text-white/80"
-        }`}
-      />
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        onFocus={() => setIsSearchFocused(true)}
-        onBlur={() => setIsSearchFocused(false)}
-        placeholder="Search premium resources..."
-        className={`w-80 pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 
-          focus:outline-none focus:border-blue-500/50 focus:bg-white/15 backdrop-blur-sm 
-          transition-all duration-300 hover:bg-white/15 hover:border-white/30
-          ${isSearchFocused ? "shadow-lg shadow-blue-500/10" : ""}
-        `}
-      />
-      {/* Premium Glow Effect */}
-      <div
-        className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 ${
-          isSearchFocused ? "opacity-100" : "opacity-0"
-        }`}
-      />
-    </div>
-
-    {searchQuery && (
-      <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
-        <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-          Quick results for &quot;{searchQuery}&quot;
-        </div>
-        <div className="max-h-48 overflow-y-auto">
-          <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">
-              Mathematics - Advanced Calculus
-            </div>
-            <div className="text-xs text-white/60 mt-1">
-              Chapter 3: Derivatives & Applications
-            </div>
-          </div>
-          <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">
-              Physics - Quantum Mechanics
-            </div>
-            <div className="text-xs text-white/60 mt-1">
-              Premium Course by Dr. Smith
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-  </div>
-);
-
-// Premium User Avatar Component
-const _PremiumUserAvatar = () => (
-  <div className="group relative">
-    {/* Glow Ring */}
-    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full blur-lg group-hover:blur-xl transition-all duration-300 animate-pulse" />
-
-    {/* Main Avatar */}
-    <div className="relative w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full flex items-center justify-center border-2 border-white/30 group-hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg shadow-blue-500/25 group-hover:scale-110">
-      <span className="text-white font-bold text-lg drop-shadow-lg">JD</span>
-    </div>
-
-    {/* Status Indicator */}
-    <div className="absolute top-0 right-0 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-lg shadow-green-500/25" />
-
-    {/* Premium Badge */}
-    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border border-slate-900">
-      <Crown className="w-3 h-3 text-white" />
-    </div>
-
-    {/* Hover Sparkles */}
-    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-      {[...Array(4)].map((_, i) => (
-        <div
-          key={i}
-          className="absolute w-1 h-1 bg-blue-300 rounded-full animate-ping"
-          style={{
-            left: `${20 + i * 15}%`,
-            top: `${20 + (i % 2) * 40}%`,
-            animationDelay: `${i * 0.2}s`,
-          }}
-        />
-      ))}
-    </div>
-  </div>
-);
 const PremiumAchievementItem = ({
   icon: Icon,
   label,

@@ -346,7 +346,7 @@ export default function TeachersPage(): React.ReactElement {
         <div className="absolute top-40 right-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-2000"></div>
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse animation-delay-4000"></div>
       </div>
-      <NavBar />
+      {/* <NavBar /> */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         {/* Breadcrumb Navigation */}
         <nav className="flex mb-6 sm:mb-8 animate-fade-in" aria-label="Breadcrumb">

@@ -1,18 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { getWebinars, getAvailability, Webinar, AvailabilitySlot } from '@/services/teacherDashboardService';
-import AvailabilityManager from './AvailabilityManager';
-import WebinarManager from './WebinarManager';
-import SubMenu from './SubMenu';
-import SharedNavigation from './SharedNavigation';
-import TeacherFooter from './TeacherFooter';
+import React, { useState, useEffect } from "react";
+import {
+  getWebinars,
+  getAvailability,
+  Webinar,
+  AvailabilitySlot,
+} from "@/services/teacherDashboardService";
+import AvailabilityManager from "./AvailabilityManager";
+import WebinarManager from "./WebinarManager";
+import SubMenu from "./SubMenu";
+import SharedNavigation from "./SharedNavigation";
+import TeacherFooter from "./TeacherFooter";
 
 export default function ScheduleManagement() {
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeScheduleSubsection, setActiveScheduleSubsection] = useState('availability');
+  const [activeScheduleSubsection, setActiveScheduleSubsection] =
+    useState("availability");
 
   useEffect(() => {
     const loadData = async () => {
@@ -23,9 +29,10 @@ export default function ScheduleManagement() {
         ]);
 
         if (webinarsRes.success) setWebinars(webinarsRes.data || []);
-        if (availabilityRes.success) setAvailability(availabilityRes.data || []);
+        if (availabilityRes.success)
+          setAvailability(availabilityRes.data || []);
       } catch (error) {
-        console.error('Error loading schedule management data:', error);
+        console.error("Error loading schedule management data:", error);
       } finally {
         setLoading(false);
       }
@@ -64,8 +71,18 @@ export default function ScheduleManagement() {
   }
 
   const scheduleItems = [
-    { id: 'availability', label: 'Availability', icon: '📅', color: 'from-blue-500 to-blue-600' },
-    { id: 'webinars', label: 'Webinars', icon: '🎥', color: 'from-purple-600 to-purple-700' }
+    {
+      id: "availability",
+      label: "Availability",
+      icon: "📅",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      id: "webinars",
+      label: "Webinars",
+      icon: "🎥",
+      color: "from-purple-600 to-purple-700",
+    },
   ];
 
   return (
@@ -101,7 +118,7 @@ export default function ScheduleManagement() {
           </div>
 
           <div className="transition-all duration-700 ease-in-out">
-            {activeScheduleSubsection === 'availability' && (
+            {activeScheduleSubsection === "availability" && (
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
                   <div className="relative bg-white rounded-3xl border-2 border-purple-200 shadow-lg p-8 hover:shadow-xl hover:border-purple-300 transition-all duration-300">
@@ -114,14 +131,17 @@ export default function ScheduleManagement() {
                       </div>
                     </div>
                     <div className="mt-8">
-                      <AvailabilityManager availability={availability} setAvailability={setAvailability} />
+                      <AvailabilityManager
+                        availability={availability}
+                        setAvailability={setAvailability}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {activeScheduleSubsection === 'webinars' && (
+            {activeScheduleSubsection === "webinars" && (
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
                   <div className="relative bg-white rounded-3xl border-2 border-purple-200 shadow-lg p-8 hover:shadow-xl hover:border-purple-300 transition-all duration-300">
@@ -134,7 +154,10 @@ export default function ScheduleManagement() {
                       </div>
                     </div>
                     <div className="mt-8">
-                      <WebinarManager webinars={webinars} setWebinars={setWebinars} />
+                      <WebinarManager
+                        webinars={webinars}
+                        setWebinars={setWebinars}
+                      />
                     </div>
                   </div>
                 </div>

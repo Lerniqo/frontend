@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { getContests, Contest } from '@/services/teacherDashboardService';
-import ContestManager from './ContestManager';
-import SubMenu from './SubMenu';
-import SharedNavigation from './SharedNavigation';
-import TeacherFooter from './TeacherFooter';
+import React, { useState, useEffect } from "react";
+import { getContests, Contest } from "@/services/teacherDashboardService";
+import ContestManager from "./ContestManager";
+import SubMenu from "./SubMenu";
+import SharedNavigation from "./SharedNavigation";
+import TeacherFooter from "./TeacherFooter";
 
 export default function ContestsPage() {
   const [contests, setContests] = useState<Contest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeContestSubsection, setActiveContestSubsection] = useState("active");
+  const [activeContestSubsection, setActiveContestSubsection] =
+    useState("active");
 
   useEffect(() => {
     const loadData = async () => {
@@ -18,7 +19,7 @@ export default function ContestsPage() {
         const contestsRes = await getContests();
         if (contestsRes.success) setContests(contestsRes.data || []);
       } catch (error) {
-        console.error('Error loading contests data:', error);
+        console.error("Error loading contests data:", error);
       } finally {
         setLoading(false);
       }
@@ -95,8 +96,8 @@ export default function ContestsPage() {
               Contest Management Center
             </h1>
             <p className="mt-2 text-sm text-gray-600 max-w-2xl">
-              Create, manage, and track educational contests to engage your students
-              and enhance their learning experience.
+              Create, manage, and track educational contests to engage your
+              students and enhance their learning experience.
             </p>
           </header>
 
@@ -117,7 +118,9 @@ export default function ContestsPage() {
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
                       <span className="text-sm font-semibold text-purple-700">
-                        {contestItems.find(item => item.id === activeContestSubsection)?.label || "Contest Management"}
+                        {contestItems.find(
+                          (item) => item.id === activeContestSubsection
+                        )?.label || "Contest Management"}
                       </span>
                     </div>
                   </div>

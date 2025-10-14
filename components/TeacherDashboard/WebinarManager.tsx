@@ -44,13 +44,13 @@ export default function WebinarManager({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "scheduled":
-        return "bg-blue-500/20 text-blue-300 border border-blue-400/30";
+        return "bg-blue-50 text-blue-700 border border-blue-200";
       case "ongoing":
-        return "bg-green-500/20 text-green-300 border border-green-400/30";
+        return "bg-green-50 text-green-700 border border-green-200";
       case "completed":
-        return "bg-slate-500/20 text-slate-300 border border-slate-400/30";
+        return "bg-gray-50 text-gray-700 border border-gray-200";
       default:
-        return "bg-slate-500/20 text-slate-300 border border-slate-400/30";
+        return "bg-gray-50 text-gray-700 border border-gray-200";
     }
   };
 
@@ -67,9 +67,9 @@ export default function WebinarManager({
     <div className="h-full">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
-          <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-xl border border-blue-400/30">
+          <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
             <svg
-              className="w-8 h-8 text-blue-300"
+              className="w-8 h-8 text-purple-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -83,31 +83,31 @@ export default function WebinarManager({
             </svg>
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-white">
+            <h3 className="text-2xl font-bold text-gray-900">
               Webinar Management
             </h3>
-            <p className="text-slate-400 mt-1">
+            <p className="text-gray-600 mt-1">
               Connect with students through live interactive sessions
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
         >
           {showCreateForm ? "Cancel" : "Schedule Webinar"}
         </button>
       </div>
 
       {showCreateForm && (
-        <div className="mb-8 p-8 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl border border-white/10">
-          <h4 className="text-xl font-semibold text-white mb-6">
+        <div className="mb-8 p-8 bg-gray-50 rounded-2xl border border-gray-200">
+          <h4 className="text-xl font-semibold text-gray-900 mb-6">
             Schedule New Webinar
           </h4>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Webinar Title
                 </label>
                 <input
@@ -116,13 +116,13 @@ export default function WebinarManager({
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-white placeholder-slate-400 backdrop-blur-sm"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-gray-900 placeholder-gray-500"
                   placeholder="Enter an engaging webinar title"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Duration (minutes)
                 </label>
                 <input
@@ -134,7 +134,7 @@ export default function WebinarManager({
                       duration: parseInt(e.target.value),
                     })
                   }
-                  className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-white placeholder-slate-400 backdrop-blur-sm"
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-gray-900 placeholder-gray-500"
                   min="30"
                   max="240"
                   required
@@ -142,7 +142,7 @@ export default function WebinarManager({
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Description
               </label>
               <textarea
@@ -150,14 +150,14 @@ export default function WebinarManager({
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-white placeholder-slate-400 backdrop-blur-sm resize-none"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-gray-900 placeholder-gray-500 resize-none"
                 rows={4}
                 placeholder="Describe what students will learn and the key topics you'll cover"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Scheduled Date & Time
               </label>
               <input
@@ -166,7 +166,7 @@ export default function WebinarManager({
                 onChange={(e) =>
                   setFormData({ ...formData, scheduledDate: e.target.value })
                 }
-                className="w-full px-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-white backdrop-blur-sm"
+                className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-gray-900"
                 required
               />
             </div>
@@ -174,13 +174,13 @@ export default function WebinarManager({
               <button
                 type="button"
                 onClick={() => setShowCreateForm(false)}
-                className="px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 shadow-lg hover:scale-105"
+                className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:scale-105"
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:scale-105"
               >
                 Schedule Webinar
               </button>
@@ -192,9 +192,9 @@ export default function WebinarManager({
       <div className="space-y-6">
         {webinars.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 backdrop-blur-xl rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-400/30">
+            <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-200">
               <svg
-                className="w-8 h-8 text-blue-300"
+                className="w-8 h-8 text-purple-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -207,8 +207,8 @@ export default function WebinarManager({
                 />
               </svg>
             </div>
-            <p className="text-slate-300 text-lg">No webinars scheduled yet</p>
-            <p className="text-slate-400 text-sm mt-2">
+            <p className="text-gray-700 text-lg">No webinars scheduled yet</p>
+            <p className="text-gray-500 text-sm mt-2">
               Create your first webinar to begin engaging with your audience
             </p>
           </div>
@@ -217,21 +217,21 @@ export default function WebinarManager({
             {webinars.map((webinar) => (
               <div
                 key={webinar.id}
-                className="p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl border border-white/10 hover:bg-white/5 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105"
+                className="p-6 bg-white rounded-2xl border border-gray-200 hover:border-purple-200 hover:shadow-lg transition-all duration-300 shadow-sm hover:scale-105"
               >
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-white text-lg mb-3">
+                    <h4 className="font-semibold text-gray-900 text-lg mb-3">
                       {webinar.title}
                     </h4>
-                    <p className="text-slate-300 mb-4 leading-relaxed">
+                    <p className="text-gray-700 mb-4 leading-relaxed">
                       {webinar.description}
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-xl border border-slate-600/30">
-                        <div className="p-2 bg-blue-500/20 rounded-lg border border-blue-400/30">
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div className="p-2 bg-purple-50 rounded-lg border border-purple-200">
                           <svg
-                            className="w-4 h-4 text-blue-300"
+                            className="w-4 h-4 text-purple-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -245,18 +245,18 @@ export default function WebinarManager({
                           </svg>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-400">
+                          <p className="text-xs font-medium text-gray-500">
                             Date & Time
                           </p>
-                          <p className="text-slate-300 font-medium text-sm">
+                          <p className="text-gray-700 font-medium text-sm">
                             {formatDateTime(webinar.scheduledDate)}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-xl border border-slate-600/30">
-                        <div className="p-2 bg-green-500/20 rounded-lg border border-green-400/30">
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div className="p-2 bg-green-50 rounded-lg border border-green-200">
                           <svg
-                            className="w-4 h-4 text-green-300"
+                            className="w-4 h-4 text-green-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -270,18 +270,18 @@ export default function WebinarManager({
                           </svg>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-400">
+                          <p className="text-xs font-medium text-gray-500">
                             Attendees
                           </p>
-                          <p className="text-slate-300 font-medium text-sm">
+                          <p className="text-gray-700 font-medium text-sm">
                             {webinar.attendees} registered
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-3 p-3 bg-slate-700/30 rounded-xl border border-slate-600/30">
-                        <div className="p-2 bg-purple-500/20 rounded-lg border border-purple-400/30">
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        <div className="p-2 bg-blue-50 rounded-lg border border-blue-200">
                           <svg
-                            className="w-4 h-4 text-purple-300"
+                            className="w-4 h-4 text-blue-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -295,16 +295,16 @@ export default function WebinarManager({
                           </svg>
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-400">
+                          <p className="text-xs font-medium text-gray-500">
                             Duration
                           </p>
-                          <p className="text-slate-300 font-medium text-sm">
+                          <p className="text-gray-700 font-medium text-sm">
                             {webinar.duration} minutes
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="ml-6">
+                    <div className="ml-6 mt-4">
                       <span
                         className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(
                           webinar.status
@@ -318,7 +318,7 @@ export default function WebinarManager({
                 <div className="flex justify-end pt-4">
                   <button
                     onClick={() => handleJoinWebinar(webinar.id)}
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:scale-105 font-medium"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:scale-105 font-medium"
                   >
                     <svg
                       className="w-5 h-5 mr-2"

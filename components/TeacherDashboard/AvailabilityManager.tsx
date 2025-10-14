@@ -105,20 +105,20 @@ export default function AvailabilityManager({ availability, setAvailability }: A
     <div className="h-full">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">
-          <div className="p-3 bg-blue-500/20 backdrop-blur-xl rounded-xl border border-blue-400/30">
-            <svg className="w-8 h-8 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
+            <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-white">Set Your Availability</h3>
-            <p className="text-slate-400 mt-1">Manage your teaching schedule</p>
+            <h3 className="text-2xl font-bold text-gray-900">Set Your Availability</h3>
+            <p className="text-gray-600 mt-1">Manage your teaching schedule</p>
           </div>
         </div>
         {!isEditing ? (
           <button
             onClick={() => setIsEditing(true)}
-            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
           >
             Edit Schedule
           </button>
@@ -126,13 +126,13 @@ export default function AvailabilityManager({ availability, setAvailability }: A
           <div className="flex space-x-3">
             <button
               onClick={handleSave}
-              className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:scale-105"
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:scale-105"
             >
               Save Changes
             </button>
             <button
               onClick={handleCancel}
-              className="px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 shadow-lg hover:scale-105"
+              className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105"
             >
               Cancel
             </button>
@@ -145,56 +145,56 @@ export default function AvailabilityManager({ availability, setAvailability }: A
           {!showAddForm ? (
             <button
               onClick={() => setShowAddForm(true)}
-              className="w-full py-4 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 backdrop-blur-xl rounded-xl border border-white/20 hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-3 group"
+              className="w-full py-4 bg-purple-50 rounded-xl border border-purple-200 hover:bg-purple-100 transition-all duration-300 flex items-center justify-center space-x-3 group"
             >
-              <svg className="w-6 h-6 text-indigo-300 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-purple-600 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              <span className="text-white font-medium">Add New Availability Slot</span>
+              <span className="text-purple-700 font-medium">Add New Availability Slot</span>
             </button>
           ) : (
-            <div className="bg-white/5 backdrop-blur-xl rounded-xl border border-white/20 p-6">
-              <h4 className="text-lg font-semibold text-white mb-4">Add New Time Slot</h4>
+            <div className="bg-gray-50 rounded-xl border border-gray-200 p-6">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Add New Time Slot</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Select Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
                   <input
                     type="date"
                     min={getMinDate()}
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">Start Time</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-300 mb-2">End Time</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               </div>
               <div className="flex space-x-3">
                 <button
                   onClick={handleAddSlot}
-                  className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 shadow-lg hover:scale-105"
+                  className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:scale-105"
                 >
                   Add Slot
                 </button>
                 <button
                   onClick={() => setShowAddForm(false)}
-                  className="px-6 py-3 bg-slate-600 text-white rounded-xl hover:bg-slate-700 transition-all duration-300 shadow-lg hover:scale-105"
+                  className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105"
                 >
                   Cancel
                 </button>
@@ -206,10 +206,10 @@ export default function AvailabilityManager({ availability, setAvailability }: A
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(isEditing ? tempAvailability : availability).map((slot) => (
-          <div key={slot.id} className="group p-6 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+          <div key={slot.id} className="group p-6 bg-white rounded-xl border border-gray-200 hover:border-purple-200 hover:shadow-lg transition-all duration-300 hover:scale-105 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                slot.isAvailable ? 'bg-green-400 shadow-lg shadow-green-400/50' : 'bg-red-400 shadow-lg shadow-red-400/50'
+                slot.isAvailable ? 'bg-green-500 shadow-lg shadow-green-500/30' : 'bg-red-500 shadow-lg shadow-red-500/30'
               }`}></div>
               {isEditing && (
                 <div className="flex space-x-2">
@@ -217,15 +217,15 @@ export default function AvailabilityManager({ availability, setAvailability }: A
                     onClick={() => handleToggleAvailability(slot.id)}
                     className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-300 ${
                       slot.isAvailable
-                        ? 'bg-green-500/20 text-green-300 hover:bg-green-500/30 border border-green-400/30'
-                        : 'bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-400/30'
+                        ? 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'
+                        : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
                     }`}
                   >
                     {slot.isAvailable ? 'Available' : 'Unavailable'}
                   </button>
                   <button
                     onClick={() => handleDeleteSlot(slot.id)}
-                    className="px-3 py-1 bg-red-500/20 text-red-300 hover:bg-red-500/30 border border-red-400/30 rounded-lg text-xs font-medium transition-all duration-300"
+                    className="px-3 py-1 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-lg text-xs font-medium transition-all duration-300"
                   >
                     Delete
                   </button>
@@ -233,9 +233,9 @@ export default function AvailabilityManager({ availability, setAvailability }: A
               )}
             </div>
             <div>
-              <h4 className="font-semibold text-white text-lg mb-1 group-hover:text-blue-200 transition-colors duration-300">{slot.day}</h4>
-              <p className="text-slate-400 text-sm mb-2 group-hover:text-slate-300 transition-colors duration-300">{formatDate(slot.date)}</p>
-              <p className="text-slate-400 text-sm group-hover:text-slate-300 transition-colors duration-300">{slot.startTime} - {slot.endTime}</p>
+              <h4 className="font-semibold text-gray-900 text-lg mb-1 group-hover:text-purple-700 transition-colors duration-300">{slot.day}</h4>
+              <p className="text-gray-600 text-sm mb-2 group-hover:text-gray-700 transition-colors duration-300">{formatDate(slot.date)}</p>
+              <p className="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">{slot.startTime} - {slot.endTime}</p>
             </div>
           </div>
         ))}
@@ -243,13 +243,13 @@ export default function AvailabilityManager({ availability, setAvailability }: A
 
       {(isEditing ? tempAvailability : availability).length === 0 && (
         <div className="text-center py-12">
-          <div className="w-16 h-16 bg-slate-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-purple-200">
+            <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-white mb-2">No Availability Set</h3>
-          <p className="text-slate-400">Add your first availability slot to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Availability Set</h3>
+          <p className="text-gray-600">Add your first availability slot to get started</p>
         </div>
       )}
     </div>

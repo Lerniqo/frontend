@@ -80,7 +80,7 @@ export default function HelpAndSupportPage() {
                 </span>
               </button>
             </div>
-            
+
             <div className="flex items-center space-x-4 mb-6">
               <div className="p-4 bg-gradient-to-r from-purple-600 to-violet-600 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <HelpCircle className="w-12 h-12 text-white" />

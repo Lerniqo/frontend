@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { Notification } from '@/services/teacherDashboardService';
-import NotificationPopup from './NotificationPopup';
-import ProfileDropdown from './ProfileDropdown';
+import React, { useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Notification } from "@/services/teacherDashboardService";
+import NotificationPopup from "./NotificationPopup";
+import ProfileDropdown from "./ProfileDropdown";
 
 interface SharedNavigationProps {
   notifications?: Notification[];
@@ -15,7 +15,7 @@ interface SharedNavigationProps {
 export default function SharedNavigation({
   notifications = [],
   setNotifications,
-  onLogout
+  onLogout,
 }: SharedNavigationProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -24,13 +24,17 @@ export default function SharedNavigation({
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', path: '/dashboard' },
-    { id: 'content-management', label: 'Content', icon: '📚', path: '/content-management' },
-    { id: 'schedule-management', label: 'Schedule', icon: '⏰', path: '/schedule-management' },
-    { id: 'contests', label: 'Contests', icon: '🏆', path: '/contests' },
+    { id: "dashboard", label: "Dashboard", path: "/dashboard" },
+    { id: "content-management", label: "Content", path: "/content-management" },
+    {
+      id: "schedule-management",
+      label: "Schedule",
+      path: "/schedule-management",
+    },
+    { id: "contests", label: "Contests", path: "/contests" },
   ];
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const isActive = (path: string) => {
     return pathname.includes(path);
@@ -41,41 +45,39 @@ export default function SharedNavigation({
   };
 
   return (
-    <nav className="backdrop-blur-xl bg-white/10 border-b border-white/20 sticky top-0 z-50 shadow-2xl">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <div className="flex items-center space-x-6 lg:space-x-8">
-            <div className="flex items-center space-x-3 lg:space-x-4">
-              <div className="hidden sm:block">
-                <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-wider font-sans bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent drop-shadow-lg hover:from-blue-300 hover:via-purple-300 hover:to-indigo-300 transition-all duration-300 hover:drop-shadow-xl cursor-pointer"
-                     onClick={() => handleNavigation('/dashboard')}>
-                  Learniqo
-                </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-lg shadow-md border-b border-purple-100">
+      <div className="container mx-auto px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a
+              onClick={() => handleNavigation("/dashboard")}
+              className="group flex items-center space-x-2 cursor-pointer"
+            >
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <span className="text-white font-bold text-xl">L</span>
               </div>
-            </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:to-blue-600 transition-all duration-300">
+                Learniqo
+              </span>
+            </a>
           </div>
 
-          <div className="hidden lg:flex space-x-3 xl:space-x-4">
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center space-x-8">
             {menuItems.map((item) => (
-              <button
+              <a
                 key={item.id}
                 onClick={() => handleNavigation(item.path)}
-                className={`group relative flex items-center space-x-3 px-5 py-3 lg:px-6 lg:py-3 rounded-xl font-semibold text-sm lg:text-base transition-all duration-300 overflow-hidden ${
+                className={`relative font-medium transition-colors duration-300 group py-2 cursor-pointer ${
                   isActive(item.path)
-                    ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white shadow-2xl shadow-purple-500/30 scale-105 ring-2 ring-white/20'
-                    : 'text-slate-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/30 hover:shadow-lg'
+                    ? "text-blue-600 hover:text-blue-600"
+                    : "text-gray-700 hover:text-blue-600"
                 }`}
               >
-                <div className={`text-lg lg:text-xl transition-transform duration-300 ${
-                  isActive(item.path) ? 'scale-110' : 'group-hover:scale-110'
-                }`}>
-                  {item.icon}
-                </div>
-                <span className="relative z-10 font-medium">{item.label}</span>
-                {isActive(item.path) && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl blur-xl"></div>
-                )}
-              </button>
+                <span className="flex items-center gap-2">{item.label}</span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+              </a>
             ))}
           </div>
 
@@ -83,81 +85,111 @@ export default function SharedNavigation({
           <div className="lg:hidden">
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="p-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300"
+              className="p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
+              aria-label="Toggle menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 {showMobileMenu ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  />
                 )}
               </svg>
             </button>
           </div>
 
           {/* Right side icons */}
-          <div className="hidden lg:flex items-center space-x-3 lg:space-x-4">
+          <div className="hidden lg:flex items-center space-x-2">
             {/* Notification Icon */}
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setShowNotificationPopup(!showNotificationPopup);
-                  setShowProfileDropdown(false);
-                }}
-                className="relative p-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300 group hover:shadow-lg"
+            <button
+              onClick={() => {
+                setShowNotificationPopup(!showNotificationPopup);
+                setShowProfileDropdown(false);
+              }}
+              className="relative p-3 rounded-full text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 group"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM4.868 12.683A17.925 17.925 0 0112 21c7.962 0 12-1.21 12-2.683m-12 2.683a17.925 17.925 0 01-7.132-8.317M12 21c4.411 0 8-4.03 8-9s-3.589-9-8-9-8 4.03-8 9a9.06 9.06 0 001.832 5.683L4 21l4.868-8.317z" />
-                </svg>
-                {unreadCount > 0 && (
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center text-xs font-bold text-white animate-pulse shadow-lg ring-2 ring-white/30">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </div>
-                )}
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              {unreadCount > 0 && (
+                <div className="absolute top-2 right-2 w-5 h-5 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-lg ring-2 ring-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </div>
+              )}
+            </button>
 
             {/* Profile Icon */}
-            <div className="relative">
-              <button
-                onClick={() => {
-                  setShowProfileDropdown(!showProfileDropdown);
-                  setShowNotificationPopup(false);
-                }}
-                className="relative p-3 rounded-xl text-slate-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10 hover:border-white/30 transition-all duration-300 group hover:shadow-lg"
+            <button
+              onClick={() => {
+                setShowProfileDropdown(!showProfileDropdown);
+                setShowNotificationPopup(false);
+              }}
+              className="relative p-3 rounded-full text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 group"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Menu */}
         {showMobileMenu && (
-          <div className="lg:hidden border-t border-white/30 py-6 bg-white/5 backdrop-blur-2xl">
-            <div className="space-y-3 px-4">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    handleNavigation(item.path);
-                    setShowMobileMenu(false);
-                  }}
-                  className={`w-full flex items-center space-x-4 px-6 py-4 rounded-2xl font-medium text-base transition-all duration-500 backdrop-blur-sm overflow-hidden ${
-                    isActive(item.path)
-                      ? 'bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 text-white shadow-2xl ring-2 ring-white/30 scale-105 border border-white/20'
-                      : 'text-slate-200 hover:text-white hover:bg-white/20 border border-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl'
-                  }`}
-                >
-                  <span className="text-xl drop-shadow-sm">{item.icon}</span>
-                  <span className="drop-shadow-sm">{item.label}</span>
-                  {isActive(item.path) && (
-                    <div className="absolute inset-0 bg-white/10 animate-pulse rounded-2xl"></div>
-                  )}
-                </button>
-              ))}
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-lg border-b border-purple-100 shadow-lg">
+            <div className="container mx-auto px-6 py-4">
+              <div className="space-y-4">
+                {menuItems.map((item) => (
+                  <a
+                    key={item.id}
+                    onClick={() => {
+                      handleNavigation(item.path);
+                      setShowMobileMenu(false);
+                    }}
+                    className={`block font-medium transition-colors duration-200 py-2 border-b border-gray-100 cursor-pointer ${
+                      isActive(item.path)
+                        ? "text-blue-600"
+                        : "text-gray-700 hover:text-blue-600"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -178,11 +210,11 @@ export default function SharedNavigation({
         <ProfileDropdown
           isVisible={showProfileDropdown}
           onViewProfile={() => {
-            handleNavigation('/profile');
+            handleNavigation("/profile");
             setShowProfileDropdown(false);
           }}
           onEditProfile={() => {
-            handleNavigation('/profile');
+            handleNavigation("/profile");
             setShowProfileDropdown(false);
           }}
           onLogout={onLogout}

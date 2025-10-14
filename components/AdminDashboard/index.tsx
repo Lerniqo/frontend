@@ -11,8 +11,6 @@ import {
   Globe,
   Shield,
   Clock,
-  Bell,
-  User,
 } from "lucide-react";
 import UserManagement from "./UserManagement";
 import ContentManagement from "./ContentManagement";

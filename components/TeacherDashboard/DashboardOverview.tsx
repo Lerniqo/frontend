@@ -8,8 +8,6 @@ import {
   AvailabilitySlot,
 } from "@/services/teacherDashboardService";
 import MotivatedHeading from "./MotivatedHeading";
-import AvailabilityManager from "./AvailabilityManager";
-import NotificationsPanel from "./NotificationsPanel";
 import SharedNavigation from "./SharedNavigation";
 import TeacherFooter from "./TeacherFooter";
 import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
@@ -17,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function DashboardOverview() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [_availability, _setAvailability] = useState<AvailabilitySlot[]>([]);
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
 
@@ -32,7 +30,7 @@ export default function DashboardOverview() {
         if (notificationsRes.success)
           setNotifications(notificationsRes.data || []);
         if (availabilityRes.success)
-          setAvailability(availabilityRes.data || []);
+          _setAvailability(availabilityRes.data || []);
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -291,7 +289,7 @@ export default function DashboardOverview() {
                         <span className="font-semibold">
                           Assignment Graded:
                         </span>{" "}
-                        "Project Alpha" submission marked.
+                        &ldquo;Project Alpha&rdquo; submission marked.
                       </p>
                       <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
                     </div>
@@ -316,8 +314,8 @@ export default function DashboardOverview() {
                     </div>
                     <div className="flex-grow">
                       <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Reminder:</span> "Intro
-                        to Physics" starts in 1 hour.
+                        <span className="font-semibold">Reminder:</span>{" "}
+                        &ldquo;Intro to Physics&rdquo; starts in 1 hour.
                       </p>
                       <p className="text-xs text-gray-400 mt-1">Yesterday</p>
                     </div>

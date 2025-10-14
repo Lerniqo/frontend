@@ -2,18 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  BarChart3,
-  Bell,
-  User,
-  Menu,
-  X,
-  Settings,
-  LogOut,
-} from "lucide-react";
+import { BarChart3, Bell, User, Settings, LogOut } from "lucide-react";
 import AdminFooter from "@/components/AdminDashboard/AdminFooter";
 
 interface AdminLayoutProps {

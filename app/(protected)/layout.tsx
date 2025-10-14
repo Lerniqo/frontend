@@ -2,7 +2,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { Loading } from "@/components/CommonComponents/Loading";
 import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
 const Protected = ({

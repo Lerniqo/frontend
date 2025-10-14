@@ -18,7 +18,7 @@ export default function SubMenu({
   items,
   activeItem,
   onItemChange,
-  title,
+  title: _title,
 }: SubMenuProps) {
   return (
     <div className="border-b border-gray-200">

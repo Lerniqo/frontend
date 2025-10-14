@@ -45,7 +45,7 @@ export default function SharedNavigation({
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-lg shadow-md border-b border-purple-100">
+    <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-lg shadow-lg border-b border-purple-100">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -54,7 +54,7 @@ export default function SharedNavigation({
               onClick={() => handleNavigation("/dashboard")}
               className="group flex items-center space-x-2 cursor-pointer"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-300 shadow-lg">
                 <span className="text-white font-bold text-xl">L</span>
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:to-blue-600 transition-all duration-300">
@@ -69,14 +69,18 @@ export default function SharedNavigation({
               <a
                 key={item.id}
                 onClick={() => handleNavigation(item.path)}
-                className={`relative font-medium transition-colors duration-300 group py-2 cursor-pointer ${
+                className={`relative font-medium transition-all duration-300 group py-2 px-3 cursor-pointer rounded-lg hover:bg-blue-50 ${
                   isActive(item.path)
-                    ? "text-blue-600 hover:text-blue-600"
+                    ? "text-blue-600 hover:text-blue-700 bg-blue-50"
                     : "text-gray-700 hover:text-blue-600"
                 }`}
               >
                 <span className="flex items-center gap-2">{item.label}</span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+                <span
+                  className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transition-all duration-300 ${
+                    isActive(item.path) ? "w-6" : "w-0 group-hover:w-6"
+                  }`}
+                ></span>
               </a>
             ))}
           </div>

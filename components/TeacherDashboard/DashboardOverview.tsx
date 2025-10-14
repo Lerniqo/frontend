@@ -115,19 +115,23 @@ export default function DashboardOverview() {
 
       <div className="relative z-10 pt-8 pb-16 flex-1">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="space-y-16">
-            <div className="text-center mb-12 mt-20">
+          <div className="space-y-12">
+            <div className="text-center mb-8 mt-16 animate-fade-in-up">
               <MotivatedHeading />
             </div>
 
             {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up"
+              style={{ animationDelay: "0.2s" }}
+            >
               {/* Active Students Card */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-center space-x-5">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
                     <svg
-                      className="w-8 h-8 text-white"
+                      className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -141,17 +145,22 @@ export default function DashboardOverview() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-gray-800">24</h3>
-                    <p className="text-gray-500 font-medium">Active Students</p>
+                    <h3 className="text-3xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-300">
+                      24
+                    </h3>
+                    <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
+                      Active Students
+                    </p>
                   </div>
                 </div>
               </div>
               {/* Courses Card */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-center space-x-5">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-indigo-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/40 group-hover:scale-105 transition-all duration-300">
                     <svg
-                      className="w-8 h-8 text-white"
+                      className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -165,17 +174,22 @@ export default function DashboardOverview() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-gray-800">12</h3>
-                    <p className="text-gray-500 font-medium">Courses</p>
+                    <h3 className="text-3xl font-bold text-gray-800 group-hover:text-purple-700 transition-colors duration-300">
+                      12
+                    </h3>
+                    <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
+                      Courses
+                    </p>
                   </div>
                 </div>
               </div>
               {/* Success Rate Card */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="flex items-center space-x-5">
-                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+              <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-green-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/40 group-hover:scale-105 transition-all duration-300">
                     <svg
-                      className="w-8 h-8 text-white"
+                      className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -189,17 +203,24 @@ export default function DashboardOverview() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-gray-800">89%</h3>
-                    <p className="text-gray-500 font-medium">Success Rate</p>
+                    <h3 className="text-3xl font-bold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">
+                      89%
+                    </h3>
+                    <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
+                      Success Rate
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Main Dashboard Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+            <div
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 animate-fade-in-up"
+              style={{ animationDelay: "0.4s" }}
+            >
               {/* Availability Manager Placeholder */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="group bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
                 <h3 className="text-xl font-bold text-gray-800 mb-5">
                   Manage Your Availability
                 </h3>
@@ -241,7 +262,7 @@ export default function DashboardOverview() {
                 </button>
               </div>
               {/* Notifications Panel Placeholder */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+              <div className="group bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden relative">
                 {/* Header with Icon */}
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
@@ -376,8 +397,46 @@ export default function DashboardOverview() {
             transform: translate(0px, 0px) scale(1);
           }
         }
+        @keyframes fade-in-up {
+          0% {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        @keyframes pulse-glow {
+          0%,
+          100% {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.5);
+          }
+        }
         .animate-blob {
           animation: blob 7s infinite;
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.8s ease-out forwards;
+          opacity: 0;
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .animate-pulse-glow {
+          animation: pulse-glow 2s ease-in-out infinite;
         }
         .animation-delay-2000 {
           animation-delay: 2s;
@@ -385,9 +444,12 @@ export default function DashboardOverview() {
         .animation-delay-4000 {
           animation-delay: 4s;
         }
-        /* Custom toggle switch styles (line 69 update) */
+        .hover\\:scale-102:hover {
+          transform: scale(1.02);
+        }
+        /* Custom toggle switch styles */
         .toggle-checkbox:checked {
-          border-color: #3b82f6; /* Tailwind's blue-500 */
+          border-color: #3b82f6;
         }
         .toggle-checkbox:checked + .toggle-label {
           background-color: #3b82f6;

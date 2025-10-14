@@ -20,7 +20,12 @@ const TeacherFooter: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-800 mt-auto relative">
+    <footer className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-800 mt-auto relative overflow-hidden">
+      {/* Enhanced background effects */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.3),transparent_60%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.3),transparent_60%)]"></div>
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400"></div>
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -30,13 +35,13 @@ const TeacherFooter: React.FC = () => {
               <h3 className="text-xl font-extrabold tracking-wider font-sans bg-gradient-to-r from-white via-blue-300 to-purple-300 bg-clip-text text-transparent">
                 Learniqo
               </h3>
-              <p className="text-slate-300 mt-1 text-sm font-medium">
+              <p className="text-slate-400 mt-1 text-sm font-medium">
                 Teacher Dashboard
               </p>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto md:mx-0">
               Empowering educators with powerful tools to inspire and guide
-              students to mathematical excellence.
+              students to excellence.
             </p>
           </div>
 

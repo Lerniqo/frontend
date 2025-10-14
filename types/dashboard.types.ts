@@ -43,6 +43,7 @@ export interface CharacterModel {
   rotation: [number, number, number];
   scale: [number, number, number];
   modelName: string;
+  side: "left" | "right";
 }
 
 // Props for the 3D scene component. enableOrbitControls is optional and used for

@@ -22,8 +22,8 @@ interface CharacterProps {
   position: [number, number, number];
   rotation: [number, number, number];
   scale: [number, number, number];
-  animation?: string;
   conceptProp?: ConceptProp | null;
+  side?: "left" | "right";
 }
 
 export default function Character({
@@ -31,8 +31,8 @@ export default function Character({
   position,
   rotation,
   scale,
-  animation = "AnimationProgressing",
   conceptProp,
+  side = "left",
 }: CharacterProps) {
   const group = useRef<Group>(null);
   const { camera } = useThree();
@@ -42,6 +42,7 @@ export default function Character({
 
   // Preload for performance (optional)
   useEffect(() => {
+    // useGLTF.preload(`/models/${modelName}`);
     useGLTF.preload(`/models/${modelName}`);
   }, [modelName]);
 
@@ -54,9 +55,44 @@ export default function Character({
   // Setup animations
   const { actions } = useAnimations(animations, group);
 
+  // Determine animation based on conceptProp status
+  const animation = useMemo(() => {
+    if (!conceptProp) return "ProgressingAnimation"; // Default animation
+
+    // Special handling for the "Starting Station"
+    if (conceptProp.conceptId === "Starting Station") {
+      // For Starting Station, show progressing animation for waiting or progressing
+      if (
+        conceptProp.status === "waiting" ||
+        conceptProp.status === "progressing"
+      ) {
+        return "ProgressingAnimation";
+      }
+      // If done, show done animation
+      if (conceptProp.status === "done") {
+        return "DoneAnimation";
+      }
+      // Fallback
+      return "ProgressingAnimation";
+    }
+
+    // Default behavior for other concepts
+    switch (conceptProp.status) {
+      case "done":
+        return "DoneAnimation";
+      case "progressing":
+        return "ProgressingAnimation";
+      case "waiting":
+        return "WaitingAnimation";
+      default:
+        return "ProgressingAnimation";
+    }
+  }, [conceptProp]);
+
   useEffect(() => {
     if (actions && actions[animation]) {
       actions[animation].play();
+      console.log("Playing animation:", animation);
     }
   }, [actions, animation]);
 
@@ -73,7 +109,7 @@ export default function Character({
 
       // Set visibility based on distance (hide if less than 50 units)
       setIsVisible(distance <= 50);
-      setIsVisibleHTML(distance <= 25);
+      setIsVisibleHTML(distance <= 15);
     }
   });
 
@@ -114,15 +150,6 @@ export default function Character({
     }
   };
 
-  // Function to render HTML content based on station type and status
-  const renderStationContent = () => {
-    if (!conceptProp) return null;
-
-    return (
-      <TalkBubble conceptProp={conceptProp} onButtonClick={handleButtonClick} />
-    );
-  };
-
   return (
     <group ref={group} visible={isVisible}>
       <primitive
@@ -135,12 +162,20 @@ export default function Character({
       {/* Display concept information using Html */}
       {conceptProp && isVisibleHTML && (
         <Html
-          position={[position[0] + 2, position[1] + 5, position[2]]}
+          position={
+            side === "left"
+              ? [position[0] - 4, position[1] + 4, position[2]]
+              : [position[0] + 4, position[1] + 4, position[2]]
+          }
           center
           distanceFactor={15}
           occlude
         >
-          {renderStationContent()}
+          <TalkBubble
+            conceptProp={conceptProp}
+            onButtonClick={handleButtonClick}
+            side={side}
+          />
         </Html>
       )}
     </group>

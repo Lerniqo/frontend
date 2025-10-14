@@ -9,11 +9,13 @@ interface ConceptProp {
 interface TalkBubbleProps {
   conceptProp: ConceptProp;
   onButtonClick: (action: string, conceptId?: string) => void;
+  side?: "left" | "right";
 }
 
 const TalkBubble: React.FC<TalkBubbleProps> = ({
   conceptProp,
   onButtonClick,
+  side = "left",
 }) => {
   const isStartingStation = conceptProp.conceptName === "Start Learning Path";
 
@@ -102,7 +104,11 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
 
   return (
     <div
-      className="relative bg-white text-black border-4 border-black rounded-[20px] px-8 py-4 max-w-[800px] min-w-[500px] w-[98%] font-comic font-bold text-lg before:content-[''] before:absolute before:left-[30px] before:top-[-24px] before:border-l-0 before:border-r-[24px] before:border-t-0 before:border-b-[24px] before:border-solid before:border-transparent before:border-b-black after:content-[''] after:absolute after:left-[32px] after:top-[-20px] after:border-l-0 after:border-r-[20px] after:border-t-0 after:border-b-[20px] after:border-solid after:border-transparent after:border-b-white"
+      className={`relative bg-white text-black border-4 border-black rounded-[20px] px-8 py-4 max-w-[800px] min-w-[500px] w-[98%] font-comic font-bold text-lg ${
+        side === "left"
+          ? "before:content-[''] before:absolute before:left-[30px] before:top-[-24px] before:border-l-0 before:border-r-[24px] before:border-t-0 before:border-b-[24px] before:border-solid before:border-transparent before:border-b-black after:content-[''] after:absolute after:left-[32px] after:top-[-20px] after:border-l-0 after:border-r-[20px] after:border-t-0 after:border-b-[20px] after:border-solid after:border-transparent after:border-b-white"
+          : "before:content-[''] before:absolute before:right-[30px] before:top-[-24px] before:border-r-0 before:border-l-[24px] before:border-t-0 before:border-b-[24px] before:border-solid before:border-transparent before:border-b-black after:content-[''] after:absolute after:right-[32px] after:top-[-20px] after:border-r-0 after:border-l-[20px] after:border-t-0 after:border-b-[20px] after:border-solid after:border-transparent after:border-b-white"
+      }`}
       style={{ WebkitTextStroke: "0.5px black" }}
     >
       {renderContent()}

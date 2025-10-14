@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 
 interface WelcomeLearningPathGenerationProps {
@@ -42,12 +42,7 @@ const WelcomeLearningPathGeneration: React.FC<
     },
   ];
 
-  useEffect(() => {
-    // Initial animation for the first slide
-    animateSlideIn();
-  }, []);
-
-  const animateSlideIn = () => {
+  const animateSlideIn = useCallback(() => {
     const tl = gsap.timeline();
 
     // Reset positions
@@ -105,7 +100,12 @@ const WelcomeLearningPathGeneration: React.FC<
         "-=0.2"
       );
     }
-  };
+  }, [currentSlide, slides]);
+
+  useEffect(() => {
+    // Initial animation for the first slide
+    animateSlideIn();
+  }, [animateSlideIn]);
 
   const animateSlideOut = () => {
     const tl = gsap.timeline();
@@ -228,8 +228,8 @@ const WelcomeLearningPathGeneration: React.FC<
             <div className="relative">
               <div className="bg-gradient-to-r from-purple-100 to-blue-100 border-2 border-purple-300 rounded-2xl px-6 py-3 shadow-lg">
                 <p className="text-purple-700 font-semibold text-lg">
-                  "Your learning adventure begins here—let's discover the best
-                  path for you!"
+                  &ldquo;Your learning adventure begins here&mdash;let&apos;s
+                  discover the best path for you!&rdquo;
                 </p>
               </div>
               {/* Tooltip arrow */}

@@ -28,8 +28,9 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
           return (
             <div className="flex flex-col h-full">
               <p className="mb-4 flex-grow">
-                Hi there! I'm here to guide you. Let's create a personalized
-                learning path together so you can master this step by step.
+                Hi there! I&apos;m here to guide you. Let&apos;s create a
+                personalized learning path together so you can master this step
+                by step.
               </p>
               <div className="flex justify-end">
                 <button
@@ -37,7 +38,7 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
                   className="font-comic text-xl font-bold text-black bg-white border-4 border-black rounded-2xl px-6 py-3 cursor-pointer transition-all duration-200 ease-in-out shadow-[0_4px_0_0_black] hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_black] active:translate-y-0.5 active:shadow-[0_2px_0_0_black]"
                   style={{ WebkitTextStroke: "0.5px black" }}
                 >
-                  Let's Go !
+                  Let&apos;s Go !
                 </button>
               </div>
             </div>
@@ -45,14 +46,15 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
         case "progressing":
           return (
             <p>
-              Welcome back! Let's continue your learning path and make more
+              Welcome back! Let&apos;s continue your learning path and make more
               progress together.
             </p>
           );
         case "done":
           return (
             <p>
-              Awesome! You've finished all the steps. Keep up the great work!
+              Awesome! You&apos;ve finished all the steps. Keep up the great
+              work!
             </p>
           );
         default:
@@ -65,9 +67,9 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
           return (
             <div className="flex flex-col h-full">
               <p className="mb-4 flex-grow">
-                Hi there! In this station, you'll learn about{" "}
-                {conceptProp.conceptName}. Let's explore it together and master
-                it step by step!
+                Hi there! In this station, you&apos;ll learn about{" "}
+                {conceptProp.conceptName}. Let&apos;s explore it together and
+                master it step by step!
               </p>
               <div className="flex justify-end">
                 <button
@@ -77,7 +79,7 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
                   className="font-comic text-xl font-bold text-black bg-white border-4 border-black rounded-2xl px-6 py-3 cursor-pointer transition-all duration-200 ease-in-out shadow-[0_4px_0_0_black] hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_black] active:translate-y-0.5 active:shadow-[0_2px_0_0_black]"
                   style={{ WebkitTextStroke: "0.5px black" }}
                 >
-                  Let's Go !
+                  Let&apos;s Go !
                 </button>
               </div>
             </div>
@@ -85,15 +87,15 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
         case "done":
           return (
             <p>
-              Great job! You've completed {conceptProp.conceptName}. Let's move
-              on to the next concept!
+              Great job! You&apos;ve completed {conceptProp.conceptName}.
+              Let&apos;s move on to the next concept!
             </p>
           );
         case "waiting":
           return (
             <p>
               Hold on! You need to complete all previous concepts before
-              learning {conceptProp.conceptName}. Let's go step by step!
+              learning {conceptProp.conceptName}. Let&apos;s go step by step!
             </p>
           );
         default:

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { Environment } from "@react-three/drei";
 import ModelRenderer from "@/components/StudentDashboardComponents/ModelRenderer";
 import Character from "./Character";
 import PathCameraController from "@/components/StudentDashboardComponents/PathCameraController";
@@ -285,7 +285,7 @@ export default function Scene3D({
   mouseOffset,
   getInterpolatedPosition,
   getLookDirection,
-  enableOrbitControls = true,
+  enableOrbitControls: _enableOrbitControls = true,
   characters = [],
   learningPath = [],
 }: Scene3DProps) {
@@ -337,7 +337,7 @@ export default function Scene3D({
             // Get the corresponding concept for this character
             const conceptProp = learningPath[index] || null;
 
-            console.log(characterData.id);
+            // console.warn(characterData.id);
             return (
               <Character
                 key={characterData.id}

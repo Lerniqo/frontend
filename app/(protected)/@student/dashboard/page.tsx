@@ -78,7 +78,7 @@ export default function StudentDashboard() {
   }
 
   // Example:
-  console.log(generateEvenlySpacedList(5, 10));
+  // console.warn(generateEvenlySpacedList(5, 10));
   // Output: [1, 3, 5, 8, 10]
 
   // Create extended learning path with starting station

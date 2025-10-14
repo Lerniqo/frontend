@@ -1,10 +1,10 @@
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
-import { Group, Vector3 } from "three";
+import { Group, Vector3, AnimationClip } from "three";
 
 type GLTFResult = {
   scene: Group;
-  animations: any[];
+  animations: AnimationClip[];
 };
 
 export default function WavingManRenderer() {
@@ -108,19 +108,19 @@ export default function WavingManRenderer() {
       if (keyLower === "f") {
         const g = group.current;
         if (g) {
-          const pos = g.position;
-          const rot = g.rotation;
-          const scl = g.scale;
-          console.log(
-            "Current transform -> position:",
-            pos,
-            "rotation:",
-            rot,
-            "scale:",
-            scl
-          );
+          const _pos = g.position;
+          const _rot = g.rotation;
+          const _scl = g.scale;
+          // console.warn(
+          //   "Current transform -> position:",
+          //   pos,
+          //   "rotation:",
+          //   rot,
+          //   "scale:",
+          //   scl
+          // );
         } else {
-          console.log("Group ref not available yet.");
+          // console.warn("Group ref not available yet.");
         }
       }
     }

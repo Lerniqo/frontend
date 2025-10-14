@@ -1,14 +1,14 @@
 import { useAnimations, useGLTF, Html } from "@react-three/drei";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Group, Vector3 } from "three";
+import { Group, Vector3, AnimationClip } from "three";
 import { clone } from "three/examples/jsm/utils/SkeletonUtils.js"; // important!
 import { useRouter } from "next/navigation";
 import TalkBubble from "./TalkBubble";
 
 type GLTFResult = {
   scene: Group;
-  animations: any[];
+  animations: AnimationClip[];
 };
 
 interface ConceptProp {
@@ -92,7 +92,7 @@ export default function Character({
   useEffect(() => {
     if (actions && actions[animation]) {
       actions[animation].play();
-      console.log("Playing animation:", animation);
+      // console.warn("Playing animation:", animation);
     }
   }, [actions, animation]);
 
@@ -114,7 +114,7 @@ export default function Character({
   });
 
   // Function to get status color
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case "done":
         return "#10b981"; // green
@@ -128,7 +128,7 @@ export default function Character({
   };
 
   // Function to get status background
-  const getStatusBackground = (status: string) => {
+  const _getStatusBackground = (status: string) => {
     switch (status) {
       case "done":
         return "#064e3b"; // dark green

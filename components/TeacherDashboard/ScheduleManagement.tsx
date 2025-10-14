@@ -12,6 +12,7 @@ import WebinarManager from "./WebinarManager";
 import SubMenu from "./SubMenu";
 import SharedNavigation from "./SharedNavigation";
 import TeacherFooter from "./TeacherFooter";
+import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
 
 export default function ScheduleManagement() {
   const [webinars, setWebinars] = useState<Webinar[]>([]);
@@ -42,32 +43,7 @@ export default function ScheduleManagement() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex flex-col items-center space-y-8">
-            <div className="relative">
-              <div className="w-20 h-20 border-4 border-slate-600 border-t-blue-500 rounded-full animate-spin"></div>
-              <div
-                className="absolute inset-0 w-20 h-20 border-4 border-transparent border-t-purple-600 rounded-full animate-spin"
-                style={{
-                  animationDirection: "reverse",
-                  animationDuration: "1.5s",
-                }}
-              ></div>
-            </div>
-            <div className="text-center space-y-4">
-              <h3 className="text-3xl font-bold text-white">
-                Loading Schedule Management
-              </h3>
-              <p className="text-slate-400 text-lg">
-                Setting up your scheduling tools...
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <GeneralLoadingComponent text="Loading Schedule Management" />;
   }
 
   const scheduleItems = [

@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { Loading } from "@/components/CommonComponents/Loading";
+import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
 const Protected = ({
   teacher,
@@ -22,7 +23,7 @@ const Protected = ({
     }
   }, [user, isAuthenticated, isLoading, router]);
   // return student;
-  if (isLoading) return <Loading />;
+  if (isLoading) return <GeneralLoadingComponent text="Loading..." />;
 
   if (!user || !isAuthenticated) {
     return <div>Redirecting to login...</div>;

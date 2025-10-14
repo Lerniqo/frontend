@@ -15,12 +15,13 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "Arial", "Helvetica", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        comic: ["Comic Neue", "cursive"],
       },
       animation: {
         "bounce-slow": "bounce 2s infinite",
         "pulse-slow": "pulse 3s infinite",
         "ping-slow": "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
-        "blob": "blob 7s infinite",
+        blob: "blob 7s infinite",
       },
       keyframes: {
         blob: {

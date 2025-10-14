@@ -1106,3 +1106,261 @@ export function getParticlesFromAtom(
   const atom = findNodeById(syllabusData.hierarchy, atomId) as Atom;
   return atom?.particles || [];
 }
+
+// Types for learning path structure
+export interface LearningPathConcept {
+  conceptName: string;
+  conceptId: string;
+  status: "done" | "progressing" | "waiting";
+}
+
+/**
+ * Retrieves the learning path for a student
+ * @returns Promise<LearningPathConcept[]> - Array of concepts in the learning path
+ */
+export async function getLearningPath(): Promise<LearningPathConcept[]> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch('/api/learning-path');
+    // const data = await response.json();
+    // return data;
+
+    // Mock data for testing purposes
+    const mockLearningPath: LearningPathConcept[] = [
+      {
+        conceptName: "Linear Equations",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000001",
+        status: "done",
+      },
+      {
+        conceptName: "Quadratic Equations",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000002",
+        status: "done",
+      },
+      {
+        conceptName: "Factorization",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000003",
+        status: "done",
+      },
+      {
+        conceptName: "Pythagorean Theorem",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000004",
+        status: "progressing",
+      },
+      {
+        conceptName: "Trigonometric Ratios",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000005",
+        status: "waiting",
+      },
+      {
+        conceptName: "Geometry — Circles",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000006",
+        status: "waiting",
+      },
+      {
+        conceptName: "Coordinate Geometry",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000007",
+        status: "waiting",
+      },
+      {
+        conceptName: "Probability",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000008",
+        status: "waiting",
+      },
+      {
+        conceptName: "Statistics (Mean, Median, Mode)",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000009",
+        status: "waiting",
+      },
+      {
+        conceptName: "Inequalities",
+        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000010",
+        status: "waiting",
+      },
+    ];
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return mockLearningPath;
+  } catch (error) {
+    console.error("Error retrieving learning path:", error);
+    throw new Error("Failed to retrieve learning path");
+  }
+}
+
+// Types for initial quiz structure
+export interface InitialQuizQuestion {
+  questionId: number;
+  question: string;
+  choices: string[];
+  answer: string;
+  isCorrect?: boolean;
+}
+
+/**
+ * Retrieves the initial quiz questions for generating a learning path
+ * @returns Promise<InitialQuizQuestion[]> - Array of quiz questions
+ */
+export async function getInitialQuizz(): Promise<InitialQuizQuestion[]> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch('/api/quiz/initial');
+    // const data = await response.json();
+    // return data;
+
+    // Mock data for testing purposes
+    const mockInitialQuiz: InitialQuizQuestion[] = [
+      {
+        questionId: 1,
+        question: "What is the value of x if 2x + 5 = 13?",
+        choices: ["3", "4", "5", "6"],
+        answer: "4",
+      },
+      {
+        questionId: 2,
+        question:
+          "The perimeter of a rectangle is 24 cm. If the length is 8 cm, what is the width?",
+        choices: ["4 cm", "6 cm", "8 cm", "10 cm"],
+        answer: "4 cm",
+      },
+      {
+        questionId: 3,
+        question: "Simplify: 3(x + 4) - 2x",
+        choices: ["x + 4", "x + 12", "5x + 4", "x + 8"],
+        answer: "x + 12",
+      },
+      {
+        questionId: 4,
+        question:
+          "A train travels at 60 km/h. How far does it travel in 2.5 hours?",
+        choices: ["120 km", "150 km", "180 km", "200 km"],
+        answer: "150 km",
+      },
+      {
+        questionId: 5,
+        question: "Which of the following is a prime number?",
+        choices: ["21", "29", "35", "39"],
+        answer: "29",
+      },
+      {
+        questionId: 6,
+        question:
+          "The ratio of boys to girls in a class is 3:4. If there are 12 boys, how many girls are there?",
+        choices: ["12", "14", "16", "18"],
+        answer: "16",
+      },
+      {
+        questionId: 7,
+        question: "Factorize: x^2 + 5x + 6",
+        choices: [
+          "(x + 2)(x + 3)",
+          "(x + 1)(x + 6)",
+          "(x - 2)(x - 3)",
+          "(x - 1)(x - 6)",
+        ],
+        answer: "(x + 2)(x + 3)",
+      },
+      {
+        questionId: 8,
+        question: "What is 25% of 240?",
+        choices: ["50", "60", "70", "80"],
+        answer: "60",
+      },
+      {
+        questionId: 9,
+        question: "Solve for y: 3y - 7 = 11",
+        choices: ["4", "5", "6", "7"],
+        answer: "6",
+      },
+      {
+        questionId: 10,
+        question: "The sum of angles in a triangle is:",
+        choices: ["90°", "180°", "270°", "360°"],
+        answer: "180°",
+      },
+    ];
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return mockInitialQuiz;
+  } catch (error) {
+    console.error("Error retrieving initial quiz:", error);
+    throw new Error("Failed to retrieve initial quiz");
+  }
+}
+
+/**
+ * Sets the goal for a student
+ * @param goal - The student's learning goal
+ * @returns Promise<void>
+ */
+export async function setGoal(goal: string): Promise<void> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch('/api/student/goal', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ goal })
+    // });
+
+    console.log("Goal is setted:", goal);
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  } catch (error) {
+    console.error("Error setting goal:", error);
+    throw new Error("Failed to set goal");
+  }
+}
+
+/**
+ * Sets the initial quiz results
+ * @param results - Array of quiz questions with results
+ * @returns Promise<void>
+ */
+export async function setInitialQuizzResult(
+  results: InitialQuizQuestion[]
+): Promise<void> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch('/api/quiz/initial-results', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ results })
+    // });
+
+    console.log("Initial quiz results:", results);
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+  } catch (error) {
+    console.error("Error setting initial quiz results:", error);
+    throw new Error("Failed to set initial quiz results");
+  }
+}
+
+/**
+ * Generates a learning path based on the initial quiz results
+ * @returns Promise<void>
+ */
+export async function generateLearningPath(): Promise<void> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await fetch('/api/learning-path/generate', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' }
+    // });
+
+    console.log("Generating learning path...");
+
+    // Simulate network delay for path generation
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    console.log("Learning path generated successfully");
+  } catch (error) {
+    console.error("Error generating learning path:", error);
+    throw new Error("Failed to generate learning path");
+  }
+}

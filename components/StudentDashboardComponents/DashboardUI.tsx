@@ -2,13 +2,14 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Search, 
-  Trophy, 
-  Users, 
-  BookOpen, 
-  GraduationCap, 
-  Zap, 
+import userService from "@/services/userService";
+import {
+  Search,
+  Trophy,
+  Users,
+  BookOpen,
+  GraduationCap,
+  Zap,
   Settings,
   Gamepad2,
   Star,
@@ -20,7 +21,7 @@ import {
   LogOut,
   X,
   BellRing,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 import { CAMERA_PATH } from "@/constants/cameraPath";
 import type { DashboardUIProps } from "@/types/dashboard.types";
@@ -35,16 +36,23 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [activeNav, setActiveNav] = useState('dashboard');
+  const [activeNav, setActiveNav] = useState("dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<'contests' | 'teachers' | 'resource-library' | null>(null);
+  const [modalContent, setModalContent] = useState<
+    "contests" | "teachers" | "resource-library" | null
+  >(null);
   const notificationRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
-  const progressPercentage = (currentPathProgress / (CAMERA_PATH.length - 1) * 100).toFixed(1);
+  const progressPercentage = (
+    (currentPathProgress / (CAMERA_PATH.length - 1)) *
+    100
+  ).toFixed(1);
 
-  const handleOpenModal = (content: 'contests' | 'teachers' | 'resource-library') => {
+  const handleOpenModal = (
+    content: "contests" | "teachers" | "resource-library"
+  ) => {
     setModalContent(content);
     setIsModalOpen(true);
   };
@@ -57,56 +65,62 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   // Close popups when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target as Node)
+      ) {
         setIsNotificationOpen(false);
       }
-      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
+      if (
+        avatarRef.current &&
+        !avatarRef.current.contains(event.target as Node)
+      ) {
         setIsAvatarOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const _navigationItems = [
-    { 
-      icon: Zap, 
-      label: "Dual Match", 
+    {
+      icon: Zap,
+      label: "Dual Match",
       description: "Challenge friends",
       gradient: "from-yellow-500 to-orange-500",
-      count: 3
+      count: 3,
     },
-    { 
-      icon: Trophy, 
-      label: "Contests", 
+    {
+      icon: Trophy,
+      label: "Contests",
       description: "Join competitions",
       gradient: "from-yellow-500 to-yellow-600",
-      count: 12
+      count: 12,
     },
-    { 
-      icon: BookOpen, 
-      label: "Learning Path", 
+    {
+      icon: BookOpen,
+      label: "Learning Path",
       description: "Your journey",
       gradient: "from-green-500 to-emerald-500",
-      progress: Math.round(parseFloat(progressPercentage))
+      progress: Math.round(parseFloat(progressPercentage)),
     },
-    { 
-      icon: GraduationCap, 
-      label: "Resource Library", 
+    {
+      icon: GraduationCap,
+      label: "Resource Library",
       description: "Study materials",
       gradient: "from-blue-500 to-cyan-500",
-      count: 156
+      count: 156,
     },
-    { 
-      icon: Users, 
-      label: "Teachers", 
+    {
+      icon: Users,
+      label: "Teachers",
       description: "Expert guidance",
       gradient: "from-purple-500 to-pink-500",
-      count: 8
-    }
+      count: 8,
+    },
   ];
 
   return (
@@ -126,14 +140,14 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/10 to-blue-500/5 rounded-2xl" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,0.1),transparent_70%)] rounded-2xl" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_50%,rgba(147,51,234,0.1),transparent_70%)] rounded-2xl" />
-          
+
           <div className="relative p-4">
             <div className="flex justify-between items-center">
               {/* Left side - Premium Logo/Brand */}
               <div className="flex items-center space-x-4 flex-shrink-0">
                 <div className="relative">
                   <div className="w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-2xl flex items-center justify-center border-2 border-white/20 shadow-lg shadow-blue-500/25">
-                    <Gamepad2 className="text-white w-7 h-7" />
+                    <span className="text-white text-2xl font-bold">L</span>
                   </div>
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
                 </div>
@@ -141,13 +155,15 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
                     Lerniqo
                   </h1>
-                  <p className="text-white/70 text-sm font-medium">Premium Gaming Mode</p>
+                  <p className="text-white/70 text-sm font-medium">
+                    Your OL maths assistance
+                  </p>
                 </div>
               </div>
 
               {/* Center - Enhanced Search Bar */}
               <div className="flex-1 max-w-2xl mx-8">
-                <CenteredSearchBar 
+                <CenteredSearchBar
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   isSearchFocused={isSearchFocused}
@@ -157,12 +173,12 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
               {/* Right side - Notifications & Avatar */}
               <div className="flex items-center space-x-4 flex-shrink-0">
-                <NotificationButton 
+                <NotificationButton
                   ref={notificationRef}
                   isOpen={isNotificationOpen}
                   setIsOpen={setIsNotificationOpen}
                 />
-                <PremiumUserAvatarWithPopup 
+                <PremiumUserAvatarWithPopup
                   ref={avatarRef}
                   isOpen={isAvatarOpen}
                   setIsOpen={setIsAvatarOpen}
@@ -175,7 +191,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Premium Left Navigation */}
       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40">
-        <PremiumNavigation 
+        <PremiumNavigation
           activeNav={activeNav}
           onNavChange={setActiveNav}
           onOpenModal={handleOpenModal}
@@ -193,34 +209,34 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
           {/* Animated Background */}
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/10 to-blue-500/5 rounded-2xl" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_70%)] rounded-2xl" />
-          
+
           <div className="relative p-6">
             <div className="flex items-center space-x-8">
-              <PremiumAchievementItem 
-                icon={Trophy} 
-                label="Achievements" 
-                value="12/50" 
+              <PremiumAchievementItem
+                icon={Trophy}
+                label="Achievements"
+                value="12/50"
                 color="from-yellow-400 to-orange-500"
                 progress={24}
               />
-              <PremiumAchievementItem 
-                icon={Target} 
-                label="Completed" 
-                value="85%" 
+              <PremiumAchievementItem
+                icon={Target}
+                label="Completed"
+                value="85%"
                 color="from-green-400 to-emerald-500"
                 progress={85}
               />
-              <PremiumAchievementItem 
-                icon={Zap} 
-                label="Speed Bonus" 
-                value="x2.5" 
+              <PremiumAchievementItem
+                icon={Zap}
+                label="Speed Bonus"
+                value="x2.5"
                 color="from-blue-400 to-cyan-500"
                 isMultiplier={true}
               />
-              <PremiumAchievementItem 
-                icon={Star} 
-                label="Perfect Scores" 
-                value="23" 
+              <PremiumAchievementItem
+                icon={Star}
+                label="Perfect Scores"
+                value="23"
                 color="from-purple-400 to-pink-500"
                 _count={23}
               />
@@ -231,9 +247,9 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Battle Button for Dual Match */}
       <div className="absolute bottom-6 left-6 z-30">
-        <DualMatchButton 
+        <DualMatchButton
           onClick={() => {
-            router.push('/dual-match');
+            router.push("/dual-match");
           }}
         />
       </div>
@@ -249,14 +265,14 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 }
 
 // Navigation Button Component
-const _NavButton = ({ 
-  icon: Icon, 
-  label, 
-  color = "from-blue-500 to-purple-600" 
-}: { 
-  icon: LucideIcon; 
-  label: string; 
-  color?: string; 
+const _NavButton = ({
+  icon: Icon,
+  label,
+  color = "from-blue-500 to-purple-600",
+}: {
+  icon: LucideIcon;
+  label: string;
+  color?: string;
 }) => (
   <div className="group cursor-pointer">
     <button className="flex items-center space-x-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-500/50 rounded-xl transition-all duration-300 backdrop-blur-sm">
@@ -271,23 +287,23 @@ const _NavButton = ({
 );
 
 // Side Navigation Button Component
-const _SideNavButton = ({ 
-  icon: Icon, 
-  label, 
+const _SideNavButton = ({
+  icon: Icon,
+  label,
   active = false,
-  onClick 
-}: { 
-  icon: LucideIcon; 
-  label: string; 
+  onClick,
+}: {
+  icon: LucideIcon;
+  label: string;
   active?: boolean;
   onClick?: () => void;
 }) => (
-  <button 
+  <button
     onClick={onClick}
     className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
-      active 
-        ? 'bg-blue-500/20 border border-blue-500/40 text-blue-400' 
-        : 'bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 text-white hover:text-purple-400'
+      active
+        ? "bg-blue-500/20 border border-blue-500/40 text-blue-400"
+        : "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-500/50 text-white hover:text-purple-400"
     }`}
   >
     <Icon className="w-4 h-4" />
@@ -296,36 +312,38 @@ const _SideNavButton = ({
 );
 
 // Simple Navigation Button Component - Matching LearningPath Style
-const _SimpleNavButton = ({ 
-  icon: Icon, 
-  label, 
+const _SimpleNavButton = ({
+  icon: Icon,
+  label,
   active = false,
   onClick,
-  _gradient = "from-blue-500 to-purple-600"
-}: { 
-  icon: LucideIcon; 
-  label: string; 
+  _gradient = "from-blue-500 to-purple-600",
+}: {
+  icon: LucideIcon;
+  label: string;
   active?: boolean;
   onClick?: () => void;
   _gradient?: string;
 }) => (
-  <div 
+  <div
     onClick={onClick}
     className="group relative flex items-start space-x-2.5 p-2 rounded-lg border border-transparent cursor-pointer transition-all duration-300 hover:bg-white/5 hover:border-white/10"
   >
     {/* Premium Hover Background Effect */}
     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg" />
-    
+
     {/* Step Icon */}
     <div className="flex-shrink-0 relative z-10">
-      <div className={`p-1.5 rounded-full border transition-all duration-300 group-hover:shadow-md ${
-        active 
-          ? "border-blue-400/50 bg-blue-500/20 text-blue-400 group-hover:border-blue-400/70 group-hover:bg-blue-500/30" 
-          : "border-purple-400/50 bg-purple-500/20 text-purple-400 group-hover:border-purple-400/70 group-hover:bg-purple-500/30"
-      }`}>
+      <div
+        className={`p-1.5 rounded-full border transition-all duration-300 group-hover:shadow-md ${
+          active
+            ? "border-blue-400/50 bg-blue-500/20 text-blue-400 group-hover:border-blue-400/70 group-hover:bg-blue-500/30"
+            : "border-purple-400/50 bg-purple-500/20 text-purple-400 group-hover:border-purple-400/70 group-hover:bg-purple-500/30"
+        }`}
+      >
         <Icon className="w-4 h-4 stroke-[2.5] group-hover:stroke-[3]" />
       </div>
-      
+
       {active && (
         <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
       )}
@@ -335,16 +353,20 @@ const _SimpleNavButton = ({
     <div className="flex-1 min-w-0 relative z-10">
       <div className="flex items-start justify-between">
         <div>
-          <h4 className={`text-sm font-medium transition-colors duration-300 ${
-            active ? 'text-white group-hover:text-blue-100' : 'text-white/90 group-hover:text-white'
-          }`}>
+          <h4
+            className={`text-sm font-medium transition-colors duration-300 ${
+              active
+                ? "text-white group-hover:text-blue-100"
+                : "text-white/90 group-hover:text-white"
+            }`}
+          >
             {label}
           </h4>
           <p className="text-xs text-white/60 mt-0.5 group-hover:text-white/70 transition-colors duration-300">
-            {active ? 'Active' : 'Available'}
+            {active ? "Active" : "Available"}
           </p>
         </div>
-        
+
         {active && (
           <div className="flex items-center space-x-1">
             <div className="w-1.5 h-1.5 bg-blue-400 rounded-full group-hover:bg-blue-300 transition-colors duration-300" />
@@ -354,18 +376,20 @@ const _SimpleNavButton = ({
     </div>
 
     {/* Premium Hover Border Glow */}
-    <div className={`absolute inset-0 rounded-lg border border-transparent group-hover:border-blue-400/20 transition-all duration-300 ${
-      active ? 'border-blue-400/30' : ''
-    }`} />
+    <div
+      className={`absolute inset-0 rounded-lg border border-transparent group-hover:border-blue-400/20 transition-all duration-300 ${
+        active ? "border-blue-400/30" : ""
+      }`}
+    />
   </div>
 );
 
 // Search Bar Component
-const _SearchBar = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  _isSearchFocused, 
-  setIsSearchFocused 
+const _SearchBar = ({
+  searchQuery,
+  setSearchQuery,
+  _isSearchFocused,
+  setIsSearchFocused,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -410,32 +434,34 @@ const _UserAvatar = () => (
 );
 
 // Achievement Item Component
-const _AchievementItem = ({ 
-  icon: Icon, 
-  label, 
-  value, 
-  color 
-}: { 
-  icon: LucideIcon; 
-  label: string; 
-  value: string; 
-  color: string; 
+const _AchievementItem = ({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  color: string;
 }) => (
   <div className="flex items-center space-x-2 text-center">
     <Icon className={`w-5 h-5 ${color}`} />
     <div>
       <div className={`text-lg font-bold ${color}`}>{value}</div>
-      <div className="text-white/60 text-xs uppercase tracking-wider">{label}</div>
+      <div className="text-white/60 text-xs uppercase tracking-wider">
+        {label}
+      </div>
     </div>
   </div>
 );
 
 // Premium Search Bar Component
-const _PremiumSearchBar = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  isSearchFocused, 
-  setIsSearchFocused 
+const _PremiumSearchBar = ({
+  searchQuery,
+  setSearchQuery,
+  isSearchFocused,
+  setIsSearchFocused,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -443,13 +469,21 @@ const _PremiumSearchBar = ({
   setIsSearchFocused: (focused: boolean) => void;
 }) => (
   <div className="relative group">
-    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
-      isSearchFocused ? 'opacity-100 scale-105' : 'opacity-0 group-hover:opacity-50'
-    }`} />
+    <div
+      className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
+        isSearchFocused
+          ? "opacity-100 scale-105"
+          : "opacity-0 group-hover:opacity-50"
+      }`}
+    />
     <div className="relative">
-      <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-        isSearchFocused ? 'text-blue-400' : 'text-white/60 group-hover:text-white/80'
-      }`} />
+      <Search
+        className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+          isSearchFocused
+            ? "text-blue-400"
+            : "text-white/60 group-hover:text-white/80"
+        }`}
+      />
       <input
         type="text"
         value={searchQuery}
@@ -460,15 +494,17 @@ const _PremiumSearchBar = ({
         className={`w-80 pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 
           focus:outline-none focus:border-blue-500/50 focus:bg-white/15 backdrop-blur-sm 
           transition-all duration-300 hover:bg-white/15 hover:border-white/30
-          ${isSearchFocused ? 'shadow-lg shadow-blue-500/10' : ''}
+          ${isSearchFocused ? "shadow-lg shadow-blue-500/10" : ""}
         `}
       />
       {/* Premium Glow Effect */}
-      <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 ${
-        isSearchFocused ? 'opacity-100' : 'opacity-0'
-      }`} />
+      <div
+        className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 ${
+          isSearchFocused ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </div>
-    
+
     {searchQuery && (
       <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
         <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
@@ -476,12 +512,20 @@ const _PremiumSearchBar = ({
         </div>
         <div className="max-h-48 overflow-y-auto">
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">Mathematics - Advanced Calculus</div>
-            <div className="text-xs text-white/60 mt-1">Chapter 3: Derivatives & Applications</div>
+            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">
+              Mathematics - Advanced Calculus
+            </div>
+            <div className="text-xs text-white/60 mt-1">
+              Chapter 3: Derivatives & Applications
+            </div>
           </div>
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">Physics - Quantum Mechanics</div>
-            <div className="text-xs text-white/60 mt-1">Premium Course by Dr. Smith</div>
+            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">
+              Physics - Quantum Mechanics
+            </div>
+            <div className="text-xs text-white/60 mt-1">
+              Premium Course by Dr. Smith
+            </div>
           </div>
         </div>
       </div>
@@ -494,20 +538,20 @@ const _PremiumUserAvatar = () => (
   <div className="group relative">
     {/* Glow Ring */}
     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full blur-lg group-hover:blur-xl transition-all duration-300 animate-pulse" />
-    
+
     {/* Main Avatar */}
     <div className="relative w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full flex items-center justify-center border-2 border-white/30 group-hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg shadow-blue-500/25 group-hover:scale-110">
       <span className="text-white font-bold text-lg drop-shadow-lg">JD</span>
     </div>
-    
+
     {/* Status Indicator */}
     <div className="absolute top-0 right-0 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-lg shadow-green-500/25" />
-    
+
     {/* Premium Badge */}
     <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border border-slate-900">
       <Crown className="w-3 h-3 text-white" />
     </div>
-    
+
     {/* Hover Sparkles */}
     <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
       {[...Array(4)].map((_, i) => (
@@ -517,25 +561,25 @@ const _PremiumUserAvatar = () => (
           style={{
             left: `${20 + i * 15}%`,
             top: `${20 + (i % 2) * 40}%`,
-            animationDelay: `${i * 0.2}s`
+            animationDelay: `${i * 0.2}s`,
           }}
         />
       ))}
     </div>
   </div>
 );
-const PremiumAchievementItem = ({ 
-  icon: Icon, 
-  label, 
-  value, 
+const PremiumAchievementItem = ({
+  icon: Icon,
+  label,
+  value,
   color,
   progress,
   _count,
-  isMultiplier = false
-}: { 
-  icon: LucideIcon; 
-  label: string; 
-  value: string; 
+  isMultiplier = false,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
   color: string;
   progress?: number;
   _count?: number;
@@ -543,33 +587,42 @@ const PremiumAchievementItem = ({
 }) => (
   <div className="group relative flex items-center space-x-4 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300">
     {/* Icon with Gradient Background */}
-    <div className={`p-3 rounded-xl bg-gradient-to-r ${color} shadow-lg transition-all duration-300 group-hover:scale-110`}>
+    <div
+      className={`p-3 rounded-xl bg-gradient-to-r ${color} shadow-lg transition-all duration-300 group-hover:scale-110`}
+    >
       <Icon className="w-6 h-6 text-white" />
     </div>
-    
+
     {/* Content */}
     <div className="flex flex-col items-start">
-      <div className={`text-xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent transition-all duration-300`}>
+      <div
+        className={`text-xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent transition-all duration-300`}
+      >
         {value}
       </div>
       <div className="text-white/70 text-sm font-medium group-hover:text-white transition-colors duration-300">
         {label}
       </div>
-      
+
       {/* Progress Bar */}
       {progress !== undefined && (
         <div className="w-16 h-1.5 bg-white/20 rounded-full mt-1 overflow-hidden">
-          <div 
+          <div
             className={`h-full bg-gradient-to-r ${color} rounded-full transition-all duration-1000 ease-out`}
             style={{ width: `${progress}%` }}
           />
         </div>
       )}
     </div>
-    
+
     {/* Premium Glow Effect */}
-    <div className={`absolute inset-0 rounded-xl bg-gradient-to-r ${color.replace('to-', 'to-transparent from-')} opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl`} />
-    
+    <div
+      className={`absolute inset-0 rounded-xl bg-gradient-to-r ${color.replace(
+        "to-",
+        "to-transparent from-"
+      )} opacity-0 group-hover:opacity-10 transition-opacity duration-300 blur-xl`}
+    />
+
     {/* Animated Sparkles */}
     {isMultiplier && (
       <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
@@ -578,11 +631,11 @@ const PremiumAchievementItem = ({
 );
 
 // Centered Search Bar Component
-const CenteredSearchBar = ({ 
-  searchQuery, 
-  setSearchQuery, 
-  isSearchFocused, 
-  setIsSearchFocused 
+const CenteredSearchBar = ({
+  searchQuery,
+  setSearchQuery,
+  isSearchFocused,
+  setIsSearchFocused,
 }: {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
@@ -590,13 +643,21 @@ const CenteredSearchBar = ({
   setIsSearchFocused: (focused: boolean) => void;
 }) => (
   <div className="relative group">
-    <div className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
-      isSearchFocused ? 'opacity-100 scale-105' : 'opacity-0 group-hover:opacity-50'
-    }`} />
+    <div
+      className={`absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl blur-sm transition-all duration-300 ${
+        isSearchFocused
+          ? "opacity-100 scale-105"
+          : "opacity-0 group-hover:opacity-50"
+      }`}
+    />
     <div className="relative">
-      <Search className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-        isSearchFocused ? 'text-blue-400' : 'text-white/60 group-hover:text-white/80'
-      }`} />
+      <Search
+        className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+          isSearchFocused
+            ? "text-blue-400"
+            : "text-white/60 group-hover:text-white/80"
+        }`}
+      />
       <input
         type="text"
         value={searchQuery}
@@ -607,15 +668,17 @@ const CenteredSearchBar = ({
         className={`w-full pl-12 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 
           focus:outline-none focus:border-blue-500/50 focus:bg-white/15 backdrop-blur-sm 
           transition-all duration-300 hover:bg-white/15 hover:border-white/30
-          ${isSearchFocused ? 'shadow-lg shadow-blue-500/10' : ''}
+          ${isSearchFocused ? "shadow-lg shadow-blue-500/10" : ""}
         `}
       />
       {/* Premium Glow Effect */}
-      <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 pointer-events-none ${
-        isSearchFocused ? 'opacity-100' : 'opacity-0'
-      }`} />
+      <div
+        className={`absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 transition-opacity duration-300 pointer-events-none ${
+          isSearchFocused ? "opacity-100" : "opacity-0"
+        }`}
+      />
     </div>
-    
+
     {searchQuery && (
       <div className="absolute top-full mt-3 w-full bg-black/90 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-50">
         <div className="p-4 text-sm text-white/80 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
@@ -623,12 +686,20 @@ const CenteredSearchBar = ({
         </div>
         <div className="max-h-48 overflow-y-auto">
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">Mathematics - Advanced Calculus</div>
-            <div className="text-xs text-white/60 mt-1">Chapter 3: Derivatives & Applications</div>
+            <div className="text-white font-semibold group-hover:text-blue-300 transition-colors">
+              Mathematics - Advanced Calculus
+            </div>
+            <div className="text-xs text-white/60 mt-1">
+              Chapter 3: Derivatives & Applications
+            </div>
           </div>
           <div className="p-4 hover:bg-white/10 cursor-pointer transition-colors group">
-            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">Physics - Quantum Mechanics</div>
-            <div className="text-xs text-white/60 mt-1">Premium Course by Dr. Smith</div>
+            <div className="text-white font-semibold group-hover:text-purple-300 transition-colors">
+              Physics - Quantum Mechanics
+            </div>
+            <div className="text-xs text-white/60 mt-1">
+              Premium Course by Dr. Smith
+            </div>
           </div>
         </div>
       </div>
@@ -648,7 +719,7 @@ const NotificationButton = React.forwardRef<
       message: "Advanced Calculus - Integration Techniques",
       time: "2 mins ago",
       type: "assignment",
-      unread: true
+      unread: true,
     },
     {
       id: 2,
@@ -656,7 +727,7 @@ const NotificationButton = React.forwardRef<
       message: "You scored 95% in Physics Quiz #5",
       time: "1 hour ago",
       type: "result",
-      unread: true
+      unread: true,
     },
     {
       id: 3,
@@ -664,7 +735,7 @@ const NotificationButton = React.forwardRef<
       message: "Join the Machine Learning study group",
       time: "3 hours ago",
       type: "social",
-      unread: false
+      unread: false,
     },
     {
       id: 4,
@@ -672,11 +743,11 @@ const NotificationButton = React.forwardRef<
       message: "New materials added to Chemistry course",
       time: "1 day ago",
       type: "update",
-      unread: false
-    }
+      unread: false,
+    },
   ];
 
-  const unreadCount = notifications.filter(n => n.unread).length;
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   return (
     <div ref={ref} className="relative flex-shrink-0">
@@ -719,69 +790,110 @@ const NotificationButton = React.forwardRef<
             spotlightSize={150}
             intensity={0.4}
           >
-          <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-            <div className="flex items-center justify-between">
-              <h3 className="text-white font-semibold">Notifications</h3>
-              <span className="text-xs text-blue-400 bg-blue-500/20 px-2 py-1 rounded-lg">
-                {unreadCount} new
-              </span>
-            </div>
-          </div>
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`p-4 border-b border-white/10 hover:bg-white/10 cursor-pointer transition-colors group ${
-                  notification.unread ? 'bg-blue-500/5' : ''
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="text-white font-medium group-hover:text-blue-300 transition-colors">
-                        {notification.title}
-                      </h4>
-                      {notification.unread && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                      )}
-                    </div>
-                    <p className="text-white/60 text-sm mt-1">{notification.message}</p>
-                    <p className="text-white/40 text-xs mt-2">{notification.time}</p>
-                  </div>
-                  <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all">
-                    <X className="w-4 h-4 text-white/60" />
-                  </button>
-                </div>
+            <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+              <div className="flex items-center justify-between">
+                <h3 className="text-white font-semibold">Notifications</h3>
+                <span className="text-xs text-blue-400 bg-blue-500/20 px-2 py-1 rounded-lg">
+                  {unreadCount} new
+                </span>
               </div>
-            ))}
-          </div>
-          <div className="p-3 border-t border-white/10 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
-            <button className="w-full text-center text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
-              View All Notifications
-            </button>
-          </div>
-        </SpotlightCard>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`p-4 border-b border-white/10 hover:bg-white/10 cursor-pointer transition-colors group ${
+                    notification.unread ? "bg-blue-500/5" : ""
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="text-white font-medium group-hover:text-blue-300 transition-colors">
+                          {notification.title}
+                        </h4>
+                        {notification.unread && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                        )}
+                      </div>
+                      <p className="text-white/60 text-sm mt-1">
+                        {notification.message}
+                      </p>
+                      <p className="text-white/40 text-xs mt-2">
+                        {notification.time}
+                      </p>
+                    </div>
+                    <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all">
+                      <X className="w-4 h-4 text-white/60" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t border-white/10 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
+              <button className="w-full text-center text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+                View All Notifications
+              </button>
+            </div>
+          </SpotlightCard>
         </div>
       )}
     </div>
   );
 });
 
-NotificationButton.displayName = 'NotificationButton';
+NotificationButton.displayName = "NotificationButton";
 
 // Premium User Avatar with Popup Component
 const PremiumUserAvatarWithPopup = React.forwardRef<
   HTMLDivElement,
   { isOpen: boolean; setIsOpen: (open: boolean) => void }
 >(({ isOpen, setIsOpen }, ref) => {
+  const router = useRouter();
+
   const menuItems = [
-    { icon: User, label: "Profile Settings", description: "Manage your account" },
-    { icon: Crown, label: "Premium Plan", description: "Upgrade your experience" },
-    { icon: Settings, label: "Preferences", description: "Customize your dashboard" },
-    { icon: Trophy, label: "Achievements", description: "View your progress" },
-    { icon: HelpCircle, label: "Help & Support", description: "Get assistance" },
-    { icon: LogOut, label: "Sign Out", description: "Leave your session" }
+    {
+      icon: User,
+      label: "Profile Settings",
+      description: "Manage your account",
+      url: "/profile",
+    },
+    {
+      icon: Trophy,
+      label: "Achievements",
+      description: "View your progress",
+      url: "/achievements",
+    },
+    {
+      icon: HelpCircle,
+      label: "Help & Support",
+      description: "Get assistance",
+      url: "/help-and-support",
+    },
+    {
+      icon: LogOut,
+      label: "Sign Out",
+      description: "Leave your session",
+      url: "",
+    },
   ];
+
+  const handleClick = async (item: (typeof menuItems)[0]) => {
+    if (item.label === "Sign Out") {
+      try {
+        await userService.logout();
+        router.push("/login");
+      } catch (error) {
+        console.error("Logout error:", error);
+        // Even if logout fails, redirect to login
+        router.push("/login");
+      }
+    } else if (item.url) {
+      router.push(item.url);
+    }
+    // Close the popup after clicking
+    setIsOpen(false);
+  };
 
   return (
     <div ref={ref} className="relative flex-shrink-0">
@@ -791,20 +903,22 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
       >
         {/* Glow Ring */}
         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-600/30 rounded-full blur-lg group-hover:blur-xl transition-all duration-300 animate-pulse" />
-        
+
         {/* Main Avatar */}
         <div className="relative w-14 h-14 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-600 rounded-full flex items-center justify-center border-2 border-white/30 group-hover:border-white/50 transition-all duration-300 cursor-pointer shadow-lg shadow-blue-500/25 group-hover:scale-110">
-          <span className="text-white font-bold text-lg drop-shadow-lg">JD</span>
+          <span className="text-white font-bold text-lg drop-shadow-lg">
+            JD
+          </span>
         </div>
-        
+
         {/* Status Indicator */}
         <div className="absolute top-0 right-0 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full border-2 border-slate-900 animate-pulse shadow-lg shadow-green-500/25" />
-        
+
         {/* Premium Badge */}
         <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center border border-slate-900">
           <Crown className="w-3 h-3 text-white" />
         </div>
-        
+
         {/* Hover Sparkles */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           {[...Array(4)].map((_, i) => (
@@ -814,7 +928,7 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
               style={{
                 left: `${20 + i * 15}%`,
                 top: `${20 + (i % 2) * 40}%`,
-                animationDelay: `${i * 0.2}s`
+                animationDelay: `${i * 0.2}s`,
               }}
             />
           ))}
@@ -830,54 +944,61 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
             spotlightSize={150}
             intensity={0.4}
           >
-          {/* Header */}
-          <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20">
-                <span className="text-white font-bold">JD</span>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold">John Doe</h3>
-                <p className="text-white/60 text-sm">Premium Student</p>
+            {/* Header */}
+            <div className="p-4 border-b border-white/10 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-white/20">
+                  <span className="text-white font-bold">JD</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">John Doe</h3>
+                  <p className="text-white/60 text-sm">Premium Student</p>
+                </div>
               </div>
             </div>
-          </div>
-          
-          {/* Menu Items */}
-          <div className="py-2">
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 transition-colors group"
-              >
-                <div className={`p-2 rounded-lg ${
-                  item.label === 'Premium Plan' 
-                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20' 
-                    : item.label === 'Sign Out'
-                    ? 'bg-red-500/20'
-                    : 'bg-blue-500/20'
-                }`}>
-                  <item.icon className={`w-4 h-4 ${
-                    item.label === 'Premium Plan' 
-                      ? 'text-yellow-400' 
-                      : item.label === 'Sign Out'
-                      ? 'text-red-400'
-                      : 'text-blue-400'
-                  }`} />
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="text-white font-medium group-hover:text-blue-300 transition-colors">
-                    {item.label}
+
+            {/* Menu Items */}
+            <div className="py-2">
+              {menuItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleClick(item)}
+                  className="w-full flex items-center space-x-3 px-4 py-3 hover:bg-white/10 transition-colors group"
+                >
+                  <div
+                    className={`p-2 rounded-lg ${
+                      item.label === "Premium Plan"
+                        ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20"
+                        : item.label === "Sign Out"
+                        ? "bg-red-500/20"
+                        : "bg-blue-500/20"
+                    }`}
+                  >
+                    <item.icon
+                      className={`w-4 h-4 ${
+                        item.label === "Premium Plan"
+                          ? "text-yellow-400"
+                          : item.label === "Sign Out"
+                          ? "text-red-400"
+                          : "text-blue-400"
+                      }`}
+                    />
                   </div>
-                  <div className="text-white/60 text-xs">{item.description}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </SpotlightCard>
+                  <div className="flex-1 text-left">
+                    <div className="text-white font-medium group-hover:text-blue-300 transition-colors">
+                      {item.label}
+                    </div>
+                    <div className="text-white/60 text-xs">
+                      {item.description}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </SpotlightCard>
         </div>
       )}
     </div>
   );
 });
-PremiumUserAvatarWithPopup.displayName = 'PremiumUserAvatarWithPopup';
+PremiumUserAvatarWithPopup.displayName = "PremiumUserAvatarWithPopup";

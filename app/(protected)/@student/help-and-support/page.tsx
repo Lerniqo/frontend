@@ -10,6 +10,8 @@ import {
   Headphones,
   CheckCircle,
 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function HelpAndSupportPage() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -21,6 +23,8 @@ export default function HelpAndSupportPage() {
     subject: "",
     message: "",
   });
+
+  const router = useRouter();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -61,18 +65,35 @@ export default function HelpAndSupportPage() {
       <section className="relative z-10 py-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           {/* Header */}
-          <header className="text-center mb-12 mt-8">
-            <div className="flex justify-center mb-6">
+          <header className="mb-12 mt-8 relative">
+            {/* Back Button - Positioned on the right */}
+            <div className="absolute top-0 right-0">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="group flex items-center space-x-2 px-4 py-2.5 bg-white/80 backdrop-blur-md border border-purple-200/50 rounded-xl shadow-lg hover:shadow-xl hover:bg-white/90 hover:border-purple-300/60 transition-all duration-300 transform hover:scale-105"
+              >
+                <div className="p-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg group-hover:from-blue-600 group-hover:to-purple-600 transition-all duration-300">
+                  <ArrowLeft className="w-4 h-4 text-white" />
+                </div>
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold group-hover:from-blue-700 group-hover:to-purple-700 transition-all duration-300">
+                  Back to Dashboard
+                </span>
+              </button>
+            </div>
+            
+            <div className="flex items-center space-x-4 mb-6">
               <div className="p-4 bg-gradient-to-r from-purple-600 to-violet-600 rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
                 <HelpCircle className="w-12 h-12 text-white" />
               </div>
+              <div>
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-700 to-violet-600 bg-clip-text text-transparent mb-2">
+                  Help & Support
+                </h1>
+                <p className="text-lg text-gray-600">
+                  We're here to help you succeed in your learning journey
+                </p>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-purple-700 to-violet-600 bg-clip-text text-transparent mb-4">
-              Help & Support
-            </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We're here to help you succeed in your learning journey
-            </p>
           </header>
 
           {/* Support Options Grid */}

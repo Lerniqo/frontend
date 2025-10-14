@@ -2,6 +2,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
 const Protected = ({
   teacher,
@@ -20,8 +21,8 @@ const Protected = ({
       router.push("/login");
     }
   }, [user, isAuthenticated, isLoading, router]);
-    // return student;
-  if (isLoading) return <div>Loading...</div>;
+  // return student;
+  if (isLoading) return <GeneralLoadingComponent text="Loading..." />;
 
   if (!user || !isAuthenticated) {
     return <div>Redirecting to login...</div>;

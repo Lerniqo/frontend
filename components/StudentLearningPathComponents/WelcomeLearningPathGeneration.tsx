@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { gsap } from "gsap";
 
 interface WelcomeLearningPathGenerationProps {
@@ -17,30 +23,33 @@ const WelcomeLearningPathGeneration: React.FC<
   const buttonRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const slides = [
-    {
-      header: "Welcome to the Lerniqo Learning Path Generator!",
-      body: "Get ready to unlock a personalized learning journey tailored just for you!\nBefore we create your learning path, we need to understand your current knowledge through a short quiz.",
-      buttonText: "Start Quiz",
-      showTooltip: false,
-      showButton: true,
-    },
-    {
-      header: "Quick Knowledge Check",
-      body: "This quiz will help us understand your strengths and areas to focus on.\nIt's short, fun, and will take only a few minutes. Don't worry—there are no wrong answers!",
-      buttonText: "Begin Quiz",
-      showTooltip: true,
-      showButton: true,
-    },
-    {
-      header:
-        "Your learning adventure begins here—let's discover the best path for you!",
-      body: "",
-      buttonText: "",
-      showTooltip: false,
-      showButton: false,
-    },
-  ];
+  const slides = useMemo(
+    () => [
+      {
+        header: "Welcome to the Lerniqo Learning Path Generator!",
+        body: "Get ready to unlock a personalized learning journey tailored just for you!\nBefore we create your learning path, we need to understand your current knowledge through a short quiz.",
+        buttonText: "Start Quiz",
+        showTooltip: false,
+        showButton: true,
+      },
+      {
+        header: "Quick Knowledge Check",
+        body: "This quiz will help us understand your strengths and areas to focus on.\nIt's short, fun, and will take only a few minutes. Don't worry—there are no wrong answers!",
+        buttonText: "Begin Quiz",
+        showTooltip: true,
+        showButton: true,
+      },
+      {
+        header:
+          "Your learning adventure begins here—let's discover the best path for you!",
+        body: "",
+        buttonText: "",
+        showTooltip: false,
+        showButton: false,
+      },
+    ],
+    []
+  );
 
   const animateSlideIn = useCallback(() => {
     const tl = gsap.timeline();

@@ -1364,3 +1364,75 @@ export async function generateLearningPath(): Promise<void> {
     throw new Error("Failed to generate learning path");
   }
 }
+
+/**
+ * Updates an existing question
+ * @param questionData - The updated question data
+ * @returns Promise<any>
+ */
+export async function updateQuestion(questionData: any): Promise<any> {
+  console.warn(
+    "updateQuestion function needs to be implemented - API call required"
+  );
+  // TODO: Implement actual API call
+  // const response = await fetch(`/api/questions/${questionData.id}`, {
+  //   method: 'PUT',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(questionData)
+  // });
+  // return response.json();
+  return { success: true, data: questionData };
+}
+
+/**
+ * Deletes a question by ID
+ * @param questionId - The ID of the question to delete
+ * @returns Promise<any>
+ */
+export async function deleteQuestion(questionId: string): Promise<any> {
+  console.warn(
+    "deleteQuestion function needs to be implemented - API call required"
+  );
+  // TODO: Implement actual API call
+  // const response = await fetch(`/api/questions/${questionId}`, {
+  //   method: 'DELETE'
+  // });
+  // return response.json();
+  return { success: true };
+}
+
+/**
+ * Updates an existing resource
+ * @param resourceData - The updated resource data
+ * @returns Promise<any>
+ */
+export async function updateResource(resourceData: any): Promise<any> {
+  console.warn(
+    "updateResource function needs to be implemented - API call required"
+  );
+  // TODO: Implement actual API call
+  // const response = await fetch(`/api/resources/${resourceData.id}`, {
+  //   method: 'PUT',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify(resourceData)
+  // });
+  // return response.json();
+  return { success: true, data: resourceData };
+}
+
+/**
+ * Deletes a resource by ID
+ * @param resourceId - The ID of the resource to delete
+ * @returns Promise<any>
+ */
+export async function deleteResource(resourceId: string): Promise<any> {
+  console.warn(
+    "deleteResource function needs to be implemented - API call required"
+  );
+  // TODO: Implement actual API call
+  // const response = await fetch(`/api/resources/${resourceId}`, {
+  //   method: 'DELETE'
+  // });
+  // return response.json();
+  return { success: true };
+}

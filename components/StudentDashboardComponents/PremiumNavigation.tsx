@@ -100,6 +100,8 @@ const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
       router.push("/teachers");
     } else if (item.label === "Resource Library") {
       router.push("/resource-library");
+    } else if (item.label === "Live Sessions") {
+      router.push("/sessions");
     }
   };
 

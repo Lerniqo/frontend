@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   retrieveWholeSyllabuses,
@@ -91,8 +91,6 @@ export default function ResourceLibrary() {
         if (response.syllabusByGrade.length > 0) {
           setSelectedGrade(response.syllabusByGrade[0].conceptId);
         }
-
-        console.log("✅ Syllabuses fetched successfully:", response);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to fetch syllabuses";
@@ -107,40 +105,43 @@ export default function ResourceLibrary() {
   }, []);
 
   // Search functionality - searches in cleaned names
-  const searchInTree = (
-    nodes: WholeSyllabusNode[],
-    query: string,
-    path: string[] = []
-  ): SearchResult[] => {
-    let results: SearchResult[] = [];
+  const searchInTree = useCallback(
+    (
+      nodes: WholeSyllabusNode[],
+      query: string,
+      path: string[] = []
+    ): SearchResult[] => {
+      let results: SearchResult[] = [];
 
-    nodes.forEach((node) => {
-      const currentPath = [...path, node.name];
-      const cleanedName = cleanName(node.name);
-      const cleanedDescription = node.description || "";
+      nodes.forEach((node) => {
+        const currentPath = [...path, node.name];
+        const cleanedName = cleanName(node.name);
+        const cleanedDescription = node.description || "";
 
-      if (
-        cleanedName.toLowerCase().includes(query.toLowerCase()) ||
-        cleanedDescription.toLowerCase().includes(query.toLowerCase())
-      ) {
-        results.push({
-          conceptId: node.conceptId,
-          name: node.name,
-          type: node.type,
-          path: currentPath,
-        });
-      }
+        if (
+          cleanedName.toLowerCase().includes(query.toLowerCase()) ||
+          cleanedDescription.toLowerCase().includes(query.toLowerCase())
+        ) {
+          results.push({
+            conceptId: node.conceptId,
+            name: node.name,
+            type: node.type,
+            path: currentPath,
+          });
+        }
 
-      if (node.children && node.children.length > 0) {
-        results = [
-          ...results,
-          ...searchInTree(node.children, query, currentPath),
-        ];
-      }
-    });
+        if (node.children && node.children.length > 0) {
+          results = [
+            ...results,
+            ...searchInTree(node.children, query, currentPath),
+          ];
+        }
+      });
 
-    return results;
-  };
+      return results;
+    },
+    []
+  );
 
   useEffect(() => {
     if (searchQuery.trim()) {
@@ -153,7 +154,7 @@ export default function ResourceLibrary() {
       setSearchResults([]);
       setShowSearchResults(false);
     }
-  }, [searchQuery, viewMode, syllabusByMatter, syllabusByGrade]);
+  }, [searchQuery, viewMode, syllabusByMatter, syllabusByGrade, searchInTree]);
 
   const handleSearchResultClick = (result: SearchResult) => {
     setSearchQuery("");

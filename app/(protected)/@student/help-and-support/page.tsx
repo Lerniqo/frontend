@@ -90,7 +90,7 @@ export default function HelpAndSupportPage() {
                   Help & Support
                 </h1>
                 <p className="text-lg text-gray-600">
-                  We're here to help you succeed in your learning journey
+                  We&apos;re here to help you succeed in your learning journey
                 </p>
               </div>
             </div>
@@ -323,8 +323,8 @@ export default function HelpAndSupportPage() {
                     How do I reset my password?
                   </h3>
                   <p className="text-gray-600">
-                    You can reset your password by clicking on the "Forgot
-                    Password" link on the login page and following the
+                    You can reset your password by clicking on the &quot;Forgot
+                    Password&quot; link on the login page and following the
                     instructions sent to your email.
                   </p>
                 </div>
@@ -353,8 +353,8 @@ export default function HelpAndSupportPage() {
                   </h3>
                   <p className="text-gray-600">
                     You can message your teachers directly through the
-                    platform's messaging system or join virtual office hours as
-                    scheduled.
+                    platform&apos;s messaging system or join virtual office
+                    hours as scheduled.
                   </p>
                 </div>
               </div>
@@ -446,7 +446,7 @@ export default function HelpAndSupportPage() {
                         Your message has been submitted successfully
                       </p>
                       <p className="text-sm text-gray-500">
-                        We'll get back to you quickly!
+                        We&apos;ll get back to you quickly!
                       </p>
                     </div>
                   </div>

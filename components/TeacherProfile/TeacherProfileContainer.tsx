@@ -84,8 +84,6 @@ export default function TeacherProfileContainer({
 
           setAvailabilities(availabilityData);
           setMySessions(sessionsData);
-          console.log("Fetched availabilities:", availabilityData);
-          console.log("Fetched sessions:", sessionsData);
         } catch (err) {
           console.error("Error fetching availability and sessions:", err);
         } finally {

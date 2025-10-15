@@ -10,8 +10,6 @@ import {
   BookOpen,
   GraduationCap,
   Zap,
-  Settings,
-  Gamepad2,
   Star,
   Target,
   LucideIcon,

@@ -19,7 +19,6 @@ import {
   ErrorState,
 } from "@/components/TeachersPage/LoadingStates";
 import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
-import NavBar from "@/components/LandingPageComponents/NavBar";
 import Footer from "@/components/LandingPageComponents/Footer";
 import Link from "next/link";
 

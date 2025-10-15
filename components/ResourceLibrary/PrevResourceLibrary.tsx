@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, BookOpen, Grid, List } from "lucide-react";
+import { BookOpen, Grid, List } from "lucide-react";
 import { Resource, SearchFilters } from "@/types/resource.types";
 import { ResourceService } from "@/services/resourceService";
 import SearchAndFilterBar from "@/components/ResourceLibrary/SearchAndFilterBar";
-import HierarchicalFilters from "@/components/ResourceLibrary/HierarchicalFilters";
 import ResourceCard from "@/components/ResourceLibrary/ResourceCard";
 import FadeIn from "@/components/ui/FadeIn";
 
@@ -16,15 +15,6 @@ const PrevResourceLibrary: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchLoading, setSearchLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [filters, setFilters] = useState<SearchFilters>({
-    searchTerm: "",
-    filters: {
-      particle: "",
-      atom: "",
-      molecule: "",
-      matter: "",
-    },
-  });
 
   useEffect(() => {
     loadInitialResources();
@@ -45,7 +35,6 @@ const PrevResourceLibrary: React.FC = () => {
   const handleSearch = async (searchFilters: SearchFilters) => {
     try {
       setSearchLoading(true);
-      setFilters(searchFilters);
       const filteredResources = await ResourceService.searchResources(
         searchFilters
       );
@@ -55,20 +44,6 @@ const PrevResourceLibrary: React.FC = () => {
     } finally {
       setSearchLoading(false);
     }
-  };
-
-  const handleHierarchicalFilterChange = async (
-    level: string,
-    value: string
-  ) => {
-    const newFilters = {
-      ...filters,
-      filters: {
-        ...filters.filters,
-        [level]: value,
-      },
-    };
-    await handleSearch(newFilters);
   };
 
   const handleResourceClick = (resource: Resource) => {

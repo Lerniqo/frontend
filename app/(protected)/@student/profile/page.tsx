@@ -39,7 +39,6 @@ export default function StudentProfile() {
       setError(null);
 
       const response = await userService.getCurrentUser();
-      console.log("Profile response:", response);
 
       if (response.success && response.data) {
         // Cast to StudentProfile since this is the student profile page

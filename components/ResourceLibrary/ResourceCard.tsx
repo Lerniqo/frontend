@@ -13,7 +13,6 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Resource } from "@/types/resource.types";
-import GlareHover from "@/components/ui/GlareHover";
 
 interface ResourceCardProps {
   resource: Resource;

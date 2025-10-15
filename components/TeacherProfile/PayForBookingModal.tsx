@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { TeacherAvailability } from "@/services/schedulingService";
 import { BookOneOnOneSession } from "@/services/schedulingService";
 
 interface PayForBookingModalProps {

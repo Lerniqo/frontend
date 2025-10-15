@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  ArrowLeft,
-  Calendar,
-  Users,
-  Trophy,
-  Clock,
-  Target,
-} from "lucide-react";
+import { Calendar, Users, Trophy, Clock, Target } from "lucide-react";
 import Link from "next/link";
 import {
   getStudentContests,

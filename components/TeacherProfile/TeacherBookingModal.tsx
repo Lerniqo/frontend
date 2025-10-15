@@ -23,12 +23,6 @@ const convertAvailabilityToSchedule = (
   mySessions: Session[],
   teacherId: string
 ): DaySchedule[] => {
-  console.log("=== convertAvailabilityToSchedule called ===");
-  console.log("Input availabilities:", availabilities);
-  console.log("Input mySessions:", mySessions);
-  console.log("Input teacherId:", teacherId);
-  console.log("Current date:", currentDate);
-
   const days = [
     "Sunday",
     "Monday",
@@ -52,8 +46,6 @@ const convertAvailabilityToSchedule = (
   const endDate = new Date(lastDay);
   endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
 
-  console.log("Calendar range:", { startDate, endDate });
-
   const currentDateIter = new Date(startDate);
 
   // Create a map of date -> availability slots
@@ -65,8 +57,6 @@ const convertAvailabilityToSchedule = (
     }
     availabilityMap.get(dateKey)?.push(avail);
   });
-
-  console.log("Availability map:", availabilityMap);
 
   // Create a map of date -> user's booked sessions for this teacher
   const bookedSessionsByDate = new Map<string, Session[]>();
@@ -81,15 +71,7 @@ const convertAvailabilityToSchedule = (
         bookedSessionsByDate.set(dateKey, []);
       }
       bookedSessionsByDate.get(dateKey)?.push(session);
-      console.log("Added booked session:", {
-        dateKey,
-        title: session.title,
-        start: session.start_time,
-        end: session.end_time,
-      });
     });
-
-  console.log("Booked sessions by date:", bookedSessionsByDate);
 
   // Helper function to check if a session overlaps with an availability slot
   const hasSessionOverlap = (
@@ -106,17 +88,6 @@ const convertAvailabilityToSchedule = (
       // Check if times overlap
       // Sessions overlap if: sessionStart < availEnd AND sessionEnd > availStart
       const overlaps = sessionStart < availEnd && sessionEnd > availStart;
-
-      if (overlaps) {
-        console.log("Found overlap:", {
-          availability: { start: availStart, end: availEnd },
-          session: {
-            title: session.title,
-            start: sessionStart,
-            end: sessionEnd,
-          },
-        });
-      }
 
       return overlaps;
     });
@@ -164,12 +135,6 @@ const convertAvailabilityToSchedule = (
     currentDateIter.setDate(currentDateIter.getDate() + 1);
   }
 
-  console.log("Generated schedule:", schedule);
-  console.log(
-    "Days with time slots:",
-    schedule.filter((day) => day.timeSlots.length > 0)
-  );
-
   return schedule;
 };
 
@@ -194,17 +159,9 @@ export default function TeacherBookingModal({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedAvailabilityId, setSelectedAvailabilityId] = useState<
-    string | null
-  >(null);
 
   // Generate schedule from availability data
   useEffect(() => {
-    console.log("TeacherBookingModal - isOpen:", isOpen);
-    console.log("TeacherBookingModal - availabilities:", availabilities);
-    console.log("TeacherBookingModal - mySessions:", mySessions);
-    console.log("TeacherBookingModal - teacherId:", teacherId);
-
     if (isOpen && availabilities.length > 0) {
       const scheduleData = convertAvailabilityToSchedule(
         availabilities,
@@ -212,7 +169,6 @@ export default function TeacherBookingModal({
         mySessions,
         teacherId
       );
-      console.log("Generated schedule:", scheduleData);
       setSchedule(scheduleData);
       setSelectedSlot(null);
       setSelectedDate(null);

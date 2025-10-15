@@ -50,7 +50,6 @@ function ConceptViewContent() {
         setError(null);
         const data = await getConceptByConceptId(conceptId);
         setConceptData(data);
-        console.log("✅ Concept data fetched:", data);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to fetch concept data";

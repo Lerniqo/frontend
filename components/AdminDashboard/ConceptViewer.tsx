@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { getConceptById, ConceptResponse } from "../../services/contentService";
+import { uploadFile } from "../../services/file-upload-service";
 import {
   ArrowLeft,
   Book,
@@ -14,7 +15,10 @@ import {
   Tags,
   Zap,
   Bookmark,
+  UploadCloud,
 } from "lucide-react";
+import ConceptFileUpload from "./concept-file-upload";
+import UploadedFileViewer from "./UploadedFileViewer";
 
 interface ConceptViewerProps {
   conceptId: string;
@@ -26,6 +30,28 @@ const ConceptViewer: React.FC<ConceptViewerProps> = ({ conceptId, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [goingBack, setGoingBack] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  const handleFileSelect = (file: File) => {
+    setUploadedFile(file);
+    setUploadSuccess(false);
+  };
+
+  const handleUpload = async () => {
+    if (!uploadedFile || !conceptData) return;
+
+    setIsUploading(true);
+    try {
+      await uploadFile(uploadedFile, conceptData.conceptId);
+      setUploadSuccess(true);
+    } catch (_error) {
+      setError("File upload failed");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const containerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -360,6 +386,27 @@ const ConceptViewer: React.FC<ConceptViewerProps> = ({ conceptId, onBack }) => {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* File Upload Section */}
+            <ConceptFileUpload onFileUpload={handleFileSelect} />
+            {uploadedFile && <UploadedFileViewer file={uploadedFile} />}
+
+            {uploadedFile && (
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={handleUpload}
+                  disabled={isUploading || uploadSuccess}
+                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                  <UploadCloud size={18} />
+                  {isUploading
+                    ? "Uploading..."
+                    : uploadSuccess
+                    ? "Uploaded!"
+                    : "Upload File"}
+                </button>
               </div>
             )}
 

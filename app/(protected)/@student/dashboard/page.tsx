@@ -12,6 +12,7 @@ import {
 } from "@/services/contentService";
 import { useState, useEffect } from "react";
 import "@/app/globals.css";
+import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
 export default function StudentDashboard() {
   const {
@@ -98,11 +99,7 @@ export default function StudentDashboard() {
   );
 
   if (isLoading) {
-    return (
-      <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-white text-xl">Loading learning path...</div>
-      </div>
-    );
+    return <GeneralLoadingComponent text="Loading Dashboard" />;
   }
 
   return (
@@ -141,7 +138,7 @@ export default function StudentDashboard() {
             );
 
             state.gl.domElement.addEventListener("webglcontextrestored", () => {
-              console.log("WebGL context restored successfully");
+              console.warn("WebGL context restored successfully");
             });
           }
         }}

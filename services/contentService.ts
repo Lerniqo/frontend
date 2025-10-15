@@ -253,14 +253,35 @@ export async function retrieveWholeSyllabuses(): Promise<WholeSyllabusResponse> 
       !Array.isArray(data.syllabus) ||
       data.syllabus.length === 0
     ) {
-      // throw new Error("Invalid syllabus data structure received");
+      console.warn("⚠️ Invalid syllabus data structure received:", data);
+      // Return empty structure instead of throwing
+      return {
+        syllabusByMatter: [],
+        syllabusByGrade: [],
+        totalConcepts: 0,
+        retrievedAt: new Date().toISOString(),
+      };
     }
 
     // Get the main subject node (should be the first and only item in the array)
     const mainSubject = data.syllabus[0];
 
-    if (!mainSubject.children || !Array.isArray(mainSubject.children)) {
-      throw new Error("No children found in syllabus structure");
+    if (
+      !mainSubject ||
+      !mainSubject.children ||
+      !Array.isArray(mainSubject.children)
+    ) {
+      console.warn(
+        "⚠️ No children found in syllabus structure. MainSubject:",
+        mainSubject
+      );
+      // Return empty structure instead of throwing
+      return {
+        syllabusByMatter: [],
+        syllabusByGrade: [],
+        totalConcepts: 0,
+        retrievedAt: new Date().toISOString(),
+      };
     }
 
     // Separate the children by type

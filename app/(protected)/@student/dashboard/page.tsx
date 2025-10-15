@@ -120,6 +120,31 @@ export default function StudentDashboard() {
           near: 0.1,
           far: 1000,
         }}
+        gl={{
+          preserveDrawingBuffer: true,
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          // Prevent context loss
+          failIfMajorPerformanceCaveat: false,
+        }}
+        onCreated={(state) => {
+          // Add context loss handlers
+          const gl = state.gl.getContext();
+          if (gl) {
+            state.gl.domElement.addEventListener(
+              "webglcontextlost",
+              (event) => {
+                event.preventDefault();
+                console.warn("WebGL context lost. Attempting to restore...");
+              }
+            );
+
+            state.gl.domElement.addEventListener("webglcontextrestored", () => {
+              console.log("WebGL context restored successfully");
+            });
+          }
+        }}
       >
         <Scene3D
           currentPathProgress={currentPathProgress}

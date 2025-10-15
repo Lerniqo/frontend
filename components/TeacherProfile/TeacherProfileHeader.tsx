@@ -23,7 +23,7 @@ export default function TeacherProfileHeader({
   };
 
   return (
-    <div className="relative bg-gradient-to-br from-purple-500 via-purple-600 to-blue-600 p-12 text-white overflow-hidden">
+    <div className="relative bg-gradient-to-br from-purple-500 via-purple-600 to-blue-600 p-12 text-white overflow-hidden rounded-3xl shadow-2xl border border-white/30">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute -top-4 -right-4 w-32 h-32 bg-white rounded-full"></div>

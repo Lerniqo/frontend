@@ -2,8 +2,8 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import Loading from "../CommonComponents/Loading";
-import { TeacherProfile as TeacherProfileType } from '@/types/auth.types';
+import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
+import { TeacherProfile as TeacherProfileType } from "@/types/auth.types";
 
 // Define the props for the dynamically imported component
 interface TeacherProfileContainerProps {
@@ -15,10 +15,15 @@ interface TeacherProfileContainerProps {
 
 // Dynamically import the TeacherProfileContainer to avoid SSR issues
 const TeacherProfileContainer = dynamic<TeacherProfileContainerProps>(
-  () => import("@/components/TeacherProfile").then(mod => mod.TeacherProfileContainer),
+  () =>
+    import("@/components/TeacherProfile").then(
+      (mod) => mod.TeacherProfileContainer
+    ),
   {
     ssr: false,
-    loading: () => <Loading />,
+    loading: () => (
+      <GeneralLoadingComponent text="Loading Teacher Profile..." />
+    ),
   }
 );
 

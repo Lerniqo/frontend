@@ -2,7 +2,7 @@
 export interface User {
   userId: string;
   email: string;
-  role: 'Student' | 'Teacher' | 'Admin';
+  role: "Student" | "Teacher" | "Admin";
   fullName: string;
   profileImage?: string;
   isVerified: boolean;
@@ -15,8 +15,13 @@ export interface User {
 export interface TimeSlot {
   id: string;
   startTime: string; // e.g., "09:00"
-  endTime: string;   // e.g., "10:00"
+  endTime: string; // e.g., "10:00"
   isAvailable: boolean;
+  price?: number | null; // Optional price per session
+  description?: string; // Optional session description
+  isPaid?: boolean; // Whether it's a paid session
+  isBookedByUser?: boolean; // Whether the current user has already booked this slot
+  availabilityId?: string; // ID from the availability record in database
 }
 
 export interface DaySchedule {
@@ -37,7 +42,7 @@ export interface SelectedSlot {
 
 // Extended user profiles for specific roles
 export interface StudentProfile extends User {
-  role: 'Student';
+  role: "Student";
   school?: string;
   birthday?: string;
   gradeLevel?: number;
@@ -50,7 +55,7 @@ export interface StudentProfile extends User {
 }
 
 export interface TeacherProfile extends User {
-  role: 'Teacher';
+  role: "Teacher";
   birthday?: string; // DateTime from backend
   address?: string; // Text from backend
   phoneNumber?: string; // phone_number from backend
@@ -65,33 +70,33 @@ export interface TeacherProfile extends User {
 export interface DetailedTeacherProfile extends TeacherProfile {
   // Professional Information
   experienceSummary?: string;
-  experienceLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  experienceLevel: "beginner" | "intermediate" | "advanced" | "expert";
   subjectsTaught: string[];
   bioOrTeachingPhilosophy?: string;
-  
+
   // Verification & Status
   isOnline?: boolean;
   availability: {
-    status: 'available' | 'busy' | 'offline';
+    status: "available" | "busy" | "offline";
     nextAvailable?: string;
   };
-  
+
   // Performance Metrics
   rating: number;
   totalStudents?: number;
   totalLessons?: number;
   responseTime?: string; // e.g., "Usually responds in 2 hours"
-  
+
   // Professional Details
   hourlyRate?: number;
   currency?: string;
   languages?: string[];
   timezone?: string;
-  
+
   // Metadata
   joinDate?: string;
   lastActive?: string;
-  
+
   // Additional Features
   badges?: TeacherBadge[];
   specializations?: string[];
@@ -108,7 +113,7 @@ export interface TeacherBadge {
 
 // Filter and search interfaces
 export interface FilterOptions {
-  experienceLevel: ('beginner' | 'intermediate' | 'advanced' | 'expert')[];
+  experienceLevel: ("beginner" | "intermediate" | "advanced" | "expert")[];
   subjects: string[];
   yearsOfExperience: { min: number; max: number };
   rating: number; // Keep for backward compatibility but not actively used
@@ -119,8 +124,8 @@ export interface FilterOptions {
 }
 
 export interface SortOptions {
-  field: 'name' | 'experience' | 'joinDate' | 'hourlyRate'; // Removed 'rating'
-  direction: 'asc' | 'desc';
+  field: "name" | "experience" | "joinDate" | "hourlyRate"; // Removed 'rating'
+  direction: "asc" | "desc";
 }
 
 export interface PaginationState {
@@ -134,7 +139,7 @@ export interface PaginationState {
 export interface BasicRegisterData {
   email: string;
   password: string;
-  role: 'Student' | 'Teacher';
+  role: "Student" | "Teacher";
 }
 
 export interface StudentProfileData {
@@ -254,7 +259,10 @@ export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; message: string }>;
   register: (data: any) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;

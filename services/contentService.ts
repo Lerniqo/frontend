@@ -1512,3 +1512,58 @@ export async function deleteResource(resourceId: string): Promise<any> {
   // return response.json();
   return { success: true };
 }
+
+// Types for concept detail structure
+export interface ConceptPrerequisiteDetail {
+  conceptId: string;
+  name: string;
+  type: string;
+  description: string;
+}
+
+export interface ConceptLearningResource {
+  resourceId: string;
+  name: string | null;
+  type: string;
+  url: string;
+  price: number;
+}
+
+export interface ConceptDetailResponse {
+  conceptId: string;
+  name: string;
+  type: string;
+  description: string;
+  prerequisites: ConceptPrerequisiteDetail[];
+  learningResources: ConceptLearningResource[];
+  createdAt: any;
+}
+
+/**
+ * Retrieves a specific concept by concept ID with its prerequisites and learning resources
+ * @param conceptId - The ID of the concept to retrieve
+ * @returns Promise<ConceptDetailResponse> - The concept details with prerequisites and resources
+ */
+export async function getConceptByConceptId(
+  conceptId: string
+): Promise<ConceptDetailResponse> {
+  try {
+    const response = await apiClient.get(
+      `/content-service/concepts/${conceptId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error(`Error retrieving concept ${conceptId}:`, error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to retrieve concept: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
+}

@@ -233,20 +233,251 @@ export async function getTeacherAvailability(
   });
 }
 
+// Mock data for all group sessions
+export const mockAllGroupSessions: Session[] = [
+  {
+    session_id: "1a2b3c4d",
+    teacher_id: "teacher123",
+    session_type: "GROUP",
+    title: "Math Group Session",
+    description: "An interactive group session on algebra and geometry.",
+    start_time: new Date("2025-10-20T10:00:00Z"),
+    end_time: new Date("2025-10-20T11:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: true,
+    price: 20.0,
+    max_attendees: 10,
+    video_conference_link: "https://zoom.us/j/1234567890",
+    attendees_count: 5,
+    zoom_meeting_id: "1234567890",
+    zoom_join_url: "https://zoom.us/j/1234567890",
+    zoom_start_url: "https://zoom.us/s/1234567890",
+    zoom_password: "math123",
+  },
+  {
+    session_id: "5e6f7g8h",
+    teacher_id: "teacher456",
+    session_type: "GROUP",
+    title: "Science Group Session",
+    description: "A group session covering physics and chemistry basics.",
+    start_time: new Date("2025-10-21T14:00:00Z"),
+    end_time: new Date("2025-10-21T15:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: false,
+    price: 0.0,
+    max_attendees: 15,
+    video_conference_link: "https://zoom.us/j/9876543210",
+    attendees_count: 10,
+    zoom_meeting_id: "9876543210",
+    zoom_join_url: "https://zoom.us/j/9876543210",
+    zoom_start_url: "https://zoom.us/s/9876543210",
+    zoom_password: "science456",
+  },
+  {
+    session_id: "9i0j1k2l",
+    teacher_id: "teacher789",
+    session_type: "GROUP",
+    title: "History Group Session",
+    description: "A deep dive into world history.",
+    start_time: new Date("2025-10-22T09:00:00Z"),
+    end_time: new Date("2025-10-22T10:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: true,
+    price: 15.0,
+    max_attendees: 20,
+    video_conference_link: "https://zoom.us/j/1122334455",
+    attendees_count: 8,
+    zoom_meeting_id: "1122334455",
+    zoom_join_url: "https://zoom.us/j/1122334455",
+    zoom_start_url: "https://zoom.us/s/1122334455",
+    zoom_password: "history789",
+  },
+  {
+    session_id: "3m4n5o6p",
+    teacher_id: "teacher321",
+    session_type: "GROUP",
+    title: "English Literature Group Session",
+    description: "Exploring classic English literature.",
+    start_time: new Date("2025-10-23T16:00:00Z"),
+    end_time: new Date("2025-10-23T17:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: false,
+    price: 0.0,
+    max_attendees: 12,
+    video_conference_link: "https://zoom.us/j/6677889900",
+    attendees_count: 6,
+    zoom_meeting_id: "6677889900",
+    zoom_join_url: "https://zoom.us/j/6677889900",
+    zoom_start_url: "https://zoom.us/s/6677889900",
+    zoom_password: "english321",
+  },
+  {
+    session_id: "7q8r9s0t",
+    teacher_id: "teacher654",
+    session_type: "GROUP",
+    title: "Programming Basics Group Session",
+    description: "Introduction to programming concepts.",
+    start_time: new Date("2025-10-24T11:00:00Z"),
+    end_time: new Date("2025-10-24T12:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: true,
+    price: 25.0,
+    max_attendees: 8,
+    video_conference_link: "https://zoom.us/j/4455667788",
+    attendees_count: 4,
+    zoom_meeting_id: "4455667788",
+    zoom_join_url: "https://zoom.us/j/4455667788",
+    zoom_start_url: "https://zoom.us/s/4455667788",
+    zoom_password: "prog654",
+  },
+  {
+    session_id: "1u2v3w4x",
+    teacher_id: "teacher987",
+    session_type: "GROUP",
+    title: "Art Group Session",
+    description: "Learn the basics of sketching and painting.",
+    start_time: new Date("2025-10-25T13:00:00Z"),
+    end_time: new Date("2025-10-25T14:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: false,
+    price: 0.0,
+    max_attendees: 10,
+    video_conference_link: "https://zoom.us/j/9988776655",
+    attendees_count: 7,
+    zoom_meeting_id: "9988776655",
+    zoom_join_url: "https://zoom.us/j/9988776655",
+    zoom_start_url: "https://zoom.us/s/9988776655",
+    zoom_password: "art987",
+  },
+  {
+    session_id: "5y6z7a8b",
+    teacher_id: "teacher111",
+    session_type: "GROUP",
+    title: "Music Theory Group Session",
+    description: "Understanding the fundamentals of music theory.",
+    start_time: new Date("2025-10-26T15:00:00Z"),
+    end_time: new Date("2025-10-26T16:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: true,
+    price: 30.0,
+    max_attendees: 5,
+    video_conference_link: "https://zoom.us/j/5544332211",
+    attendees_count: 3,
+    zoom_meeting_id: "5544332211",
+    zoom_join_url: "https://zoom.us/j/5544332211",
+    zoom_start_url: "https://zoom.us/s/5544332211",
+    zoom_password: "music111",
+  },
+  {
+    session_id: "9c0d1e2f",
+    teacher_id: "teacher222",
+    session_type: "GROUP",
+    title: "Fitness Group Session",
+    description: "A group workout session for all fitness levels.",
+    start_time: new Date("2025-10-27T08:00:00Z"),
+    end_time: new Date("2025-10-27T09:00:00Z"),
+    status: "SCHEDULED",
+    is_paid: false,
+    price: 0.0,
+    max_attendees: 20,
+    video_conference_link: "https://zoom.us/j/7766554433",
+    attendees_count: 15,
+    zoom_meeting_id: "7766554433",
+    zoom_join_url: "https://zoom.us/j/7766554433",
+    zoom_start_url: "https://zoom.us/s/7766554433",
+    zoom_password: "fitness222",
+  },
+  // Include one session that's also in mockSessions to show registered status
+  {
+    session_id: "660e8400-e29b-41d4-a716-446655440002",
+    teacher_id: "cmey4gxpx0000jt01teghjwom",
+    session_type: "GROUP",
+    title: "Algebra Crash Course",
+    description: "Learn key algebraic concepts with problem-solving sessions.",
+    start_time: new Date("2025-10-18T10:00:00Z"),
+    end_time: new Date("2025-10-18T11:30:00Z"),
+    status: "SCHEDULED",
+    is_paid: false,
+    price: null,
+    max_attendees: 25,
+    video_conference_link: "https://us05web.zoom.us/j/333333333?pwd=algfree",
+    attendees_count: 12,
+    zoom_meeting_id: "333333333",
+    zoom_join_url: "https://us05web.zoom.us/j/333333333?pwd=algfree",
+    zoom_start_url: "https://us05web.zoom.us/s/333333333?zak=startalg",
+    zoom_password: "algfree",
+  },
+];
+
 /**
- * Fetches sessions for the current user (student)
- * @returns Promise with array of user's booked sessions
+ * Extended Session interface with teacher name
  */
-export async function getMySessions(): Promise<Session[]> {
+export interface SessionWithTeacher extends Session {
+  teacher_name?: string;
+}
+
+/**
+ * Fetches all available group sessions
+ * @returns Promise with array of all group sessions
+ */
+export async function getAllGroupSessions(): Promise<Session[]> {
   // TODO: Replace with actual API call
-  // const response = await fetch('/api/sessions/my-sessions');
+  // const response = await fetch('/api/sessions/group-sessions');
   // const data = await response.json();
   // return data;
 
   // For now, return mock data with a simulated delay
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(mockSessions);
+      resolve(mockAllGroupSessions);
+    }, 300); // Simulate network delay
+  });
+}
+
+/**
+ * Fetches sessions for the current user (student)
+ * @returns Promise with array of user's booked sessions
+ */
+export async function getMySessions(): Promise<SessionWithTeacher[]> {
+  // TODO: Replace with actual API call
+  // const response = await fetch('/api/sessions/my-sessions');
+  // const data = await response.json();
+  // return data;
+
+  // For now, return mock data with a simulated delay
+  return new Promise(async (resolve) => {
+    setTimeout(async () => {
+      // Import getTeacherProfile dynamically to avoid circular dependencies
+      const { default: userService } = await import("./userService");
+
+      // Fetch teacher profiles for each session
+      const sessionsWithTeachers = await Promise.all(
+        mockSessions.map(async (session) => {
+          try {
+            const teacherResponse = await userService.getTeacherProfile(
+              session.teacher_id
+            );
+            return {
+              ...session,
+              teacher_name:
+                teacherResponse.success && teacherResponse.data
+                  ? teacherResponse.data.fullName
+                  : "Unknown Teacher",
+            };
+          } catch (error) {
+            console.warn(
+              `Failed to fetch teacher profile for ${session.teacher_id}`,
+              error
+            );
+            return {
+              ...session,
+              teacher_name: "Unknown Teacher",
+            };
+          }
+        })
+      );
+
+      resolve(sessionsWithTeachers);
     }, 300); // Simulate network delay
   });
 }

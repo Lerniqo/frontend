@@ -99,9 +99,7 @@ export default function StudentDashboard() {
   );
 
   if (isLoading) {
-    return (
-      <GeneralLoadingComponent text="Loading Dashboard" />
-    );
+    return <GeneralLoadingComponent text="Loading Dashboard" />;
   }
 
   return (
@@ -140,7 +138,7 @@ export default function StudentDashboard() {
             );
 
             state.gl.domElement.addEventListener("webglcontextrestored", () => {
-              console.log("WebGL context restored successfully");
+              console.warn("WebGL context restored successfully");
             });
           }
         }}

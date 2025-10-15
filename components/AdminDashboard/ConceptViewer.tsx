@@ -17,8 +17,8 @@ import {
   Bookmark,
   UploadCloud,
 } from "lucide-react";
-import ConceptFileUpload from './concept-file-upload';
-import UploadedFileViewer from './UploadedFileViewer';
+import ConceptFileUpload from "./concept-file-upload";
+import UploadedFileViewer from "./UploadedFileViewer";
 
 interface ConceptViewerProps {
   conceptId: string;
@@ -46,7 +46,7 @@ const ConceptViewer: React.FC<ConceptViewerProps> = ({ conceptId, onBack }) => {
     try {
       await uploadFile(uploadedFile, conceptData.conceptId);
       setUploadSuccess(true);
-    } catch (error) {
+    } catch (_error) {
       setError("File upload failed");
     } finally {
       setIsUploading(false);
@@ -401,7 +401,11 @@ const ConceptViewer: React.FC<ConceptViewerProps> = ({ conceptId, onBack }) => {
                   className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl flex items-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   <UploadCloud size={18} />
-                  {isUploading ? "Uploading..." : uploadSuccess ? "Uploaded!" : "Upload File"}
+                  {isUploading
+                    ? "Uploading..."
+                    : uploadSuccess
+                    ? "Uploaded!"
+                    : "Upload File"}
                 </button>
               </div>
             )}

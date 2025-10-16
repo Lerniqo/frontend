@@ -7,6 +7,13 @@ import {
   Question,
   Resource,
 } from "@/services/teacherDashboardService";
+import {
+  getParticlesAndTopics,
+  ParticleOption,
+  TopicOption,
+  getAllQuestionsByTeacher,
+  QuestionResponse,
+} from "@/services/contentService";
 import QuestionBankManager from "./QuestionBankManager";
 import ResourceManager from "./ResourceManager";
 import SubMenu from "./SubMenu";
@@ -17,6 +24,8 @@ import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent
 export default function ContentManagement() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [particles, setParticles] = useState<ParticleOption[]>([]);
+  const [topics, setTopics] = useState<TopicOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeContentSubsection, setActiveContentSubsection] =
     useState("questions");
@@ -24,17 +33,41 @@ export default function ContentManagement() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [questionsRes, resourcesRes] = await Promise.all([
-          getQuestions(),
-          getResources(),
-        ]);
+        const [questionsFromApi, resourcesRes, particlesAndTopics] =
+          await Promise.all([
+            getAllQuestionsByTeacher(),
+            getResources(),
+            getParticlesAndTopics(),
+          ]);
 
-        if (questionsRes.success) setQuestions(questionsRes.data || []);
+        // Map API response to Question format for UI
+        const mappedQuestions: Question[] = questionsFromApi.map(
+          (q: QuestionResponse) => {
+            // Find the index of the correct answer in the options array
+            const correctAnswerIndex = q.options.findIndex(
+              (option) => option === q.correctAnswer
+            );
+
+            return {
+              id: q.id,
+              subject: q.tags && q.tags.length > 0 ? q.tags[0] : "General",
+              question: q.questionText,
+              options: q.options,
+              correctAnswer: correctAnswerIndex >= 0 ? correctAnswerIndex : 0,
+              difficulty: "easy" as "easy" | "medium" | "hard", // Default to easy since API doesn't provide this
+            };
+          }
+        );
+
+        setQuestions(mappedQuestions);
         if (resourcesRes.success) setResources(resourcesRes.data || []);
+        setParticles(particlesAndTopics.particles);
+        setTopics(particlesAndTopics.topics);
       } catch (error) {
         console.error("Error loading content management data:", error);
       } finally {
         setLoading(false);
+        // console.log(particles);
       }
     };
 
@@ -42,9 +75,7 @@ export default function ContentManagement() {
   }, []);
 
   if (loading) {
-    return (
-      <GeneralLoadingComponent text="Loading Content Management" />
-    );
+    return <GeneralLoadingComponent text="Loading Content Management" />;
   }
 
   const contentItems = [
@@ -111,6 +142,8 @@ export default function ContentManagement() {
                       <QuestionBankManager
                         questions={questions}
                         setQuestions={setQuestions}
+                        particles={particles}
+                        topics={topics}
                       />
                     </div>
                   </div>

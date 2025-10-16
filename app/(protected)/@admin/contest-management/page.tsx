@@ -431,8 +431,8 @@ export default function ContestManagementPage() {
                   Upcoming Contest
                 </h3>
                 <p className="text-gray-600">
-                  This contest hasn&apos;t started yet. Rankings will be available
-                  after the contest begins.
+                  This contest hasn&apos;t started yet. Rankings will be
+                  available after the contest begins.
                 </p>
               </div>
             )}

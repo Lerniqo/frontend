@@ -318,6 +318,150 @@ export async function retrieveWholeSyllabuses(): Promise<WholeSyllabusResponse> 
   }
 }
 
+// Types for event structure
+export interface TopRanker {
+  rank: number;
+  name: string;
+  points: number;
+}
+
+export interface Task {
+  taskId: string;
+  title: string;
+  description: string;
+  goal: number;
+  progress: number;
+  unit: string;
+  status: "in_progress" | "not_started" | "completed";
+  rewardPoints: number;
+}
+
+export interface EventDetails {
+  eventId: string;
+  eventName: string;
+  subtitle: string;
+  bannerImage: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  tasks: Task[];
+}
+
+export interface EventResponse {
+  topRankers: TopRanker[];
+  contestDetails: EventDetails;
+}
+
+/**
+ * Retrieves event data with top rankers and contest details
+ * @returns Promise<EventResponse> - The event data with top rankers and contest details
+ */
+export async function getEvent(): Promise<EventResponse> {
+  try {
+    // TODO: Replace with actual API call when backend is implemented
+    // const response = await apiClient.get('/events/current');
+    // return response.data;
+
+    // Mock data for now
+    const mockEventData: EventResponse = {
+      topRankers: [
+        {
+          rank: 1,
+          name: "Ishara Perera",
+          points: 980,
+        },
+        {
+          rank: 2,
+          name: "Tharindu Fernando",
+          points: 940,
+        },
+        {
+          rank: 3,
+          name: "Dinushi Jayasuriya",
+          points: 910,
+        },
+        {
+          rank: 4,
+          name: "Sahan Bandara",
+          points: 880,
+        },
+        {
+          rank: 5,
+          name: "Nethmi Silva",
+          points: 860,
+        },
+        {
+          rank: 6,
+          name: "Kasun Madushanka",
+          points: 830,
+        },
+        {
+          rank: 7,
+          name: "Hiruni Wijesinghe",
+          points: 800,
+        },
+        {
+          rank: 8,
+          name: "Chathura Ranasinghe",
+          points: 780,
+        },
+        {
+          rank: 9,
+          name: "Pavithra Abeykoon",
+          points: 750,
+        },
+        {
+          rank: 10,
+          name: "Ravindu Senanayake",
+          points: 720,
+        },
+      ],
+      contestDetails: {
+        eventId: "evt_2025_christmas_challenge",
+        eventName: "Christmas Challenge",
+        subtitle: "Complete tasks to and win a Minion!",
+        bannerImage:
+          "https://wallpapers.com/images/hd/minion-christmas-celebration-vsvbkcd500c33hee.jpg",
+        startDate: "2025-12-20T00:00:00Z",
+        endDate: "2026-01-05T23:59:59Z",
+        isActive: true,
+        tasks: [
+          {
+            taskId: "task_1v1_win",
+            title: "Win 10 One vs One Battles",
+            description:
+              "Compete against other students in live 1v1 matches and win 10 times.",
+            goal: 10,
+            progress: 6,
+            unit: "wins",
+            status: "in_progress",
+            rewardPoints: 100,
+          },
+          {
+            taskId: "task_ai_quiz_score",
+            title: "Score 8+ in AI-Generated Hard Quiz",
+            description:
+              "Attempt the AI-generated quiz and score at least 8 out of 10.",
+            goal: 8,
+            progress: 0,
+            unit: "score",
+            status: "not_started",
+            rewardPoints: 150,
+          },
+        ],
+      },
+    };
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    return mockEventData;
+  } catch (error) {
+    console.error("Error retrieving event:", error);
+    throw new Error("Failed to retrieve event");
+  }
+}
+
 /**
  * Retrieves the entire syllabus structure
  * @returns Promise<SyllabusResponse> - The syllabus hierarchy

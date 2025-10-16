@@ -4,8 +4,10 @@ import React, { useState, useEffect } from "react";
 import {
   getNotifications,
   getAvailability,
+  getAllTeachersSessions,
   Notification,
   AvailabilitySlot,
+  TeacherSession,
 } from "@/services/teacherDashboardService";
 import MotivatedHeading from "./MotivatedHeading";
 import SharedNavigation from "./SharedNavigation";
@@ -15,22 +17,36 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function DashboardOverview() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [_availability, _setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
+  const [groupSessions, setGroupSessions] = useState<TeacherSession[]>([]);
+  const [oneOnOneSessions, setOneOnOneSessions] = useState<TeacherSession[]>([]);
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [notificationsRes, availabilityRes] = await Promise.all([
-          getNotifications(),
-          getAvailability(),
-        ]);
+        const [notificationsRes, availabilityRes, sessionsRes] =
+          await Promise.all([
+            getNotifications(),
+            getAvailability(),
+            getAllTeachersSessions(),
+          ]);
 
         if (notificationsRes.success)
           setNotifications(notificationsRes.data || []);
-        if (availabilityRes.success)
-          _setAvailability(availabilityRes.data || []);
+        if (availabilityRes.success) setAvailability(availabilityRes.data || []);
+
+        if (sessionsRes.success && sessionsRes.data) {
+          const groupSessionsList = sessionsRes.data.filter(
+            (session: TeacherSession) => session.session_type === "GROUP"
+          );
+          const oneOnOneSessionsList = sessionsRes.data.filter(
+            (session: TeacherSession) => session.session_type === "ONE_ON_ONE"
+          );
+          setGroupSessions(groupSessionsList);
+          setOneOnOneSessions(oneOnOneSessionsList);
+        }
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -76,9 +92,39 @@ export default function DashboardOverview() {
               className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up"
               style={{ animationDelay: "0.2s" }}
             >
-              {/* Active Students Card */}
+              {/* Group Sessions Card */}
               <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center space-x-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:shadow-green-500/40 group-hover:scale-105 transition-all duration-300">
+                    <svg
+                      className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10h.01M11 10h.01M7 10h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold text-gray-800 group-hover:text-green-700 transition-colors duration-300">
+                      {groupSessions.length}
+                    </h3>
+                    <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
+                      Group Sessions
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* One-on-One Sessions Card */}
+              <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-cyan-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center space-x-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/40 group-hover:scale-105 transition-all duration-300">
                     <svg
@@ -97,15 +143,16 @@ export default function DashboardOverview() {
                   </div>
                   <div>
                     <h3 className="text-3xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-300">
-                      24
+                      {oneOnOneSessions.length}
                     </h3>
                     <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
-                      Active Students
+                      One-on-One Sessions
                     </p>
                   </div>
                 </div>
               </div>
-              {/* Courses Card */}
+
+              {/* Availability Slots Card */}
               <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-indigo-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center space-x-4">
@@ -126,39 +173,10 @@ export default function DashboardOverview() {
                   </div>
                   <div>
                     <h3 className="text-3xl font-bold text-gray-800 group-hover:text-purple-700 transition-colors duration-300">
-                      12
+                      {availability.length}
                     </h3>
                     <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
-                      Courses
-                    </p>
-                  </div>
-                </div>
-              </div>
-              {/* Success Rate Card */}
-              <div className="group bg-white rounded-2xl border border-gray-200 p-6 shadow-lg hover:shadow-xl hover:-translate-y-1 hover:scale-102 transition-all duration-300 cursor-pointer overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-green-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:shadow-indigo-500/40 group-hover:scale-105 transition-all duration-300">
-                    <svg
-                      className="w-8 h-8 text-white group-hover:scale-110 transition-transform duration-300"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-bold text-gray-800 group-hover:text-indigo-700 transition-colors duration-300">
-                      89%
-                    </h3>
-                    <p className="text-gray-500 font-medium group-hover:text-gray-600 transition-colors duration-300">
-                      Success Rate
+                      Availability Slots
                     </p>
                   </div>
                 </div>
@@ -173,156 +191,147 @@ export default function DashboardOverview() {
               {/* Availability Manager Placeholder */}
               <div className="group bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
                 <h3 className="text-xl font-bold text-gray-800 mb-5">
-                  Manage Your Availability
+                  Your Availability Slots
                 </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg">
-                    <span className="font-medium">Monday - Friday</span>
-                    <div className="relative inline-block w-12 mr-2 align-middle select-none">
-                      <input
-                        type="checkbox"
-                        name="toggle"
-                        id="toggle1"
-                        className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 checked:bg-blue-600"
-                        defaultChecked
-                      />
-                      <label
-                        htmlFor="toggle1"
-                        className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                      ></label>
+                <div className="space-y-3 max-h-48 overflow-y-auto">
+                  {availability.length > 0 ? (
+                    availability.slice(0, 5).map((slot, index) => (
+                      <div
+                        key={slot.id || index}
+                        className="flex justify-between items-center bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-blue-100 hover:border-blue-300 transition-all duration-200"
+                      >
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-800">
+                            {slot.day}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {slot.startTime} - {slot.endTime}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              slot.isAvailable
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {slot.isAvailable ? "Available" : "Booked"}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No availability slots set yet</p>
                     </div>
-                  </div>
-                  <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg">
-                    <span className="font-medium">Saturday</span>
-                    <div className="relative inline-block w-12 mr-2 align-middle select-none">
-                      <input
-                        type="checkbox"
-                        name="toggle"
-                        id="toggle2"
-                        className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 checked:bg-blue-600"
-                      />
-                      <label
-                        htmlFor="toggle2"
-                        className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                      ></label>
-                    </div>
-                  </div>
+                  )}
                 </div>
-                <button className="mt-8 w-full group relative px-6 py-3 font-semibold text-white rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-                  Update Schedule
+                <button className="mt-6 w-full group relative px-6 py-3 font-semibold text-white rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                  Manage Availability
                 </button>
               </div>
-              {/* Notifications Panel Placeholder */}
+              {/* Recent Sessions Panel */}
               <div className="group bg-white rounded-2xl border border-gray-200 p-8 shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full overflow-hidden relative">
                 {/* Header with Icon */}
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
                     <svg
                       className="w-6 h-6 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                        d="M12 6v6m0 0v6m0-6h6m0 0h6M6 12a6 6 0 11-12 0 6 6 0 0112 0z"
                       ></path>
                     </svg>
                   </div>
                   <h3 className="text-xl font-bold text-gray-800">
-                    Recent Notifications
+                    Upcoming Sessions
                   </h3>
                 </div>
 
-                {/* Notification List */}
-                <ul className="space-y-3 flex-grow">
-                  <li className="group flex items-center space-x-4 p-3.5 rounded-lg transition-colors duration-200 bg-blue-50 border-l-4 border-blue-500 hover:bg-blue-100 cursor-pointer">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
+                {/* Sessions List */}
+                <ul className="space-y-3 flex-grow max-h-64 overflow-y-auto">
+                  {[...groupSessions, ...oneOnOneSessions]
+                    .slice(0, 4)
+                    .map((session, index) => (
+                      <li
+                        key={session.session_id}
+                        className={`group flex items-center space-x-4 p-3.5 rounded-lg transition-colors duration-200 border-l-4 hover:shadow-md cursor-pointer ${
+                          session.session_type === "GROUP"
+                            ? "bg-green-50 border-green-500 hover:bg-green-100"
+                            : "bg-blue-50 border-blue-500 hover:bg-blue-100"
+                        }`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        ></path>
-                      </svg>
+                        <div
+                          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
+                            session.session_type === "GROUP"
+                              ? "bg-green-100"
+                              : "bg-blue-100"
+                          }`}
+                        >
+                          <svg
+                            className={`w-5 h-5 ${
+                              session.session_type === "GROUP"
+                                ? "text-green-600"
+                                : "text-blue-600"
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d={
+                                session.session_type === "GROUP"
+                                  ? "M17 20h5v-2a3 3 0 00-5.856-1.487M15 10h.01M11 10h.01M7 10h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  : "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              }
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-grow">
+                          <p className="text-sm text-gray-800 line-clamp-1">
+                            <span className="font-semibold">
+                              {session.title}
+                            </span>
+                          </p>
+                          <p className="text-xs text-gray-600 mt-0.5">
+                            {session.session_type === "GROUP"
+                              ? "Group Session"
+                              : "One-on-One"}
+                            {" • "}
+                            {session.max_attendees} max attendees
+                          </p>
+                        </div>
+                        <span
+                          className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                            session.status === "SCHEDULED"
+                              ? "bg-blue-100 text-blue-700"
+                              : session.status === "COMPLETED"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {session.status}
+                        </span>
+                      </li>
+                    ))}
+                  {groupSessions.length === 0 && oneOnOneSessions.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>No sessions scheduled yet</p>
                     </div>
-                    <div className="flex-grow">
-                      <p className="text-sm text-gray-800">
-                        <span className="font-semibold">New Student:</span> Alex
-                        Johnson has enrolled.
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        5 minutes ago
-                      </p>
-                    </div>
-                  </li>
-
-                  <li className="group flex items-center space-x-4 p-3.5 rounded-lg transition-colors duration-200 hover:bg-slate-50 cursor-pointer">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="flex-grow">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">
-                          Assignment Graded:
-                        </span>{" "}
-                        &ldquo;Project Alpha&rdquo; submission marked.
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                    </div>
-                  </li>
-
-                  <li className="group flex items-center space-x-4 p-3.5 rounded-lg transition-colors duration-200 hover:bg-slate-50 cursor-pointer">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-yellow-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        ></path>
-                      </svg>
-                    </div>
-                    <div className="flex-grow">
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold">Reminder:</span>{" "}
-                        &ldquo;Intro to Physics&rdquo; starts in 1 hour.
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">Yesterday</p>
-                    </div>
-                  </li>
+                  )}
                 </ul>
-                <button className="mt-6 w-full group relative px-6 py-3 font-semibold text-white rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
-                  View All Notifications
+                <button className="mt-6 w-full group relative px-6 py-3 font-semibold text-white rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-emerald-600 hover:to-green-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
+                  View All Sessions
                 </button>
               </div>
             </div>

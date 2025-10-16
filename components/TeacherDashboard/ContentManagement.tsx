@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  getQuestions,
   getResources,
   Question,
   Resource,

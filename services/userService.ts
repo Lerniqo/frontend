@@ -170,6 +170,17 @@ const resendVerificationCode = async (email: string): Promise<ApiResponse> => {
   }
 };
 
+export const getAllUsers = async (): Promise<User[]> => {
+  const response = await apiClient.get("/user-service/users");
+  return response.data.data.users; // returns array of users
+};
+
+// Fetch only teachers (for internal use)
+export const getTeachersList = async (): Promise<User[]> => {
+  const response = await apiClient.get("/user-service/users/teachers"); // your new endpoint
+  return response.data.data.teachers;
+};
+
 /**
  * Format student profile data for backend submission
  */
@@ -372,6 +383,9 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
     };
   }
 };
+
+
+
 
 /**
  * Get current user profile
@@ -680,6 +694,7 @@ export const userService = {
   updateProfile,
   logout,
   getTeachers,
+  getTeachersList,
   getTeacherProfile,
   changePassword,
   uploadPhoto,

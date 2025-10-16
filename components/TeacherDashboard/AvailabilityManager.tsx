@@ -4,16 +4,20 @@ import React, { useState } from "react";
 import {
   AvailabilitySlot,
   updateAvailability,
+  TeacherSession,
 } from "@/services/teacherDashboardService";
+import { detectAllConflicts } from "@/utils/availabilityConflictDetector";
 
 interface AvailabilityManagerProps {
   availability: AvailabilitySlot[];
   setAvailability: (slots: AvailabilitySlot[]) => void;
+  sessions?: TeacherSession[];
 }
 
 export default function AvailabilityManager({
   availability,
   setAvailability,
+  sessions = [],
 }: AvailabilityManagerProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [tempAvailability, setTempAvailability] =
@@ -21,7 +25,13 @@ export default function AvailabilityManager({
   const [selectedDate, setSelectedDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+  const [price, setPrice] = useState<number | null>(null);
+  const [sessionDescription, setSessionDescription] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const handleToggleAvailability = (id: string) => {
     setTempAvailability((prev) =>
@@ -36,8 +46,12 @@ export default function AvailabilityManager({
   };
 
   const handleAddSlot = () => {
+    // Reset errors
+    setFormError(null);
+
+    // Validation
     if (!selectedDate || !startTime || !endTime) {
-      alert("Please fill in all fields");
+      setFormError("Please fill in all required fields");
       return;
     }
 
@@ -46,18 +60,25 @@ export default function AvailabilityManager({
     today.setHours(0, 0, 0, 0);
 
     if (selectedDateObj < today) {
-      alert("Please select a future date");
+      setFormError("Please select a future date");
       return;
     }
 
     if (startTime >= endTime) {
-      alert("End time must be after start time");
+      setFormError("End time must be after start time");
+      return;
+    }
+
+    // Validate price if isPaid is selected
+    if (isPaid && (!price || price <= 0)) {
+      setFormError("Please enter a valid price for paid sessions");
       return;
     }
 
     const dayName = selectedDateObj.toLocaleDateString("en-US", {
       weekday: "long",
     });
+
     const newSlot: AvailabilitySlot = {
       id: Date.now().toString(),
       date: selectedDate,
@@ -65,24 +86,50 @@ export default function AvailabilityManager({
       startTime,
       endTime,
       isAvailable: true,
+      isPaid,
+      price: isPaid ? price : null,
+      sessionDescription: sessionDescription || null,
     };
+
+    // Check for conflicts with existing availability and sessions
+    const conflictCheck = detectAllConflicts(
+      newSlot,
+      tempAvailability,
+      sessions
+    );
+
+    if (conflictCheck.conflict) {
+      setFormError(conflictCheck.message);
+      return;
+    }
 
     setTempAvailability((prev) => [...prev, newSlot]);
     setSelectedDate("");
     setStartTime("");
     setEndTime("");
+    setIsPaid(false);
+    setPrice(null);
+    setSessionDescription("");
     setShowAddForm(false);
   };
 
   const handleSave = async () => {
+    setSaveError(null);
+    setSaveLoading(true);
+
     try {
       const result = await updateAvailability(tempAvailability);
       if (result.success) {
         setAvailability(tempAvailability);
         setIsEditing(false);
+      } else {
+        setSaveError(result.message || "Failed to save availability");
       }
     } catch (error) {
       console.error("Error updating availability:", error);
+      setSaveError("An error occurred while saving. Please try again.");
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -93,6 +140,11 @@ export default function AvailabilityManager({
     setSelectedDate("");
     setStartTime("");
     setEndTime("");
+    setIsPaid(false);
+    setPrice(null);
+    setSessionDescription("");
+    setFormError(null);
+    setSaveError(null);
   };
 
   const getMinDate = () => {
@@ -147,19 +199,65 @@ export default function AvailabilityManager({
           <div className="flex space-x-3">
             <button
               onClick={handleSave}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:scale-105"
+              disabled={saveLoading}
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
-              Save Changes
+              {saveLoading ? (
+                <>
+                  <svg
+                    className="w-5 h-5 animate-spin"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                      opacity="0.2"
+                    />
+                    <path
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
             </button>
             <button
               onClick={handleCancel}
-              className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105"
+              disabled={saveLoading}
+              className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
           </div>
         )}
       </div>
+
+      {/* Save Error Message */}
+      {saveError && isEditing && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
+          <svg
+            className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <p className="text-red-700 text-sm">{saveError}</p>
+        </div>
+      )}
 
       {isEditing && (
         <div className="mb-8">
@@ -190,10 +288,29 @@ export default function AvailabilityManager({
               <h4 className="text-lg font-semibold text-gray-900 mb-4">
                 Add New Time Slot
               </h4>
+
+              {/* Error Message */}
+              {formError && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3">
+                  <svg
+                    className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-red-700 text-sm">{formError}</p>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Select Date
+                    Select Date *
                   </label>
                   <input
                     type="date"
@@ -205,7 +322,7 @@ export default function AvailabilityManager({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Start Time
+                    Start Time *
                   </label>
                   <input
                     type="time"
@@ -216,7 +333,7 @@ export default function AvailabilityManager({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    End Time
+                    End Time *
                   </label>
                   <input
                     type="time"
@@ -226,6 +343,57 @@ export default function AvailabilityManager({
                   />
                 </div>
               </div>
+
+              {/* Session Description */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Session Description
+                </label>
+                <textarea
+                  value={sessionDescription}
+                  onChange={(e) => setSessionDescription(e.target.value)}
+                  placeholder="E.g., Advanced Math tutoring, one-on-one consultation, etc."
+                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 resize-none"
+                  rows={3}
+                />
+              </div>
+
+              {/* Paid Session Section */}
+              <div className="mb-6 p-4 bg-white border border-gray-200 rounded-xl">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isPaid}
+                    onChange={(e) => setIsPaid(e.target.checked)}
+                    className="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500 cursor-pointer"
+                  />
+                  <span className="text-gray-700 font-medium">
+                    This is a paid session
+                  </span>
+                </label>
+
+                {isPaid && (
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price per Session (USD) *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={price || ""}
+                      onChange={(e) =>
+                        setPrice(
+                          e.target.value ? parseFloat(e.target.value) : null
+                        )
+                      }
+                      placeholder="Enter price"
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+                )}
+              </div>
+
               <div className="flex space-x-3">
                 <button
                   onClick={handleAddSlot}
@@ -234,7 +402,10 @@ export default function AvailabilityManager({
                   Add Slot
                 </button>
                 <button
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setFormError(null);
+                  }}
                   className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all duration-300 shadow-lg hover:scale-105"
                 >
                   Cancel
@@ -287,9 +458,34 @@ export default function AvailabilityManager({
               <p className="text-gray-600 text-sm mb-2 group-hover:text-gray-700 transition-colors duration-300">
                 {formatDate(slot.date)}
               </p>
-              <p className="text-gray-600 text-sm group-hover:text-gray-700 transition-colors duration-300">
+              <p className="text-gray-600 text-sm mb-4 group-hover:text-gray-700 transition-colors duration-300">
                 {slot.startTime} - {slot.endTime}
               </p>
+
+              {/* Session Description */}
+              {slot.sessionDescription && (
+                <p className="text-gray-700 text-sm mb-3 p-2 bg-blue-50 rounded border border-blue-100 italic">
+                  &quot;{slot.sessionDescription}&quot;
+                </p>
+              )}
+
+              {/* Pricing Info */}
+              {slot.isPaid && (
+                <div className="pt-3 border-t border-gray-200">
+                  <div className="flex items-center space-x-2">
+                    <svg
+                      className="w-4 h-4 text-green-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M8.16 2.75a.75.75 0 00-1.32 0l-.478 1.435A7.001 7.001 0 002.75 8.16l-1.435.478a.75.75 0 000 1.32l1.435.478a7.001 7.001 0 003.455 3.455l.478 1.435a.75.75 0 001.32 0l.478-1.435a7.001 7.001 0 003.455-3.455l1.435-.478a.75.75 0 000-1.32l-1.435-.478A7.001 7.001 0 008.638 2.75l-.478-1.435z" />
+                    </svg>
+                    <span className="text-green-700 font-semibold">
+                      ${slot.price?.toFixed(2) || "0.00"}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

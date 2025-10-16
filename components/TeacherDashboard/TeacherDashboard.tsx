@@ -8,12 +8,14 @@ import {
   getWebinars,
   getAvailability,
   getContests,
+  getAllTeachersSessions,
   Notification,
   Question,
   Resource,
   Webinar,
   AvailabilitySlot,
   Contest,
+  TeacherSession,
 } from "@/services/teacherDashboardService";
 import {
   getParticlesAndTopics,
@@ -39,6 +41,7 @@ export default function TeacherDashboard() {
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [contests, setContests] = useState<Contest[]>([]);
+  const [sessions, setSessions] = useState<TeacherSession[]>([]);
   const [particles, setParticles] = useState<ParticleOption[]>([]);
   const [topics, setTopics] = useState<TopicOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +66,7 @@ export default function TeacherDashboard() {
           webinarsRes,
           availabilityRes,
           contestsRes,
+          sessionsRes,
           particlesAndTopicsRes,
         ] = await Promise.all([
           getNotifications(),
@@ -71,6 +75,7 @@ export default function TeacherDashboard() {
           getWebinars(),
           getAvailability(),
           getContests(),
+          getAllTeachersSessions(),
           getParticlesAndTopics(),
         ]);
 
@@ -82,6 +87,7 @@ export default function TeacherDashboard() {
         if (availabilityRes.success)
           setAvailability(availabilityRes.data || []);
         if (contestsRes.success) setContests(contestsRes.data || []);
+        if (sessionsRes.success) setSessions(sessionsRes.data || []);
         if (particlesAndTopicsRes && particlesAndTopicsRes.particles) {
           setParticles(particlesAndTopicsRes.particles || []);
           setTopics(particlesAndTopicsRes.topics || []);
@@ -113,6 +119,7 @@ export default function TeacherDashboard() {
                 <AvailabilityManager
                   availability={availability}
                   setAvailability={setAvailability}
+                  sessions={sessions}
                 />
               </div>
               <div className="backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 hover:bg-white/15 transition-all duration-500 group">
@@ -174,6 +181,7 @@ export default function TeacherDashboard() {
                     <AvailabilityManager
                       availability={availability}
                       setAvailability={setAvailability}
+                      sessions={sessions}
                     />
                   </div>
                 </div>

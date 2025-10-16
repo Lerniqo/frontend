@@ -2,22 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  getWebinars,
   getAvailability,
   getAllTeachersSessions,
-  Webinar,
   AvailabilitySlot,
   TeacherSession,
 } from "@/services/teacherDashboardService";
 import AvailabilityManager from "./AvailabilityManager";
-import WebinarManager from "./WebinarManager";
 import SubMenu from "./SubMenu";
 import SharedNavigation from "./SharedNavigation";
 import TeacherFooter from "./TeacherFooter";
 import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
 
 export default function ScheduleManagement() {
-  const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [groupSessions, setGroupSessions] = useState<TeacherSession[]>([]);
   const [oneOnOneSessions, setOneOnOneSessions] = useState<TeacherSession[]>(
@@ -30,23 +26,21 @@ export default function ScheduleManagement() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [webinarsRes, availabilityRes, sessionsRes] = await Promise.all([
-          getWebinars(),
+        const [availabilityRes, sessionsRes] = await Promise.all([
           getAvailability(),
           getAllTeachersSessions(),
         ]);
 
-        if (webinarsRes.success) setWebinars(webinarsRes.data || []);
         if (availabilityRes.success)
           setAvailability(availabilityRes.data || []);
 
         if (sessionsRes.success && sessionsRes.data) {
           // Filter sessions by type
           const groupSessionsList = sessionsRes.data.filter(
-            (session) => session.session_type === "GROUP"
+            (session: TeacherSession) => session.session_type === "GROUP"
           );
           const oneOnOneSessionsList = sessionsRes.data.filter(
-            (session) => session.session_type === "ONE_ON_ONE"
+            (session: TeacherSession) => session.session_type === "ONE_ON_ONE"
           );
 
           setGroupSessions(groupSessionsList);

@@ -397,11 +397,11 @@ export default function QuestionBankManager({
     const [topicSearch, setTopicSearch] = useState("");
 
     // Debug: Log particles and topics availability
-    console.log(
+    console.warn(
       "EditQuestionForm - Particles available:",
       particles?.length || 0
     );
-    console.log("EditQuestionForm - Topics available:", topics?.length || 0);
+    console.warn("EditQuestionForm - Topics available:", topics?.length || 0);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleInputChange = (e: any, index?: number) => {

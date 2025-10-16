@@ -7,16 +7,13 @@ import SubMenu from "@/components/TeacherDashboard/SubMenu";
 import {
   Users,
   CheckCircle,
-  XCircle,
   UserCheck,
-  Shield,
   Search,
   Filter,
   MoreVertical,
   Mail,
   Calendar,
   Award,
-  Clock,
   BarChart3,
 } from "lucide-react";
 
@@ -132,7 +129,6 @@ const UserManagement = () => {
 
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchTotalUsers = async () => {

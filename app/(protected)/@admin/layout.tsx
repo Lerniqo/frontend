@@ -55,6 +55,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       label: "Contest Management",
       path: "/contest-management",
     },
+    {
+      id: "resource-library",
+      label: "Resource Library",
+      path: "/resource-library",
+    },
     { id: "analytics", label: "Analytics", path: "/analytics" },
   ];
 

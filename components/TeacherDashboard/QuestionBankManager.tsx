@@ -2,11 +2,19 @@
 
 import React, { useState } from "react";
 import { Question, addQuestion } from "@/services/teacherDashboardService";
-import { updateQuestion, deleteQuestion } from "@/services/contentService";
+import {
+  updateQuestion,
+  deleteQuestion,
+  createQuestion,
+  CreateQuestionDto,
+} from "@/services/contentService";
+import { ParticleOption, TopicOption } from "@/services/contentService";
 
 interface QuestionBankManagerProps {
   questions: Question[];
   setQuestions: (questions: Question[]) => void;
+  particles: ParticleOption[];
+  topics: TopicOption[];
 }
 
 // Search icon component
@@ -80,6 +88,8 @@ const DeleteIcon = () => (
 export default function QuestionBankManager({
   questions,
   setQuestions,
+  particles,
+  topics,
 }: QuestionBankManagerProps) {
   const [_showCreateForm, _setShowCreateForm] = useState(false);
   const [questionSearchTerm, setQuestionSearchTerm] = useState("");
@@ -186,20 +196,39 @@ export default function QuestionBankManager({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddQuestionSave = async (newQuestion: any) => {
     try {
-      const questionData = {
-        subject: newQuestion.topic,
-        question: newQuestion.questionText,
+      // Map selected particles and topics to tags array (conceptIds)
+      const tags = [
+        ...(newQuestion.particles || []),
+        ...(newQuestion.topics || []),
+      ];
+
+      // Get the correct answer text from the options array
+      const correctAnswerText = newQuestion.options[newQuestion.correctAnswer];
+
+      const questionData: CreateQuestionDto = {
+        questionText: newQuestion.questionText,
         options: newQuestion.options,
-        correctAnswer: newQuestion.correctAnswer,
-        difficulty: newQuestion.difficulty,
+        correctAnswer: correctAnswerText,
+        tags: tags,
       };
-      const result = await addQuestion(questionData);
-      if (result.success && result.data) {
-        setQuestions([...questions, result.data]);
-        setIsAddingQuestion(false);
-      }
+
+      const result = await createQuestion(questionData);
+
+      // Map the API response to the local Question type for UI display
+      const mappedQuestion: Question = {
+        id: result.id,
+        subject: newQuestion.topic || "General",
+        question: result.questionText,
+        options: result.options,
+        correctAnswer: newQuestion.correctAnswer, // Keep as index for UI
+        difficulty: newQuestion.difficulty || "easy",
+      };
+
+      setQuestions([...questions, mappedQuestion]);
+      setIsAddingQuestion(false);
     } catch (error) {
       console.error("Error adding question:", error);
+      alert("Failed to add question. Please try again.");
     }
   };
 
@@ -355,6 +384,24 @@ export default function QuestionBankManager({
     isNew?: boolean;
   }) => {
     const [editedQuestion, setEditedQuestion] = useState(question);
+    const [mappingType, setMappingType] = useState<"particle" | "topic">(
+      "particle"
+    );
+    const [selectedParticles, setSelectedParticles] = useState<string[]>(
+      question.particles || []
+    );
+    const [selectedTopics, setSelectedTopics] = useState<string[]>(
+      question.topics || []
+    );
+    const [particleSearch, setParticleSearch] = useState("");
+    const [topicSearch, setTopicSearch] = useState("");
+
+    // Debug: Log particles and topics availability
+    console.warn(
+      "EditQuestionForm - Particles available:",
+      particles?.length || 0
+    );
+    console.warn("EditQuestionForm - Topics available:", topics?.length || 0);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleInputChange = (e: any, index?: number) => {
@@ -370,6 +417,40 @@ export default function QuestionBankManager({
 
     const handleCorrectAnswerChange = (index: number) =>
       setEditedQuestion({ ...editedQuestion, correctAnswer: index });
+
+    const handleParticleToggle = (conceptId: string) => {
+      setSelectedParticles((prev) =>
+        prev.includes(conceptId)
+          ? prev.filter((id) => id !== conceptId)
+          : [...prev, conceptId]
+      );
+    };
+
+    const handleTopicToggle = (conceptId: string) => {
+      setSelectedTopics((prev) =>
+        prev.includes(conceptId)
+          ? prev.filter((id) => id !== conceptId)
+          : [...prev, conceptId]
+      );
+    };
+
+    const handleSave = () => {
+      onSave({
+        ...editedQuestion,
+        particles: selectedParticles,
+        topics: selectedTopics,
+      });
+    };
+
+    const filteredParticles =
+      particles?.filter((p) =>
+        p.name.toLowerCase().includes(particleSearch.toLowerCase())
+      ) || [];
+
+    const filteredTopics =
+      topics?.filter((t) =>
+        t.name.toLowerCase().includes(topicSearch.toLowerCase())
+      ) || [];
 
     return (
       <div className="bg-gradient-to-br from-white to-purple-50 p-8 rounded-2xl shadow-lg border-2 border-purple-200 space-y-6 mb-6 animate-slideDown">
@@ -449,37 +530,176 @@ export default function QuestionBankManager({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center">
-              <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-              Topic
-            </label>
-            <input
-              type="text"
-              name="topic"
-              value={editedQuestion.topic || editedQuestion.subject}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 sm:text-sm transition-all duration-200 px-4 py-3"
-              placeholder="Enter topic or subject..."
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-700 flex items-center">
-              <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-              Difficulty
-            </label>
-            <select
-              name="difficulty"
-              value={editedQuestion.difficulty}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 sm:text-sm transition-all duration-200 px-4 py-3"
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-gray-700 flex items-center">
+            <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+            Difficulty
+          </label>
+          <select
+            name="difficulty"
+            value={editedQuestion.difficulty}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 sm:text-sm transition-all duration-200 px-4 py-3"
+          >
+            <option value="easy">🟢 Easy</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="hard">🔴 Hard</option>
+          </select>
+        </div>
+
+        {/* Concept Mapping Section */}
+        <div className="space-y-4 border-t border-purple-200 pt-6">
+          <label className="text-sm font-semibold text-gray-700 flex items-center">
+            <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+            Map to Concepts
+          </label>
+
+          <div className="flex gap-4 mb-4">
+            <button
+              type="button"
+              onClick={() => setMappingType("particle")}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                mappingType === "particle"
+                  ? "bg-purple-600 text-white shadow-md"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
             >
-              <option value="easy">🟢 Easy</option>
-              <option value="medium">🟡 Medium</option>
-              <option value="hard">🔴 Hard</option>
-            </select>
+              🔬 Particles
+            </button>
+            <button
+              type="button"
+              onClick={() => setMappingType("topic")}
+              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                mappingType === "topic"
+                  ? "bg-purple-600 text-white shadow-md"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              📚 Topics
+            </button>
           </div>
+
+          {mappingType === "particle" && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Search particles..."
+                value={particleSearch}
+                onChange={(e) => setParticleSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+              />
+              <div className="max-h-48 overflow-y-auto bg-white rounded-lg border border-gray-200 p-2 space-y-1">
+                {filteredParticles.length > 0 ? (
+                  filteredParticles.map((particle) => (
+                    <label
+                      key={particle.conceptId}
+                      className="flex items-center gap-2 p-2 hover:bg-purple-50 rounded-lg cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedParticles.includes(particle.conceptId)}
+                        onChange={() =>
+                          handleParticleToggle(particle.conceptId)
+                        }
+                        className="h-4 w-4 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {particle.name}
+                      </span>
+                    </label>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No particles found
+                  </p>
+                )}
+              </div>
+              {selectedParticles.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedParticles.map((conceptId) => {
+                    const particle = particles?.find(
+                      (p) => p.conceptId === conceptId
+                    );
+                    return particle ? (
+                      <span
+                        key={conceptId}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium"
+                      >
+                        {particle.name}
+                        <button
+                          type="button"
+                          onClick={() => handleParticleToggle(conceptId)}
+                          className="ml-1 hover:text-purple-900"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {mappingType === "topic" && (
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Search topics..."
+                value={topicSearch}
+                onChange={(e) => setTopicSearch(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+              />
+              <div className="max-h-48 overflow-y-auto bg-white rounded-lg border border-gray-200 p-2 space-y-1">
+                {filteredTopics.length > 0 ? (
+                  filteredTopics.map((topic) => (
+                    <label
+                      key={topic.conceptId}
+                      className="flex items-center gap-2 p-2 hover:bg-purple-50 rounded-lg cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedTopics.includes(topic.conceptId)}
+                        onChange={() => handleTopicToggle(topic.conceptId)}
+                        className="h-4 w-4 text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <span className="text-sm text-gray-700">
+                        {topic.name}
+                      </span>
+                    </label>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No topics found
+                  </p>
+                )}
+              </div>
+              {selectedTopics.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedTopics.map((conceptId) => {
+                    const topic = topics?.find(
+                      (t) => t.conceptId === conceptId
+                    );
+                    return topic ? (
+                      <span
+                        key={conceptId}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium"
+                      >
+                        {topic.name}
+                        <button
+                          type="button"
+                          onClick={() => handleTopicToggle(conceptId)}
+                          className="ml-1 hover:text-indigo-900"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end space-x-4 pt-4 border-t border-purple-200">
@@ -490,7 +710,7 @@ export default function QuestionBankManager({
             Cancel
           </button>
           <button
-            onClick={() => onSave(editedQuestion)}
+            onClick={handleSave}
             className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-xl transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg"
           >
             {isNew ? "Add Question" : "Save Changes"}

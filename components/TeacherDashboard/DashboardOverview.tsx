@@ -262,7 +262,7 @@ export default function DashboardOverview() {
                 <ul className="space-y-3 flex-grow max-h-64 overflow-y-auto">
                   {[...groupSessions, ...oneOnOneSessions]
                     .slice(0, 4)
-                    .map((session, index) => (
+                    .map((session) => (
                       <li
                         key={session.session_id}
                         className={`group flex items-center space-x-4 p-3.5 rounded-lg transition-colors duration-200 border-l-4 hover:shadow-md cursor-pointer ${

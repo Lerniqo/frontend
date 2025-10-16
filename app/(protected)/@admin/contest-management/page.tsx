@@ -178,7 +178,7 @@ export default function ContestManagementPage() {
     });
   };
 
-  const updateTask = (index: number, field: string, value: any) => {
+  const updateTask = (index: number, field: string, value: string | number) => {
     const newTasks = [...formData.tasks];
     newTasks[index] = { ...newTasks[index], [field]: value };
 
@@ -320,7 +320,7 @@ export default function ContestManagementPage() {
                 Contest Tasks
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {selectedContest.tasks.map((task, index) => (
+                {selectedContest.tasks.map((task) => (
                   <div
                     key={task.taskId}
                     className="border-2 border-purple-200 rounded-xl p-5 bg-gradient-to-br from-purple-50 to-white hover:shadow-lg transition-all"
@@ -431,7 +431,7 @@ export default function ContestManagementPage() {
                   Upcoming Contest
                 </h3>
                 <p className="text-gray-600">
-                  This contest hasn't started yet. Rankings will be available
+                  This contest hasn&apos;t started yet. Rankings will be available
                   after the contest begins.
                 </p>
               </div>
@@ -618,17 +618,17 @@ export default function ContestManagementPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {formData.tasks.map((task, index) => (
+                  {formData.tasks.map((task, _index) => (
                     <div
-                      key={index}
+                      key={_index}
                       className="border-2 border-gray-300 rounded-xl p-4 bg-gray-50"
                     >
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="font-bold text-gray-800">
-                          Task {index + 1}
+                          Task {_index + 1}
                         </h4>
                         <button
-                          onClick={() => removeTask(index)}
+                          onClick={() => removeTask(_index)}
                           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all"
                         >
                           <X className="w-5 h-5" />
@@ -643,7 +643,7 @@ export default function ContestManagementPage() {
                           <select
                             value={task.type}
                             onChange={(e) =>
-                              updateTask(index, "type", e.target.value)
+                              updateTask(_index, "type", e.target.value)
                             }
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none"
                           >
@@ -660,7 +660,7 @@ export default function ContestManagementPage() {
                             type="text"
                             value={task.title}
                             onChange={(e) =>
-                              updateTask(index, "title", e.target.value)
+                              updateTask(_index, "title", e.target.value)
                             }
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none"
                             placeholder="Task title"
@@ -678,7 +678,7 @@ export default function ContestManagementPage() {
                             value={task.goal}
                             onChange={(e) =>
                               updateTask(
-                                index,
+                                _index,
                                 "goal",
                                 parseInt(e.target.value) || 0
                               )
@@ -698,7 +698,7 @@ export default function ContestManagementPage() {
                             <select
                               value={task.difficulty || "medium"}
                               onChange={(e) =>
-                                updateTask(index, "difficulty", e.target.value)
+                                updateTask(_index, "difficulty", e.target.value)
                               }
                               className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none"
                             >
@@ -718,7 +718,7 @@ export default function ContestManagementPage() {
                             value={task.rewardPoints}
                             onChange={(e) =>
                               updateTask(
-                                index,
+                                _index,
                                 "rewardPoints",
                                 parseInt(e.target.value) || 0
                               )
@@ -735,7 +735,7 @@ export default function ContestManagementPage() {
                           <textarea
                             value={task.description}
                             onChange={(e) =>
-                              updateTask(index, "description", e.target.value)
+                              updateTask(_index, "description", e.target.value)
                             }
                             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-purple-500 focus:outline-none"
                             rows={2}

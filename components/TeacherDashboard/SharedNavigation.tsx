@@ -32,6 +32,11 @@ export default function SharedNavigation({
       path: "/schedule-management",
     },
     { id: "contests", label: "Contests", path: "/contests" },
+    {
+      id: "resource-library",
+      label: "Resource Library",
+      path: "/resource-library",
+    },
   ];
 
   const unreadCount = notifications.filter((n) => !n.read).length;

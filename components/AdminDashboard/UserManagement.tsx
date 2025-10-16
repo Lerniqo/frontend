@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { getAllUsers, getTeachersList } from "@/services/userService";
 import { User } from "@/types/auth.types";
 import SubMenu from "@/components/TeacherDashboard/SubMenu";
+import UserDetailsModal from "@/components/AdminDashboard/UserDetailsModal";
 import {
   Users,
   CheckCircle,
@@ -129,6 +130,8 @@ const UserManagement = () => {
 
   const [totalUsers, setTotalUsers] = useState<number | null>(null);
   const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchTotalUsers = async () => {
@@ -244,6 +247,15 @@ const UserManagement = () => {
 
   return (
     <div className="space-y-12 animate-fade-in-up">
+      {/* User Details Modal */}
+      <UserDetailsModal
+        isOpen={isModalOpen}
+        user={selectedUser}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedUser(null);
+        }}
+      />
       {/* Header */}
       <div className="text-center mb-16">
         <h1 className="text-5xl font-bold mb-6 tracking-tight leading-tight bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -583,7 +595,13 @@ const UserManagement = () => {
 
                     {/* Action Buttons */}
                     <div className="flex items-center space-x-3 lg:flex-nowrap flex-wrap">
-                      <button className="group relative flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setIsModalOpen(true);
+                        }}
+                        className="group relative flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+                      >
                         <CheckCircle className="w-5 h-5" />
                         <span className="font-semibold">View</span>
                       </button>

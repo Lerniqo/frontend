@@ -291,76 +291,133 @@ export const scheduleWebinar = async (
   };
 };
 
-// Mock availability data
+// Availability API response types
+export interface AvailabilityAPIResponse {
+  availability_id: string;
+  teacher_id: string;
+  start_time: string; // ISO datetime string (e.g., "2025-10-17T09:00:00.000Z")
+  end_time: string; // ISO datetime string
+  is_booked: boolean;
+  is_paid: boolean;
+  price_per_session: string | null;
+  session_description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Local availability slot for frontend display
 export interface AvailabilitySlot {
   id: string;
   date: string; // ISO date string (YYYY-MM-DD)
   day: string; // Day name for display
-  startTime: string;
-  endTime: string;
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
   isAvailable: boolean;
 }
 
-const mockAvailability: AvailabilitySlot[] = [
-  {
-    id: "1",
-    date: "2025-09-02",
-    day: "Monday",
-    startTime: "09:00",
-    endTime: "11:00",
-    isAvailable: true,
-  },
-  {
-    id: "2",
-    date: "2025-09-02",
-    day: "Monday",
-    startTime: "14:00",
-    endTime: "16:00",
-    isAvailable: true,
-  },
-  {
-    id: "3",
-    date: "2025-09-03",
-    day: "Tuesday",
-    startTime: "10:00",
-    endTime: "12:00",
-    isAvailable: false,
-  },
-  {
-    id: "4",
-    date: "2025-09-04",
-    day: "Wednesday",
-    startTime: "09:00",
-    endTime: "11:00",
-    isAvailable: true,
-  },
-  {
-    id: "5",
-    date: "2025-09-05",
-    day: "Thursday",
-    startTime: "15:00",
-    endTime: "17:00",
-    isAvailable: true,
-  },
-  {
-    id: "6",
-    date: "2025-09-06",
-    day: "Friday",
-    startTime: "13:00",
-    endTime: "15:00",
-    isAvailable: false,
-  },
-];
+/**
+ * Transforms API availability response to frontend AvailabilitySlot format
+ * @param apiResponse - Raw API response
+ * @returns Formatted AvailabilitySlot
+ */
+const transformAvailabilityResponse = (
+  apiResponse: AvailabilityAPIResponse
+): AvailabilitySlot => {
+  const startDate = new Date(apiResponse.start_time);
+  const endDate = new Date(apiResponse.end_time);
 
-export const getAvailability = async (): Promise<
-  ApiResponse<AvailabilitySlot[]>
-> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Extract date in YYYY-MM-DD format
+  const date = startDate.toISOString().split("T")[0];
+
+  // Extract day name
+  const dayName = startDate.toLocaleDateString("en-US", { weekday: "long" });
+
+  // Extract time in HH:mm format
+  const startTime = startDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const endTime = endDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
   return {
-    success: true,
-    message: "Availability retrieved successfully",
-    data: mockAvailability,
+    id: apiResponse.availability_id,
+    date,
+    day: dayName,
+    startTime,
+    endTime,
+    isAvailable: !apiResponse.is_booked,
   };
+};
+
+/**
+ * Fetches teacher availability from the scheduling service
+ * @param teacherId - The teacher's ID (optional, uses current user if not provided)
+ * @returns Promise with array of availability slots
+ */
+export const getAvailability = async (
+  teacherId?: string
+): Promise<ApiResponse<AvailabilitySlot[]>> => {
+  try {
+    // If teacherId is not provided, we need to get current user
+    let finalTeacherId = teacherId;
+
+    if (!finalTeacherId) {
+      // Get current user from userService
+      const { userService } = await import("@/services/userService");
+      const currentUserResponse = await userService.getCurrentUser();
+
+      if (!currentUserResponse.success || !currentUserResponse.data?.userId) {
+        return {
+          success: false,
+          message: "Failed to get current user information",
+          error: "Unable to retrieve current teacher ID",
+        };
+      }
+
+      finalTeacherId = currentUserResponse.data.userId;
+    }
+
+    // Fetch availability from scheduling service
+    const response = await apiClient.get<AvailabilityAPIResponse[]>(
+      `/scheduling-service/scheduling/teachers/${finalTeacherId}/availability`
+    );
+
+    // Check if we have valid data
+    if (!Array.isArray(response.data)) {
+      return {
+        success: false,
+        message: "Invalid availability data format",
+        error: "API returned non-array data",
+      };
+    }
+
+    // Transform API responses to frontend format
+    const transformedData: AvailabilitySlot[] = response.data.map((slot) =>
+      transformAvailabilityResponse(slot)
+    );
+
+    return {
+      success: true,
+      message: "Availability retrieved successfully",
+      data: transformedData,
+    };
+  } catch (error: any) {
+    console.error("Error fetching availability:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch availability",
+      error: error.response?.data?.error || error.message || "Unknown error",
+    };
+  }
 };
 
 export const updateAvailability = async (

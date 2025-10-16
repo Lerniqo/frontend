@@ -140,15 +140,7 @@ export default function ScheduleManagement() {
             {activeScheduleSubsection === "group-sessions" && (
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
-                  <div className="relative bg-white rounded-3xl border-2 border-green-200 shadow-lg p-8 hover:shadow-xl hover:border-green-300 transition-all duration-300">
-                    <div className="absolute top-4 left-8">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-sm font-semibold text-green-700">
-                          Group Sessions Management
-                        </span>
-                      </div>
-                    </div>
+                  <div className="relative transition-all duration-300">
                     <div className="mt-8">
                       {groupSessions.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -178,15 +170,8 @@ export default function ScheduleManagement() {
             {activeScheduleSubsection === "one-on-one-sessions" && (
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
-                  <div className="relative bg-white rounded-3xl border-2 border-orange-200 shadow-lg p-8 hover:shadow-xl hover:border-orange-300 transition-all duration-300">
-                    <div className="absolute top-4 left-8">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                        <span className="text-sm font-semibold text-orange-700">
-                          One on One Sessions Management
-                        </span>
-                      </div>
-                    </div>
+                  <div className="relative transition-all duration-300">
+                
                     <div className="mt-8">
                       {oneOnOneSessions.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

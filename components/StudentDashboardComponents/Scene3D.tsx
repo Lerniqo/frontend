@@ -8,9 +8,15 @@ import PathCameraController from "@/components/StudentDashboardComponents/PathCa
 import type { Scene3DProps, CharacterModel } from "@/types/dashboard.types";
 
 interface ConceptProp {
-  conceptName: string;
-  conceptId: string;
-  status: "done" | "progressing" | "waiting";
+  stepNumber: number;
+  title: string;
+  conceptName?: string;
+  conceptId?: string;
+  estimatedDuration: string;
+  description: string;
+  prerequisites: string[];
+  resources: string[];
+  status?: "done" | "progressing" | "waiting";
 }
 
 const startingPoint: CharacterModel = {
@@ -23,8 +29,15 @@ const startingPoint: CharacterModel = {
 };
 
 const startingConceptProp: ConceptProp = {
+  stepNumber: 0,
+  title: "Start Learning Path",
   conceptName: "Start Learning Path",
   conceptId: "Starting Station",
+  estimatedDuration: "Introduction",
+  description:
+    "Welcome to your learning journey! Let's start by understanding your current level and creating a personalized learning path for you.",
+  prerequisites: [],
+  resources: [],
   status: "progressing" as const,
 };
 

@@ -12,9 +12,15 @@ type GLTFResult = {
 };
 
 interface ConceptProp {
-  conceptName: string;
-  conceptId: string;
-  status: "done" | "progressing" | "waiting";
+  stepNumber: number;
+  title: string;
+  conceptName?: string;
+  conceptId?: string;
+  estimatedDuration: string;
+  description: string;
+  prerequisites: string[];
+  resources: string[];
+  status?: "done" | "progressing" | "waiting";
 }
 
 interface CharacterProps {
@@ -59,17 +65,19 @@ export default function Character({
   const animation = useMemo(() => {
     if (!conceptProp) return "ProgressingAnimation"; // Default animation
 
+    const status = conceptProp.status || "progressing";
+
     // Special handling for the "Starting Station"
-    if (conceptProp.conceptId === "Starting Station") {
+    if (
+      conceptProp.conceptId === "Starting Station" ||
+      conceptProp.stepNumber === 0
+    ) {
       // For Starting Station, show progressing animation for waiting or progressing
-      if (
-        conceptProp.status === "waiting" ||
-        conceptProp.status === "progressing"
-      ) {
+      if (status === "waiting" || status === "progressing") {
         return "ProgressingAnimation";
       }
       // If done, show done animation
-      if (conceptProp.status === "done") {
+      if (status === "done") {
         return "DoneAnimation";
       }
       // Fallback
@@ -77,7 +85,7 @@ export default function Character({
     }
 
     // Default behavior for other concepts
-    switch (conceptProp.status) {
+    switch (status) {
       case "done":
         return "DoneAnimation";
       case "progressing":

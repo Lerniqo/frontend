@@ -1,9 +1,15 @@
 import React from "react";
 
 interface ConceptProp {
-  conceptName: string;
-  conceptId: string;
-  status: "done" | "progressing" | "waiting";
+  stepNumber: number;
+  title: string;
+  conceptName?: string;
+  conceptId?: string;
+  estimatedDuration: string;
+  description: string;
+  prerequisites: string[];
+  resources: string[];
+  status?: "done" | "progressing" | "waiting";
 }
 
 interface TalkBubbleProps {
@@ -17,13 +23,17 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
   onButtonClick,
   side = "left",
 }) => {
-  const isStartingStation = conceptProp.conceptName === "Start Learning Path";
+  const isStartingStation =
+    conceptProp.conceptName === "Start Learning Path" ||
+    conceptProp.stepNumber === 0;
 
   // Function to render content based on station type and status
   const renderContent = () => {
+    const displayStatus = conceptProp.status || "progressing";
+
     if (isStartingStation) {
       // Starting Station Logic
-      switch (conceptProp.status) {
+      switch (displayStatus) {
         case "waiting":
           return (
             <div className="flex flex-col h-full">
@@ -61,16 +71,32 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
           return null;
       }
     } else {
-      // Regular Station Logic
-      switch (conceptProp.status) {
+      // Regular Station Logic - Display step information
+      switch (displayStatus) {
         case "progressing":
           return (
             <div className="flex flex-col h-full">
-              <p className="mb-4 flex-grow">
-                Hi there! In this station, you&apos;ll learn about{" "}
-                {conceptProp.conceptName}. Let&apos;s explore it together and
-                master it step by step!
-              </p>
+              <div className="mb-3 flex-grow">
+                <h3 className="text-base font-bold mb-2">
+                  Step {conceptProp.stepNumber}: {conceptProp.title}
+                </h3>
+                <p className="text-sm mb-2">{conceptProp.description}</p>
+                <p className="text-xs text-gray-600 mb-1">
+                  <strong>Duration:</strong> {conceptProp.estimatedDuration}
+                </p>
+                {conceptProp.resources && conceptProp.resources.length > 0 && (
+                  <div className="text-xs text-gray-600">
+                    <strong>Resources:</strong>
+                    <ul className="ml-2 mt-1">
+                      {conceptProp.resources
+                        .slice(0, 2)
+                        .map((resource, idx) => (
+                          <li key={idx}>• {resource}</li>
+                        ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
               <div className="flex justify-end">
                 <button
                   onClick={() =>
@@ -86,17 +112,38 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
           );
         case "done":
           return (
-            <p>
-              Great job! You&apos;ve completed {conceptProp.conceptName}.
-              Let&apos;s move on to the next concept!
-            </p>
+            <div className="flex flex-col h-full">
+              <div className="mb-4 flex-grow">
+                <h3 className="text-base font-bold mb-2">
+                  Step {conceptProp.stepNumber}: {conceptProp.title}
+                </h3>
+                <p className="text-sm">
+                  Great job! You&apos;ve completed {conceptProp.title}.
+                  Let&apos;s move on to the next concept!
+                </p>
+              </div>
+            </div>
           );
         case "waiting":
           return (
-            <p>
-              Hold on! You need to complete all previous concepts before
-              learning {conceptProp.conceptName}. Let&apos;s go step by step!
-            </p>
+            <div className="flex flex-col h-full">
+              <div className="mb-4 flex-grow">
+                <h3 className="text-base font-bold mb-2">
+                  Step {conceptProp.stepNumber}: {conceptProp.title}
+                </h3>
+                <p className="text-sm mb-2">
+                  Hold on! You need to complete all previous concepts before
+                  learning {conceptProp.title}. Let&apos;s go step by step!
+                </p>
+                {conceptProp.prerequisites &&
+                  conceptProp.prerequisites.length > 0 && (
+                    <p className="text-xs text-gray-600">
+                      <strong>Prerequisites:</strong>{" "}
+                      {conceptProp.prerequisites.join(", ")}
+                    </p>
+                  )}
+              </div>
+            </div>
           );
         default:
           return null;

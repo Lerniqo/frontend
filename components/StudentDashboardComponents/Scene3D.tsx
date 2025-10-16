@@ -25,7 +25,7 @@ const startingPoint: CharacterModel = {
 const startingConceptProp: ConceptProp = {
   conceptName: "Start Learning Path",
   conceptId: "Starting Station",
-  status: "waiting" as const,
+  status: "progressing" as const,
 };
 
 export const positionsOfCharacters: CharacterModel[] = [
@@ -306,8 +306,8 @@ export default function Scene3D({
         position={[10, 10, 5]}
         intensity={1.2}
         castShadow
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
       />
       <directionalLight position={[-5, 5, -5]} intensity={0.4} />
 

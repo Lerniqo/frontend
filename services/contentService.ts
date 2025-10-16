@@ -518,7 +518,40 @@ export async function retrieveSyllabuses(): Promise<SyllabusResponse> {
     // return data;
 
     // Mock data for now
-
+    const mockSyllabusData: SyllabusResponse = {
+      hierarchy: {
+        id: "mathematics",
+        name: "Mathematics",
+        layer: "Subject",
+        children: [
+          {
+            id: "algebra",
+            name: "Algebra", 
+            layer: "Matter",
+            children: [
+              {
+                id: "linear-equations",
+                name: "Linear Equations",
+                layer: "Molecule",
+                children: [
+                  {
+                    id: "solving-linear-equations",
+                    name: "Solving Linear Equations",
+                    layer: "Atom",
+                    particles: [
+                      {
+                        id: "basic-solving",
+                        name: "Basic Solving Techniques"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    };
 
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 500));

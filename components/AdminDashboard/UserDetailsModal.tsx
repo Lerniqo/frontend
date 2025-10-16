@@ -71,9 +71,9 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
         onClick={onClose}
       ></div>
 
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-scale-in overflow-hidden flex flex-col">
+      {/* Modal Container - Fixed Position */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="pointer-events-auto bg-white rounded-2xl shadow-2xl w-full mx-3 sm:mx-4 max-w-md animate-scale-in overflow-hidden flex flex-col">
           {/* Header */}
           <div
             className={`bg-gradient-to-r ${roleColor.icon} p-4 sm:p-6 relative overflow-hidden flex-shrink-0`}

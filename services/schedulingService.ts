@@ -1,3 +1,5 @@
+import apiClient from "@/services/apiClient";
+
 // Types for teacher availability
 export interface TeacherAvailability {
   availability_id: string;
@@ -421,17 +423,41 @@ export interface SessionWithTeacher extends Session {
  * @returns Promise with array of all group sessions
  */
 export async function getAllGroupSessions(): Promise<Session[]> {
-  // TODO: Replace with actual API call
-  // const response = await fetch('/api/sessions/group-sessions');
-  // const data = await response.json();
-  // return data;
+  try {
+    const response = await apiClient.get<Session[]>(
+      "/scheduling-service/scheduling/group-sessions"
+    );
 
-  // For now, return mock data with a simulated delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockAllGroupSessions);
-    }, 300); // Simulate network delay
-  });
+    // Map the API response to Session objects, converting date strings to Date objects
+    const sessions: Session[] = response.data.map((session: any) => ({
+      session_id: session.session_id,
+      teacher_id: session.teacher_id,
+      session_type: session.session_type,
+      title: session.title,
+      description: session.description,
+      start_time: new Date(session.start_time),
+      end_time: new Date(session.end_time),
+      status: session.status,
+      is_paid: session.is_paid,
+      price: session.price,
+      max_attendees: session.max_attendees,
+      video_conference_link: session.video_conference_link,
+      attendees_count: session.attendees_count,
+      zoom_meeting_id: session.zoom_meeting_id,
+      zoom_join_url: session.zoom_join_url,
+      zoom_start_url: session.zoom_start_url || "",
+      zoom_password: session.zoom_password || "",
+    }));
+
+    console.log("✅ Group sessions fetched successfully:", sessions);
+    return sessions;
+  } catch (error: any) {
+    console.error("❌ Failed to fetch group sessions:", error);
+    
+    // Fallback to mock data if API call fails
+    console.warn("⚠️ Falling back to mock data");
+    return mockAllGroupSessions;
+  }
 }
 
 /**

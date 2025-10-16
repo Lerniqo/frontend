@@ -1,8 +1,6 @@
 // Content service for handling syllabus and educational content
 import apiClient from "@/services/apiClient";
 
-import apiClient from "@/services/apiClient";
-
 // Types for syllabus structure
 
 export interface CreateResourceDto {

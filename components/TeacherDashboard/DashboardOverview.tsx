@@ -19,7 +19,9 @@ export default function DashboardOverview() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [groupSessions, setGroupSessions] = useState<TeacherSession[]>([]);
-  const [oneOnOneSessions, setOneOnOneSessions] = useState<TeacherSession[]>([]);
+  const [oneOnOneSessions, setOneOnOneSessions] = useState<TeacherSession[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const { logout } = useAuth();
 
@@ -35,7 +37,8 @@ export default function DashboardOverview() {
 
         if (notificationsRes.success)
           setNotifications(notificationsRes.data || []);
-        if (availabilityRes.success) setAvailability(availabilityRes.data || []);
+        if (availabilityRes.success)
+          setAvailability(availabilityRes.data || []);
 
         if (sessionsRes.success && sessionsRes.data) {
           const groupSessionsList = sessionsRes.data.filter(
@@ -324,11 +327,12 @@ export default function DashboardOverview() {
                         </span>
                       </li>
                     ))}
-                  {groupSessions.length === 0 && oneOnOneSessions.length === 0 && (
-                    <div className="text-center py-8 text-gray-500">
-                      <p>No sessions scheduled yet</p>
-                    </div>
-                  )}
+                  {groupSessions.length === 0 &&
+                    oneOnOneSessions.length === 0 && (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No sessions scheduled yet</p>
+                      </div>
+                    )}
                 </ul>
                 <button className="mt-6 w-full group relative px-6 py-3 font-semibold text-white rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-emerald-600 hover:to-green-600 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
                   View All Sessions

@@ -291,88 +291,233 @@ export const scheduleWebinar = async (
   };
 };
 
-// Mock availability data
+// Availability API response types
+export interface AvailabilityAPIResponse {
+  availability_id: string;
+  teacher_id: string;
+  start_time: string; // ISO datetime string (e.g., "2025-10-17T09:00:00.000Z")
+  end_time: string; // ISO datetime string
+  is_booked: boolean;
+  is_paid: boolean;
+  price_per_session: string | null;
+  session_description: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Local availability slot for frontend display
 export interface AvailabilitySlot {
   id: string;
   date: string; // ISO date string (YYYY-MM-DD)
   day: string; // Day name for display
-  startTime: string;
-  endTime: string;
+  startTime: string; // HH:mm format
+  endTime: string; // HH:mm format
   isAvailable: boolean;
+  isPaid?: boolean;
+  price?: number | null;
+  sessionDescription?: string | null;
 }
 
-const mockAvailability: AvailabilitySlot[] = [
-  {
-    id: "1",
-    date: "2025-09-02",
-    day: "Monday",
-    startTime: "09:00",
-    endTime: "11:00",
-    isAvailable: true,
-  },
-  {
-    id: "2",
-    date: "2025-09-02",
-    day: "Monday",
-    startTime: "14:00",
-    endTime: "16:00",
-    isAvailable: true,
-  },
-  {
-    id: "3",
-    date: "2025-09-03",
-    day: "Tuesday",
-    startTime: "10:00",
-    endTime: "12:00",
-    isAvailable: false,
-  },
-  {
-    id: "4",
-    date: "2025-09-04",
-    day: "Wednesday",
-    startTime: "09:00",
-    endTime: "11:00",
-    isAvailable: true,
-  },
-  {
-    id: "5",
-    date: "2025-09-05",
-    day: "Thursday",
-    startTime: "15:00",
-    endTime: "17:00",
-    isAvailable: true,
-  },
-  {
-    id: "6",
-    date: "2025-09-06",
-    day: "Friday",
-    startTime: "13:00",
-    endTime: "15:00",
-    isAvailable: false,
-  },
-];
+/**
+ * Transforms API availability response to frontend AvailabilitySlot format
+ * @param apiResponse - Raw API response
+ * @returns Formatted AvailabilitySlot
+ */
+const transformAvailabilityResponse = (
+  apiResponse: AvailabilityAPIResponse
+): AvailabilitySlot => {
+  const startDate = new Date(apiResponse.start_time);
+  const endDate = new Date(apiResponse.end_time);
 
-export const getAvailability = async (): Promise<
-  ApiResponse<AvailabilitySlot[]>
-> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Extract date in YYYY-MM-DD format
+  const date = startDate.toISOString().split("T")[0];
+
+  // Extract day name
+  const dayName = startDate.toLocaleDateString("en-US", { weekday: "long" });
+
+  // Extract time in HH:mm format
+  const startTime = startDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const endTime = endDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
   return {
-    success: true,
-    message: "Availability retrieved successfully",
-    data: mockAvailability,
+    id: apiResponse.availability_id,
+    date,
+    day: dayName,
+    startTime,
+    endTime,
+    isAvailable: !apiResponse.is_booked,
   };
 };
 
+/**
+ * Fetches teacher availability from the scheduling service
+ * @param teacherId - The teacher's ID (optional, uses current user if not provided)
+ * @returns Promise with array of availability slots
+ */
+export const getAvailability = async (
+  teacherId?: string
+): Promise<ApiResponse<AvailabilitySlot[]>> => {
+  try {
+    // If teacherId is not provided, we need to get current user
+    let finalTeacherId = teacherId;
+
+    if (!finalTeacherId) {
+      // Get current user from userService
+      const { userService } = await import("@/services/userService");
+      const currentUserResponse = await userService.getCurrentUser();
+
+      if (!currentUserResponse.success || !currentUserResponse.data?.userId) {
+        return {
+          success: false,
+          message: "Failed to get current user information",
+          error: "Unable to retrieve current teacher ID",
+        };
+      }
+
+      finalTeacherId = currentUserResponse.data.userId;
+    }
+
+    // Fetch availability from scheduling service
+    const response = await apiClient.get<AvailabilityAPIResponse[]>(
+      `/scheduling-service/scheduling/teachers/${finalTeacherId}/availability`
+    );
+
+    // Check if we have valid data
+    if (!Array.isArray(response.data)) {
+      return {
+        success: false,
+        message: "Invalid availability data format",
+        error: "API returned non-array data",
+      };
+    }
+
+    // Transform API responses to frontend format
+    const transformedData: AvailabilitySlot[] = response.data.map((slot) =>
+      transformAvailabilityResponse(slot)
+    );
+
+    return {
+      success: true,
+      message: "Availability retrieved successfully",
+      data: transformedData,
+    };
+  } catch (error: any) {
+    console.error("Error fetching availability:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch availability",
+      error: error.response?.data?.error || error.message || "Unknown error",
+    };
+  }
+};
+
+// Interface for availability slot with optional paid info
+export interface AvailabilityUpdateRequest {
+  startTime: string; // ISO datetime string
+  endTime: string; // ISO datetime string
+  isPaid: boolean;
+  price: number | null;
+  sessionDescription: string | null;
+}
+
+/**
+ * Transforms frontend availability slots to API request format
+ * @param slots - Array of availability slots with optional paid info
+ * @returns Array of availability update requests in API format
+ */
+const transformSlotsToApiFormat = (
+  slots: AvailabilitySlot[]
+): AvailabilityUpdateRequest[] => {
+  return slots.map((slot) => {
+    // Parse date and time components
+    const [year, month, day] = slot.date.split("-");
+    const [startHour, startMin] = slot.startTime.split(":");
+    const [endHour, endMin] = slot.endTime.split(":");
+
+    // Create ISO datetime strings
+    const startDateTime = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(startHour),
+      parseInt(startMin),
+      0,
+      0
+    );
+
+    const endDateTime = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(endHour),
+      parseInt(endMin),
+      0,
+      0
+    );
+
+    return {
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
+      isPaid: slot.isPaid || false,
+      price: slot.price || null,
+      sessionDescription: slot.sessionDescription || null,
+    };
+  });
+};
+
+/**
+ * Updates teacher availability by sending all availability slots to backend
+ * Backend will delete all existing slots and save new ones
+ * @param slots - Array of availability slots with optional paid info
+ * @returns Promise with success status
+ */
 export const updateAvailability = async (
   slots: AvailabilitySlot[]
 ): Promise<ApiResponse<boolean>> => {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  // In a real app, this would update the backend
-  return {
-    success: true,
-    message: "Availability updated successfully",
-    data: true,
-  };
+  try {
+    // Transform slots to API format
+    const requestData = transformSlotsToApiFormat(slots);
+    console.log("Request data for availability update:", requestData);
+
+    // Send to backend - backend handles delete all and insert new
+    // Request should be an array of availability slots
+    const response = await apiClient.post<{ message: string }>(
+      "/scheduling-service/scheduling/availability",
+      {
+        availabilities: requestData,
+      }
+    );
+
+    // Backend returns status 201 with { message: "Availability updated." }
+    // If we reach here without error, it means success (status 2xx)
+    return {
+      success: true,
+      message: response.data.message || "Availability updated successfully",
+      data: true,
+    };
+  } catch (error: any) {
+    console.error("Error updating availability:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update availability",
+      error: error.response?.data?.error || error.message || "Unknown error",
+    };
+  }
 };
 
 // Teacher Sessions Interface

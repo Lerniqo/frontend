@@ -163,7 +163,10 @@ export default function CreateGroupSessionModal({
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="px-6 py-8 sm:px-8 max-h-[70vh] overflow-y-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="px-6 py-8 sm:px-8 max-h-[70vh] overflow-y-auto"
+          >
             {error && (
               <div className="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
                 <p className="text-sm text-red-800">{error}</p>
@@ -180,7 +183,10 @@ export default function CreateGroupSessionModal({
 
             {/* Title */}
             <div className="mb-6">
-              <label htmlFor="title" className="block text-sm font-semibold text-gray-900">
+              <label
+                htmlFor="title"
+                className="block text-sm font-semibold text-gray-900"
+              >
                 Session Title
               </label>
               <input

@@ -22,7 +22,6 @@ export interface ResourceResponse {
   uploadUrl: string;
 }
 
-
 export interface Particle {
   id: string;
   name: string;
@@ -85,10 +84,7 @@ export const createResource = async (
   data: CreateResourceDto
 ): Promise<ResourceResponse> => {
   try {
-    const response = await apiClient.post(
-      "/content-service/resources",
-      data
-    );
+    const response = await apiClient.post("/content-service/resources", data);
     // Assuming the response.data directly matches ResourceResponse on success
     return response.data;
   } catch (error) {
@@ -97,7 +93,7 @@ export const createResource = async (
 
     // Re-throw a standardized error for the calling component/hook to handle
     // The exact structure depends on how your application handles errors
-    throw new Error("Failed to create resource. Please try again."); 
+    throw new Error("Failed to create resource. Please try again.");
   }
 };
 
@@ -504,6 +500,76 @@ export async function getEvent(): Promise<EventResponse> {
   }
 }
 
+// Types for particles and topics
+export interface ParticleOption {
+  conceptId: string;
+  name: string;
+}
+
+export interface TopicOption {
+  conceptId: string;
+  name: string;
+}
+
+export interface ParticlesAndTopicsResponse {
+  particles: ParticleOption[];
+  topics: TopicOption[];
+}
+
+/**
+ * Retrieves particles and topics from the whole syllabus
+ * @returns Promise<ParticlesAndTopicsResponse> - Lists of particles and topics
+ */
+export async function getParticlesAndTopics(): Promise<ParticlesAndTopicsResponse> {
+  try {
+    // Call retrieveWholeSyllabuses to get the syllabus data
+    const syllabusData = await retrieveWholeSyllabuses();
+
+    const particles: ParticleOption[] = [];
+    const topics: TopicOption[] = [];
+
+    // Recursive function to traverse the tree and extract particles and topics
+    const traverseNode = (node: WholeSyllabusNode) => {
+      // Check if node is a Particle type
+      if (node.type === "Particle") {
+        particles.push({
+          conceptId: node.conceptId,
+          name: node.name,
+        });
+      }
+
+      // Check if node is a Topic type
+      if (node.type === "Topic") {
+        topics.push({
+          conceptId: node.conceptId,
+          name: node.name,
+        });
+      }
+
+      // Recursively traverse children
+      if (node.children && node.children.length > 0) {
+        node.children.forEach((child) => traverseNode(child));
+      }
+    };
+
+    // Traverse both hierarchies (by Matter and by Grade)
+    syllabusData.syllabusByMatter.forEach((node) => traverseNode(node));
+    syllabusData.syllabusByGrade.forEach((node) => traverseNode(node));
+
+    return {
+      particles,
+      topics,
+    };
+  } catch (error: any) {
+    console.error("Error retrieving particles and topics:", error);
+    throw new Error(
+      `Failed to retrieve particles and topics: ${
+        error.message || "Unknown error"
+      }`
+    );
+  }
+}
+
 /**
  * Retrieves the entire syllabus structure
  * @returns Promise<SyllabusResponse> - The syllabus hierarchy
@@ -524,7 +590,7 @@ export async function retrieveSyllabuses(): Promise<SyllabusResponse> {
         children: [
           {
             id: "algebra",
-            name: "Algebra", 
+            name: "Algebra",
             layer: "Matter",
             children: [
               {
@@ -539,16 +605,16 @@ export async function retrieveSyllabuses(): Promise<SyllabusResponse> {
                     particles: [
                       {
                         id: "basic-solving",
-                        name: "Basic Solving Techniques"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
+                        name: "Basic Solving Techniques",
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
     };
 
     // Simulate network delay
@@ -1091,6 +1157,87 @@ export async function getConceptByConceptId(
     });
     throw new Error(
       `Failed to retrieve concept: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
+}
+
+// Types for question structure
+export interface CreateQuestionDto {
+  questionText: string;
+  options: string[];
+  correctAnswer: string;
+  tags: string[];
+}
+
+export interface QuestionResponse {
+  id: string;
+  questionText: string;
+  options: string[];
+  correctAnswer: string;
+  explanation?: string;
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Creates a new question
+ * @param data - The question data to create
+ * @returns Promise<QuestionResponse> - The created question
+ */
+export async function createQuestion(
+  data: CreateQuestionDto
+): Promise<QuestionResponse> {
+  try {
+    const response = await apiClient.post("/content-service/questions", data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error creating question:", error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to create question: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
+}
+
+/**
+ * Retrieves all questions for the logged-in teacher
+ * @returns Promise<QuestionResponse[]> - Array of questions created by the teacher
+ */
+export async function getAllQuestionsByTeacher(): Promise<QuestionResponse[]> {
+  try {
+    const response = await apiClient.get("/content-service/questions/teacher");
+    return response.data;
+  } catch (error: any) {
+    // If 404 error with message about "teacher not found" or no questions, return empty array
+    if (
+      error.response?.status === 404 &&
+      (error.response?.data?.message?.includes("teacher not found") ||
+        error.response?.data?.message?.includes("not found"))
+    ) {
+      console.log("No questions found for teacher yet, returning empty array");
+      return [];
+    }
+
+    // For other errors, log and throw
+    console.error("Error retrieving teacher questions:", error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to retrieve teacher questions: ${
         error.response?.data?.message || error.message
       }`
     );

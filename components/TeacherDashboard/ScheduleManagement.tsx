@@ -9,6 +9,7 @@ import {
 } from "@/services/teacherDashboardService";
 import AvailabilityManager from "./AvailabilityManager";
 import SubMenu from "./SubMenu";
+import CreateGroupSessionModal from "./CreateGroupSessionModal";
 import SharedNavigation from "./SharedNavigation";
 import TeacherFooter from "./TeacherFooter";
 import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
@@ -22,6 +23,7 @@ export default function ScheduleManagement() {
   const [loading, setLoading] = useState(true);
   const [activeScheduleSubsection, setActiveScheduleSubsection] =
     useState("availability");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -45,18 +47,36 @@ export default function ScheduleManagement() {
 
           setGroupSessions(groupSessionsList);
           setOneOnOneSessions(oneOnOneSessionsList);
-          console.log("Fetched sessions:", groupSessionsList, oneOnOneSessionsList);
+          console.log(
+            "Fetched sessions:",
+            groupSessionsList,
+            oneOnOneSessionsList
+          );
         }
       } catch (error) {
         console.error("Error loading schedule management data:", error);
       } finally {
         setLoading(false);
-        
       }
     };
 
     loadData();
   }, []);
+
+  const handleGroupSessionCreated = async () => {
+    // Reload group sessions
+    try {
+      const sessionsRes = await getAllTeachersSessions();
+      if (sessionsRes.success && sessionsRes.data) {
+        const groupSessionsList = sessionsRes.data.filter(
+          (session: TeacherSession) => session.session_type === "GROUP"
+        );
+        setGroupSessions(groupSessionsList);
+      }
+    } catch (error) {
+      console.error("Error reloading group sessions:", error);
+    }
+  };
 
   if (loading) {
     return <GeneralLoadingComponent text="Loading Schedule Management" />;
@@ -142,15 +162,25 @@ export default function ScheduleManagement() {
             {activeScheduleSubsection === "group-sessions" && (
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
+                  {/* Add Group Session Button */}
+                  <div className="mb-6 flex justify-end">
+                    <button
+                      onClick={() => setIsCreateModalOpen(true)}
+                      className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200"
+                    >
+                      <span>➕</span>
+                      Add Group Session
+                    </button>
+                  </div>
+
                   <div className="relative transition-all duration-300">
                     <div className="mt-8">
                       {groupSessions.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
                           {groupSessions.map((session) => (
-                            <SessionCard
-                              key={session.session_id}
-                              session={session}
-                            />
+                            <div key={session.session_id} className="h-110">
+                              <SessionCard session={session} />
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -173,15 +203,13 @@ export default function ScheduleManagement() {
               <div className="max-w-6xl mx-auto">
                 <div className="group relative">
                   <div className="relative transition-all duration-300">
-                
                     <div className="mt-8">
                       {oneOnOneSessions.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max">
                           {oneOnOneSessions.map((session) => (
-                            <SessionCard
-                              key={session.session_id}
-                              session={session}
-                            />
+                            <div key={session.session_id} className="h-110">
+                              <SessionCard session={session} />
+                            </div>
                           ))}
                         </div>
                       ) : (
@@ -202,6 +230,20 @@ export default function ScheduleManagement() {
           </div>
         </div>
       </section>
+
+      {/* Create Group Session Modal */}
+      <CreateGroupSessionModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSessionCreated={handleGroupSessionCreated}
+      />
+
+      {/* Create Group Session Modal */}
+      <CreateGroupSessionModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSessionCreated={handleGroupSessionCreated}
+      />
 
       {/* Footer */}
       <TeacherFooter />
@@ -272,81 +314,87 @@ function SessionCard({ session }: { session: TeacherSession }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-300 p-6">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-bold text-gray-900 line-clamp-2">
-            {session.title}
-          </h3>
-          <p className="text-xs text-gray-500 mt-1">
-            ID: {session.session_id.slice(0, 8)}...
+    <div className="relative rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group bg-gradient-to-r from-purple-500 via-blue-500 to-violet-500 p-[3px] h-full">
+      {/* Inner white/gray background */}
+      <div className="rounded-2xl bg-gradient-to-br from-white to-gray-50 p-6 h-full flex flex-col">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 line-clamp-2">
+              {session.title}
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">
+              ID: {session.session_id.slice(0, 8)}...
+            </p>
+          </div>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+              session.status
+            )}`}
+          >
+            {session.status}
+          </span>
+        </div>
+
+        {/* Description */}
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+          {session.description}
+        </p>
+
+        {/* Date and Time */}
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold">Date:</span> {formatDate(startDate)}
+          </p>
+          <p className="text-xs text-gray-600">
+            <span className="font-semibold">Time:</span> {formatTime(startDate)}{" "}
+            - {formatTime(endDate)}
           </p>
         </div>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-            session.status
-          )}`}
-        >
-          {session.status}
-        </span>
-      </div>
 
-      {/* Description */}
-      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-        {session.description}
-      </p>
-
-      {/* Date and Time */}
-      <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-        <p className="text-xs text-gray-600">
-          <span className="font-semibold">Date:</span> {formatDate(startDate)}
-        </p>
-        <p className="text-xs text-gray-600">
-          <span className="font-semibold">Time:</span> {formatTime(startDate)} -{" "}
-          {formatTime(endDate)}
-        </p>
-      </div>
-
-      {/* Session Details */}
-      <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
-        <div className="p-2 bg-gray-100 rounded">
-          <p className="text-gray-600 font-semibold">Max Attendees</p>
-          <p className="text-gray-900 font-bold">{session.max_attendees}</p>
+        {/* Session Details */}
+        <div className="grid grid-cols-2 gap-3 mb-4 text-xs">
+          <div className="p-2 bg-gray-100 rounded">
+            <p className="text-gray-600 font-semibold">Max Attendees</p>
+            <p className="text-gray-900 font-bold">{session.max_attendees}</p>
+          </div>
+          <div className="p-2 bg-gray-100 rounded">
+            <p className="text-gray-600 font-semibold">Current Attendees</p>
+            <p className="text-gray-900 font-bold">{session.attendees_count}</p>
+          </div>
         </div>
-        <div className="p-2 bg-gray-100 rounded">
-          <p className="text-gray-600 font-semibold">Current Attendees</p>
-          <p className="text-gray-900 font-bold">{session.attendees_count}</p>
-        </div>
-      </div>
 
-      {/* Pricing */}
-      <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-600 font-semibold">
-            {session.is_paid ? "Paid Session" : "Free Session"}
-          </span>
-          {session.is_paid && session.price && (
-            <span className="text-lg font-bold text-amber-600">
-              ${parseFloat(session.price).toFixed(2)}
+        {/* Pricing */}
+        <div className="mb-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-600 font-semibold">
+              {session.is_paid ? "Paid Session" : "Free Session"}
             </span>
-          )}
+            {session.is_paid && session.price && (
+              <span className="text-lg font-bold text-amber-600">
+                ${parseFloat(session.price).toFixed(2)}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2">
-        <a
-          href={session.zoom_start_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all duration-200 text-center"
-        >
-          Join Zoom
-        </a>
-        <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-3 rounded-lg text-xs transition-all duration-200">
-          Edit
-        </button>
+        {/* Spacer to push buttons to bottom */}
+        <div className="flex-grow"></div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 mt-4">
+          <a
+            href={session.zoom_start_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all duration-200 text-center"
+          >
+            Join Zoom
+          </a>
+          <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-3 rounded-lg text-xs transition-all duration-200">
+            Edit
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -571,3 +571,67 @@ export const getAllTeachersSessions = async (): Promise<
     };
   }
 };
+
+// Create Group Session Request Interface
+export interface CreateGroupSessionRequest {
+  title: string;
+  description: string;
+  startTime: string; // ISO datetime string (e.g., "2025-10-20T14:00:00Z")
+  endTime: string; // ISO datetime string (e.g., "2025-10-20T16:00:00Z")
+  isPaid: boolean;
+  price: number; // Price in USD
+  maxAttendees: number;
+}
+
+// Create Group Session Response Interface
+export interface CreateGroupSessionResponse {
+  session_id: string;
+  teacher_id: string;
+  session_type: "GROUP";
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  status: "SCHEDULED";
+  is_paid: boolean;
+  price: string;
+  max_attendees: number;
+  video_conference_link: string;
+  attendees_count: number;
+  zoom_meeting_id: string;
+  zoom_join_url: string;
+  zoom_start_url: string;
+  zoom_password: string;
+}
+
+/**
+ * Creates a new group session for the teacher
+ * @param sessionData - Group session data including title, description, timing, pricing, and max attendees
+ * @returns Promise with created group session details
+ */
+export const createNewGroupSession = async (
+  sessionData: CreateGroupSessionRequest
+): Promise<ApiResponse<CreateGroupSessionResponse>> => {
+  try {
+    const response = await apiClient.post<CreateGroupSessionResponse>(
+      "/scheduling-service/scheduling/group-sessions",
+      sessionData
+    );
+
+    return {
+      success: true,
+      message: "Group session created successfully",
+      data: response.data,
+    };
+  } catch (error: any) {
+    console.error("Error creating group session:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create group session",
+      error: error.response?.data?.error || error.message || "Unknown error",
+    };
+  }
+};

@@ -7,6 +7,7 @@ import {
   getMySessions,
   SessionWithTeacher,
   Session,
+  enrollInGroupSession,
 } from "@/services/schedulingService";
 import SubMenu from "@/components/TeacherDashboard/SubMenu";
 import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
@@ -156,6 +157,7 @@ function SessionDetailModal({
 export default function SessionsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [registering, setRegistering] = useState<string | null>(null);
   const [allGroupSessions, setAllGroupSessions] = useState<Session[]>([]);
   const [mySessions, setMySessions] = useState<SessionWithTeacher[]>([]);
   const [viewMode, setViewMode] = useState<"one-on-one" | "group">("group");
@@ -197,10 +199,40 @@ export default function SessionsPage() {
     setIsModalOpen(true);
   };
 
-  const handleRegister = (sessionId: string) => {
-    console.warn(`Register for session: ${sessionId}`);
-    // TODO: Implement registration logic
-    setIsModalOpen(false);
+  const handleRegister = async (sessionId: string) => {
+    try {
+      setRegistering(sessionId);
+      console.log(`Registering for session: ${sessionId}`);
+
+      const response = await enrollInGroupSession(sessionId);
+
+      console.log("Enrollment response:", response);
+
+      if (response.success) {
+        console.log("✅ Successfully registered for session");
+        console.log("Response message:", response.message);
+
+        // Show success message only if there's no "network" warning
+        if (!response.message.toLowerCase().includes("network")) {
+          alert("✅ Successfully registered for the session!");
+        } else {
+          // For network issues, still show success but with different message
+          alert("✅ Registration processed! Updating sessions list...");
+        }
+
+        // Refresh sessions to update the UI
+        await fetchData();
+        setIsModalOpen(false);
+      } else {
+        console.error("❌ Registration failed:", response.message);
+        alert(`❌ Registration failed: ${response.message}`);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("❌ An error occurred during registration. Please try again.");
+    } finally {
+      setRegistering(null);
+    }
   };
 
   const handleUnregister = (sessionId: string) => {
@@ -429,9 +461,16 @@ export default function SessionsPage() {
                           </button>
                         ) : (
                           <button
-                            className={`w-full bg-gradient-to-r ${gradient.btnFrom} ${gradient.btnTo} text-white font-semibold py-3 rounded-xl ${gradient.btnHoverFrom} ${gradient.btnHoverTo} transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transform hover:scale-[1.02] shadow-md hover:shadow-lg`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRegister(session.session_id);
+                            }}
+                            disabled={registering === session.session_id}
+                            className={`w-full bg-gradient-to-r ${gradient.btnFrom} ${gradient.btnTo} text-white font-semibold py-3 rounded-xl ${gradient.btnHoverFrom} ${gradient.btnHoverTo} transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transform hover:scale-[1.02] shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100`}
                           >
-                            Register Now
+                            {registering === session.session_id
+                              ? "Registering..."
+                              : "Register Now"}
                           </button>
                         )}
                       </div>

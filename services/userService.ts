@@ -175,6 +175,8 @@ export const getAllUsers = async (): Promise<User[]> => {
   return response.data.data.users; // returns array of users
 };
 
+
+
 // Fetch only teachers (for internal use)
 export const getTeachersList = async (): Promise<User[]> => {
   const response = await apiClient.get("/user-service/users/teachers"); // your new endpoint

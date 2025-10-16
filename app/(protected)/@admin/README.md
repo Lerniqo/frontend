@@ -4,7 +4,7 @@ This document outlines the restructured admin routes for the Lerniqo platform.
 
 ## Route Structure
 
-The admin section has been broken down into the following protected routes:
+The admin section has been broken down into the following protected routes
 
 ### `/dashboard`
 - **Location**: `app/(protected)/@admin/dashboard/page.tsx`

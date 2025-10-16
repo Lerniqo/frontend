@@ -20,6 +20,13 @@ import {
   Calendar,
 } from "lucide-react";
 
+// Helper function to format price safely
+const formatPrice = (price: any): string => {
+  if (!price) return "Free";
+  const numPrice = typeof price === "string" ? parseFloat(price) : price;
+  return isNaN(numPrice) ? "Free" : `$${numPrice.toFixed(2)}`;
+};
+
 interface SessionDetailModalProps {
   session: SessionWithTeacher | null;
   isRegistered: boolean;
@@ -83,9 +90,7 @@ function SessionDetailModal({
               <div>
                 <p className="text-xs text-gray-600">Price</p>
                 <p className="font-semibold text-gray-800">
-                  {session.is_paid && session.price
-                    ? `$${session.price.toFixed(2)}`
-                    : "Free"}
+                  {session.is_paid ? formatPrice(session.price) : "Free"}
                 </p>
               </div>
             </div>
@@ -170,6 +175,8 @@ export default function SessionsPage() {
         getAllGroupSessions(),
         getMySessions(),
       ]);
+
+      console.log("Fetched group sessions:", groupSessions);
 
       setAllGroupSessions(groupSessions);
       setMySessions(userSessions);
@@ -357,8 +364,8 @@ export default function SessionsPage() {
                             className="text-xl font-bold text-white tracking-tight"
                             style={{ textShadow: "0 2px 4px rgba(0,0,0,0.15)" }}
                           >
-                            {session.is_paid && session.price
-                              ? `$${session.price.toFixed(2)}`
+                            {session.is_paid
+                              ? formatPrice(session.price)
                               : "Free"}
                           </p>
                           <div

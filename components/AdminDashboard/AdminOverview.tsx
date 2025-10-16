@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { getAllUsers, getTeachersList } from "@/services/userService";
 import {
   Users,
-  BookOpen,
   BarChart3,
   CheckCircle,
   UserCheck,
@@ -13,33 +14,79 @@ import {
   Clock,
 } from "lucide-react";
 
+
 const AdminOverview = () => {
+
+ const [totalUsers, setTotalUsers] = useState<number | null>(null);
+
+ useEffect(() => {
+   const fetchTotalUsers = async () => {
+     try {
+       const users = await getAllUsers();
+       setTotalUsers(users.length);
+     } catch (error) {
+       console.error("Error fetching total users:", error);
+     }
+   };
+
+   fetchTotalUsers();
+ }, []);
+
+ const [activeTeachers, setActiveTeachers] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchActiveTeachers = async () => {
+      try {
+        const teachers = await getTeachersList();
+        setActiveTeachers(teachers.length);
+      } catch (error) {
+        console.error("Error fetching active teachers:", error);
+      }
+    };
+
+    fetchActiveTeachers();
+  }, []);
+
+  const [activeStudents, setActiveStudents] = useState<number | null>(null);
+
+  useEffect(() => { 
+    const fetchActiveStudents = async () => {
+      try {
+        const users = await getAllUsers();  
+        const students = users.filter((user) => user.role === "Student");
+        setActiveStudents(students.length);
+      } catch (error) {
+        console.error("Error fetching active students:", error);
+      }     
+    };
+
+    fetchActiveStudents();
+  }
+, []);
+
   const stats = [
     {
       label: "Total Users",
-      value: "2,456",
-      change: "+12%",
+      value: totalUsers !== null ? totalUsers.toString() : "Loading...",
       icon: Users,
       color: "from-blue-500 to-blue-600",
     },
+
     {
       label: "Active Teachers",
-      value: "87",
-      change: "+5%",
+      value: activeTeachers !== null ? activeTeachers.toString() : "Loading...",
       icon: UserCheck,
       color: "from-purple-600 to-purple-700",
     },
     {
-      label: "Content Items",
-      value: "1,234",
-      change: "+18%",
-      icon: BookOpen,
+      label: "Active Students",
+      value: activeStudents !== null ? activeStudents.toString() : "Loading...",
+      icon: UserCheck,
       color: "from-indigo-500 to-indigo-600",
     },
     {
       label: "Pending Reviews",
       value: "23",
-      change: "-3%",
       icon: Clock,
       color: "from-orange-500 to-orange-600",
     },
@@ -74,22 +121,12 @@ const AdminOverview = () => {
                 >
                   <IconComponent className="w-6 h-6 text-white" />
                 </div>
-                <div
-                  className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    stat.change.startsWith("+")
-                      ? "text-green-600 bg-green-50"
-                      : "text-red-600 bg-red-50"
-                  }`}
-                >
-                  {stat.change}
-                </div>
               </div>
               <div>
                 <p className="text-gray-600 text-sm font-medium mb-1">
                   {stat.label}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-gray-400 text-xs mt-1">from last month</p>
               </div>
             </div>
           );
@@ -110,30 +147,34 @@ const AdminOverview = () => {
               icon: Shield,
               label: "Review Teacher Applications",
               color: "from-blue-500 to-blue-600",
+              href: "/user-management", // <-- target route
             },
             {
               icon: FileText,
               label: "Moderate Content",
               color: "from-purple-600 to-purple-700",
+              href: "/content", // <-- target route
             },
             {
               icon: Globe,
               label: "Update Knowledge Graph",
               color: "from-indigo-500 to-indigo-600",
+              href: "/knowledge-graph", // <-- target route
             },
           ].map((action, index) => {
             const IconComponent = action.icon;
             return (
-              <button
-                key={index}
-                className={`group relative flex items-center space-x-4 p-6 bg-gradient-to-r ${action.color} text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl overflow-hidden`}
-              >
-                <div className="relative z-10 flex items-center space-x-4">
-                  <IconComponent className="w-6 h-6" />
-                  <span className="font-semibold">{action.label}</span>
+              <Link key={index} href={action.href}>
+                <div
+                  className={`group relative flex items-center space-x-4 p-6 bg-gradient-to-r ${action.color} text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl overflow-hidden cursor-pointer`}
+                >
+                  <div className="relative z-10 flex items-center space-x-4">
+                    <IconComponent className="w-6 h-6" />
+                    <span className="font-semibold">{action.label}</span>
+                  </div>
+                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </Link>
             );
           })}
         </div>

@@ -10,6 +10,7 @@ import QuestionTimer from './QuestionTimer';
 import OpponentSearch from './OpponentSearch';
 import ParticleEffect from './ParticleEffect';
 import { gameSounds } from './GameSounds';
+import useIOClient from '@/hooks/useIOClient';
 
 // Game states
 type GameState = 'searching' | 'waiting' | 'countdown' | 'playing' | 'finished';
@@ -101,6 +102,12 @@ const DualMatchArena: React.FC = () => {
   const [showParticles, setShowParticles] = useState(false);
   const [particleType, setParticleType] = useState<'success' | 'error' | 'victory'>('success');
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const IOClient = useIOClient();
+
+  // Initialize socket connection
+  useEffect(() => {
+    IOClient.connect().catch(console.error);
+  }, [IOClient]);
 
   // Mock opponent data
   const mockOpponents = useMemo(() => [

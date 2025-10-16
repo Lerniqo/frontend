@@ -313,6 +313,9 @@ export interface AvailabilitySlot {
   startTime: string; // HH:mm format
   endTime: string; // HH:mm format
   isAvailable: boolean;
+  isPaid?: boolean;
+  price?: number | null;
+  sessionDescription?: string | null;
 }
 
 /**
@@ -420,16 +423,101 @@ export const getAvailability = async (
   }
 };
 
+// Interface for availability slot with optional paid info
+export interface AvailabilityUpdateRequest {
+  startTime: string; // ISO datetime string
+  endTime: string; // ISO datetime string
+  isPaid: boolean;
+  price: number | null;
+  sessionDescription: string | null;
+}
+
+/**
+ * Transforms frontend availability slots to API request format
+ * @param slots - Array of availability slots with optional paid info
+ * @returns Array of availability update requests in API format
+ */
+const transformSlotsToApiFormat = (
+  slots: AvailabilitySlot[]
+): AvailabilityUpdateRequest[] => {
+  return slots.map((slot) => {
+    // Parse date and time components
+    const [year, month, day] = slot.date.split("-");
+    const [startHour, startMin] = slot.startTime.split(":");
+    const [endHour, endMin] = slot.endTime.split(":");
+
+    // Create ISO datetime strings
+    const startDateTime = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(startHour),
+      parseInt(startMin),
+      0,
+      0
+    );
+
+    const endDateTime = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(endHour),
+      parseInt(endMin),
+      0,
+      0
+    );
+
+    return {
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
+      isPaid: slot.isPaid || false,
+      price: slot.price || null,
+      sessionDescription: slot.sessionDescription || null,
+    };
+  });
+};
+
+/**
+ * Updates teacher availability by sending all availability slots to backend
+ * Backend will delete all existing slots and save new ones
+ * @param slots - Array of availability slots with optional paid info
+ * @returns Promise with success status
+ */
 export const updateAvailability = async (
   slots: AvailabilitySlot[]
 ): Promise<ApiResponse<boolean>> => {
-  await new Promise((resolve) => setTimeout(resolve, 800));
-  // In a real app, this would update the backend
-  return {
-    success: true,
-    message: "Availability updated successfully",
-    data: true,
-  };
+  try {
+    // Transform slots to API format
+    const requestData = transformSlotsToApiFormat(slots);
+    console.log("Request data for availability update:", requestData);
+
+    // Send to backend - backend handles delete all and insert new
+    // Request should be an array of availability slots
+    const response = await apiClient.post<{ message: string }>(
+      "/scheduling-service/scheduling/availability",
+      {
+        availabilities: requestData,
+      }
+    );
+
+    // Backend returns status 201 with { message: "Availability updated." }
+    // If we reach here without error, it means success (status 2xx)
+    return {
+      success: true,
+      message: response.data.message || "Availability updated successfully",
+      data: true,
+    };
+  } catch (error: any) {
+    console.error("Error updating availability:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to update availability",
+      error: error.response?.data?.error || error.message || "Unknown error",
+    };
+  }
 };
 
 // Teacher Sessions Interface

@@ -107,12 +107,12 @@ function SessionDetailModal({
               <div className="flex-1">
                 <p className="text-xs text-gray-600">Video Conference</p>
                 <a
-                  href={session.zoom_join_url}
+                  href={session.zoom_start_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold text-pink-600 hover:text-pink-700 underline break-all"
                 >
-                  {session.zoom_join_url}
+                  {session.zoom_start_url}
                 </a>
               </div>
             </div>

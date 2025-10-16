@@ -45,11 +45,13 @@ export default function ScheduleManagement() {
 
           setGroupSessions(groupSessionsList);
           setOneOnOneSessions(oneOnOneSessionsList);
+          console.log("Fetched sessions:", groupSessionsList, oneOnOneSessionsList);
         }
       } catch (error) {
         console.error("Error loading schedule management data:", error);
       } finally {
         setLoading(false);
+        
       }
     };
 
@@ -335,7 +337,7 @@ function SessionCard({ session }: { session: TeacherSession }) {
       {/* Action Buttons */}
       <div className="flex gap-2">
         <a
-          href={session.zoom_join_url}
+          href={session.zoom_start_url}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-3 rounded-lg text-xs transition-all duration-200 text-center"

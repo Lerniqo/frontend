@@ -28,6 +28,8 @@ import LearningPath from "./LearningPath";
 import PremiumNavigation from "./PremiumNavigation";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
 import GlareHover from "@/components/reactbits/GlareHover";
+import { getLearningPath } from "@/services/contentService";
+import type { LearningPathConcept } from "@/services/contentService";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const router = useRouter();
@@ -36,12 +38,29 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isAvatarOpen, setIsAvatarOpen] = useState(false);
+  const [learningPathData, setLearningPathData] = useState<
+    LearningPathConcept[]
+  >([]);
   const notificationRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLDivElement>(null);
   const progressPercentage = (
     (currentPathProgress / (CAMERA_PATH.length - 1)) *
     100
   ).toFixed(1);
+
+  // Fetch learning path data on component mount
+  useEffect(() => {
+    const fetchLearningPath = async () => {
+      try {
+        const data = await getLearningPath();
+        setLearningPathData(data);
+      } catch (error) {
+        console.error("Failed to fetch learning path in DashboardUI:", error);
+      }
+    };
+
+    fetchLearningPath();
+  }, []);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -177,7 +196,7 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Right side Learning Path */}
       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40">
-        <LearningPath />
+        <LearningPath learningPathData={learningPathData} />
       </div>
 
       {/* Premium Achievement Bar */}

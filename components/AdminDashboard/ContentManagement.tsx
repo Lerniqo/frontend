@@ -29,7 +29,7 @@ import {
 // IMPORTANT: These mocks should be removed in your local project after resolving the imports.
 
 // Placeholder components
-const LessonLibraryManager = ({ onConceptClick }) => (
+const LessonLibraryManager = ({ onConceptClick }: { onConceptClick: (conceptId: string) => void }) => (
   <div className="text-center p-12 bg-gray-50 rounded-xl border-dashed border-2 border-gray-300">
     <h4 className="text-lg font-semibold text-gray-700">
       Lesson Library Manager Placeholder
@@ -42,7 +42,7 @@ const LessonLibraryManager = ({ onConceptClick }) => (
     </button>
   </div>
 );
-const ConceptViewer = ({ conceptId, onBack }) => (
+const ConceptViewer = ({ conceptId, onBack }: { conceptId: string; onBack: () => void }) => (
   <div className="p-12 bg-gray-50 rounded-xl border-dashed border-2 border-gray-300">
     <h4 className="text-lg font-semibold text-gray-700 mb-4">
       Concept Viewer for: {conceptId}
@@ -57,7 +57,7 @@ const ConceptViewer = ({ conceptId, onBack }) => (
 );
 
 // MOCK SERVICE FUNCTION - Mimics external call and SUCCESS response contract
-const createResource = async (data) => {
+const createResource = async (data: CreateResourceDto) => {
   console.warn(
     "Using local service implementation to bypass compilation error. Data submitted:",
     data
@@ -84,7 +84,7 @@ interface CreateResourceDto {
   gradeLevel: string;
   subject: string;
 }
-interface ResourceResponse {
+interface _ResourceResponse {
   resourceId: string;
   uploadUrl: string;
 }
@@ -202,7 +202,7 @@ const ContentManagement = () => {
       const requestBody: CreateResourceDto = {
         resourceId: generatedId,
         name: formData.name,
-        type: formData.type as any, // Cast union type
+        type: formData.type as CreateResourceDto['type'], // Cast union type
         description: formData.description,
         url: formData.url,
         conceptId: formData.conceptId,
@@ -217,7 +217,7 @@ const ContentManagement = () => {
 
       // 2. Call the service function (this uses the local mock in this environment, but the real one in your project)
       const response = await createResource(requestBody);
-      console.log("✅ Resource creation confirmed by service:", response);
+      console.warn("✅ Resource creation confirmed by service:", response);
 
       // 3. Create the full display object and prepend it to the list
       const newResource: ContentItem = {
@@ -268,7 +268,7 @@ const ContentManagement = () => {
 
   const handleDelete = (id: number) => {
     // In a real app, this would trigger a deleteResource API call
-    console.log(`Delete content with id: ${id}`);
+    console.warn(`Delete content with id: ${id}`);
     setUploadedResources((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -686,8 +686,8 @@ const ContentManagement = () => {
           <div className="space-y-6">
             {uploadedResources.length === 0 ? (
               <div className="text-center p-10 text-gray-500 bg-gray-50 rounded-xl">
-                No resources uploaded yet. Start by clicking "Upload New
-                Resource"!
+                No resources uploaded yet. Start by clicking &ldquo;Upload New
+                Resource&rdquo;!
               </div>
             ) : (
               uploadedResources.map((content) => (

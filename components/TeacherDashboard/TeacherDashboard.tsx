@@ -15,6 +15,11 @@ import {
   AvailabilitySlot,
   Contest,
 } from "@/services/teacherDashboardService";
+import {
+  getParticlesAndTopics,
+  ParticleOption,
+  TopicOption,
+} from "@/services/contentService";
 import NavigationMenu from "./NavigationMenu";
 import MotivatedHeading from "./MotivatedHeading";
 import AvailabilityManager from "./AvailabilityManager";
@@ -34,6 +39,8 @@ export default function TeacherDashboard() {
   const [webinars, setWebinars] = useState<Webinar[]>([]);
   const [availability, setAvailability] = useState<AvailabilitySlot[]>([]);
   const [contests, setContests] = useState<Contest[]>([]);
+  const [particles, setParticles] = useState<ParticleOption[]>([]);
+  const [topics, setTopics] = useState<TopicOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   // New state for popups
@@ -56,6 +63,7 @@ export default function TeacherDashboard() {
           webinarsRes,
           availabilityRes,
           contestsRes,
+          particlesAndTopicsRes,
         ] = await Promise.all([
           getNotifications(),
           getQuestions(),
@@ -63,6 +71,7 @@ export default function TeacherDashboard() {
           getWebinars(),
           getAvailability(),
           getContests(),
+          getParticlesAndTopics(),
         ]);
 
         if (notificationsRes.success)
@@ -73,6 +82,10 @@ export default function TeacherDashboard() {
         if (availabilityRes.success)
           setAvailability(availabilityRes.data || []);
         if (contestsRes.success) setContests(contestsRes.data || []);
+        if (particlesAndTopicsRes && particlesAndTopicsRes.particles) {
+          setParticles(particlesAndTopicsRes.particles || []);
+          setTopics(particlesAndTopicsRes.topics || []);
+        }
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -229,6 +242,8 @@ export default function TeacherDashboard() {
                     <QuestionBankManager
                       questions={questions}
                       setQuestions={setQuestions}
+                      particles={particles}
+                      topics={topics}
                     />
                   </div>
                 </div>

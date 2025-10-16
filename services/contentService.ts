@@ -1,4 +1,5 @@
 // Content service for handling syllabus and educational content
+import apiClient from "@/services/apiClient";
 
 import apiClient from "@/services/apiClient";
 
@@ -262,6 +263,102 @@ export async function getConceptById(
   } catch (error) {
     console.error(`Error retrieving concept ${conceptId}:`, error);
     throw new Error(`Failed to retrieve concept: ${conceptId}`);
+  }
+}
+
+// Types for whole syllabus structure with two different hierarchies
+export interface WholeSyllabusNode {
+  conceptId: string;
+  name: string;
+  type: string;
+  description: string;
+  children?: WholeSyllabusNode[];
+  createdAt: string;
+}
+
+export interface WholeSyllabusResponse {
+  syllabusByMatter: WholeSyllabusNode[];
+  syllabusByGrade: WholeSyllabusNode[];
+  totalConcepts: number;
+  retrievedAt: string;
+}
+
+/**
+ * Retrieves the whole syllabus structure with both Matter and Grade hierarchies
+ * @returns Promise<WholeSyllabusResponse> - The complete syllabus with both hierarchies
+ */
+export async function retrieveWholeSyllabuses(): Promise<WholeSyllabusResponse> {
+  try {
+    const response = await apiClient.get("/content-service/syllabus");
+    const data = response.data;
+
+    if (
+      !data.syllabus ||
+      !Array.isArray(data.syllabus) ||
+      data.syllabus.length === 0
+    ) {
+      console.warn("⚠️ Invalid syllabus data structure received:", data);
+      // Return empty structure instead of throwing
+      return {
+        syllabusByMatter: [],
+        syllabusByGrade: [],
+        totalConcepts: 0,
+        retrievedAt: new Date().toISOString(),
+      };
+    }
+
+    // Get the main subject node (should be the first and only item in the array)
+    const mainSubject = data.syllabus[0];
+
+    if (
+      !mainSubject ||
+      !mainSubject.children ||
+      !Array.isArray(mainSubject.children)
+    ) {
+      console.warn(
+        "⚠️ No children found in syllabus structure. MainSubject:",
+        mainSubject
+      );
+      // Return empty structure instead of throwing
+      return {
+        syllabusByMatter: [],
+        syllabusByGrade: [],
+        totalConcepts: 0,
+        retrievedAt: new Date().toISOString(),
+      };
+    }
+
+    // Separate the children by type
+    const syllabusByMatter: WholeSyllabusNode[] = [];
+    const syllabusByGrade: WholeSyllabusNode[] = [];
+
+    mainSubject.children.forEach((child: WholeSyllabusNode) => {
+      if (child.type === "Matter") {
+        syllabusByMatter.push(child);
+      } else if (child.type === "Grade") {
+        syllabusByGrade.push(child);
+      }
+    });
+
+    return {
+      syllabusByMatter,
+      syllabusByGrade,
+      totalConcepts: data.totalConcepts || 0,
+      retrievedAt: data.retrievedAt || new Date().toISOString(),
+    };
+  } catch (error: any) {
+    console.error("Error retrieving whole syllabuses:", error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to retrieve whole syllabuses: ${
+        error.response?.data?.message || error.message
+      }`
+    );
   }
 }
 
@@ -801,4 +898,59 @@ export async function deleteResource(resourceId: string): Promise<any> {
   // });
   // return response.json();
   return { success: true };
+}
+
+// Types for concept detail structure
+export interface ConceptPrerequisiteDetail {
+  conceptId: string;
+  name: string;
+  type: string;
+  description: string;
+}
+
+export interface ConceptLearningResource {
+  resourceId: string;
+  name: string | null;
+  type: string;
+  url: string;
+  price: number;
+}
+
+export interface ConceptDetailResponse {
+  conceptId: string;
+  name: string;
+  type: string;
+  description: string;
+  prerequisites: ConceptPrerequisiteDetail[];
+  learningResources: ConceptLearningResource[];
+  createdAt: any;
+}
+
+/**
+ * Retrieves a specific concept by concept ID with its prerequisites and learning resources
+ * @param conceptId - The ID of the concept to retrieve
+ * @returns Promise<ConceptDetailResponse> - The concept details with prerequisites and resources
+ */
+export async function getConceptByConceptId(
+  conceptId: string
+): Promise<ConceptDetailResponse> {
+  try {
+    const response = await apiClient.get(
+      `/content-service/concepts/${conceptId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error(`Error retrieving concept ${conceptId}:`, error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to retrieve concept: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
 }

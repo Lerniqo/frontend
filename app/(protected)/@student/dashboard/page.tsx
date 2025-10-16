@@ -12,6 +12,7 @@ import {
 } from "@/services/contentService";
 import { useState, useEffect } from "react";
 import "@/app/globals.css";
+import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
 export default function StudentDashboard() {
   const {
@@ -98,11 +99,7 @@ export default function StudentDashboard() {
   );
 
   if (isLoading) {
-    return (
-      <div className="w-full h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
-        <div className="text-white text-xl">Loading learning path...</div>
-      </div>
-    );
+    return <GeneralLoadingComponent text="Loading Dashboard" />;
   }
 
   return (
@@ -119,6 +116,31 @@ export default function StudentDashboard() {
           fov: 75,
           near: 0.1,
           far: 1000,
+        }}
+        gl={{
+          preserveDrawingBuffer: true,
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          // Prevent context loss
+          failIfMajorPerformanceCaveat: false,
+        }}
+        onCreated={(state) => {
+          // Add context loss handlers
+          const gl = state.gl.getContext();
+          if (gl) {
+            state.gl.domElement.addEventListener(
+              "webglcontextlost",
+              (event) => {
+                event.preventDefault();
+                console.warn("WebGL context lost. Attempting to restore...");
+              }
+            );
+
+            state.gl.domElement.addEventListener("webglcontextrestored", () => {
+              console.warn("WebGL context restored successfully");
+            });
+          }
         }}
       >
         <Scene3D

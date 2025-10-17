@@ -52,8 +52,14 @@ export interface Scene3DProps extends PathCameraControllerProps {
   enableOrbitControls?: boolean;
   characters?: number[];
   learningPath?: Array<{
-    conceptName: string;
-    conceptId: string;
-    status: "done" | "progressing" | "waiting";
+    stepNumber: number;
+    title: string;
+    conceptName?: string;
+    conceptId?: string;
+    estimatedDuration: string;
+    description: string;
+    prerequisites: string[];
+    resources: string[];
+    status?: "done" | "progressing" | "waiting";
   }>;
 }

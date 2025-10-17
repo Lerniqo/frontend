@@ -109,72 +109,73 @@ const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
       intensity={0.6}
     >
       <Card className="w-64 bg-black/40 backdrop-blur-2xl border-0 overflow-hidden relative">
-          {/* Premium Background Effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/10 to-blue-500/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_40%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.15),transparent_40%)]" />
+        {/* Premium Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/10 to-blue-500/5" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_40%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.15),transparent_40%)]" />
 
-          {/* Animated Border */}
-          <div className="absolute inset-0 rounded-xl border border-transparent bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 p-[1px]">
-            <div className="w-full h-full bg-black/60 rounded-xl" />
+        {/* Animated Border */}
+        <div className="absolute inset-0 rounded-xl border border-transparent bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 p-[1px]">
+          <div className="w-full h-full bg-black/60 rounded-xl" />
+        </div>
+
+        <CardContent className="p-0 relative z-10">
+          {/* Header */}
+          <div className="p-4 border-b border-white/10">
+            <div className="flex items-center space-x-2">
+              <div className="relative">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25">
+                  <Crown className="w-4 h-4 text-white" />
+                </div>
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
+              </div>
+              <div>
+                <p className="text-xs text-white/60">
+                  Elite Learning Experience
+                </p>
+              </div>
+            </div>
           </div>
 
-          <CardContent className="p-0 relative z-10">
-            {/* Header */}
-            <div className="p-4 border-b border-white/10">
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/25">
-                    <Crown className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
+          {/* Navigation Items */}
+          <div className="p-3 space-y-2">
+            {navigationItems.map((item, index) => (
+              <PremiumNavItem
+                key={index}
+                item={item}
+                isActive={
+                  activeNav === item.label.toLowerCase().replace(" ", "-")
+                }
+                isHovered={hoveredItem === item.label}
+                onHover={setHoveredItem}
+                onClick={() => handleItemClick(item)}
+              />
+            ))}
+          </div>
+
+          {/* Premium Stats Footer */}
+          <div className="p-3 border-t border-white/10">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center">
+                <div className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  98%
                 </div>
-                <div>
-                  <p className="text-xs text-white/60">
-                    Elite Learning Experience
-                  </p>
+                <div className="text-xs text-white/60">Success Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  247
                 </div>
+                <div className="text-xs text-white/60">Study Streak</div>
               </div>
             </div>
-
-            {/* Navigation Items */}
-            <div className="p-3 space-y-2">
-              {navigationItems.map((item, index) => (
-                <PremiumNavItem
-                  key={index}
-                  item={item}
-                  isActive={
-                    activeNav === item.label.toLowerCase().replace(" ", "-")
-                  }
-                  isHovered={hoveredItem === item.label}
-                  onHover={setHoveredItem}
-                  onClick={() => handleItemClick(item)}
-                />
-              ))}
-            </div>
-
-            {/* Premium Stats Footer */}
-            <div className="p-3 border-t border-white/10">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="text-center">
-                  <div className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    98%
-                  </div>
-                  <div className="text-xs text-white/60">Success Rate</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    247
-                  </div>
-                  <div className="text-xs text-white/60">Study Streak</div>
-                </div>
-              </div>
-            </div>
+          </div>
         </CardContent>
       </Card>
     </SpotlightCard>
   );
-};interface PremiumNavItemProps {
+};
+interface PremiumNavItemProps {
   item: NavigationItem;
   isActive: boolean;
   isHovered: boolean;

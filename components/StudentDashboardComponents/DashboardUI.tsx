@@ -193,8 +193,8 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Premium Left Navigation */}
       <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-40">
-        <PremiumNavigation 
-          activeNav={activeNav} 
+        <PremiumNavigation
+          activeNav={activeNav}
           onNavChange={setActiveNav}
           onOpenAIQuiz={() => setShowAIQuizModal(true)}
         />

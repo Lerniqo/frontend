@@ -28,6 +28,7 @@ export interface Question {
   options: string[];
   correctAnswer: number;
   difficulty: "easy" | "medium" | "hard";
+  tags?: string[]; // Array of concept IDs (particle and topic IDs)
 }
 
 export interface Resource {

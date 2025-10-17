@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { bookSession, BookOneOnOneSession } from "@/services/schedulingService";
+import { bookSession } from "@/services/schedulingService";
 
 interface PayForBookingModalProps {
   isOpen: boolean;
@@ -78,11 +78,6 @@ const PayForBookingModal: React.FC<PayForBookingModalProps> = ({
       }
 
       // Call the booking function with availabilityId
-      console.log("====== Submitting Booking ======");
-      console.log("Availability ID:", slotDetails.availabilityId);
-      console.log("Is Free Session:", isFreeSession);
-      console.log("Payment Details:", !isFreeSession ? { cardNumber: cardNumber.slice(-4), expiryDate } : "N/A");
-
       const bookingResult = await bookSession(slotDetails.availabilityId);
 
       if (!bookingResult.success) {
@@ -90,8 +85,6 @@ const PayForBookingModal: React.FC<PayForBookingModalProps> = ({
         setIsProcessing(false);
         return;
       }
-
-      console.log("✅ Booking successful:", bookingResult.data);
 
       // Success
       alert(

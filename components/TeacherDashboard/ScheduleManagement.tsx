@@ -45,7 +45,6 @@ export default function ScheduleManagement() {
 
           setGroupSessions(groupSessionsList);
           setOneOnOneSessions(oneOnOneSessionsList);
-          console.log("Fetched sessions:", groupSessionsList, oneOnOneSessionsList);
         }
       } catch (error) {
         console.error("Error loading schedule management data:", error);

@@ -206,33 +206,43 @@ export const mockSessions: Session[] = [
 export async function getTeacherAvailability(
   teacherId: string
 ): Promise<TeacherAvailability[]> {
-  // TODO: Replace with actual API call
-  // const response = await fetch(`/api/teachers/${teacherId}/availability`);
-  // const data = await response.json();
-  // return data;
+  try {
+    console.log("Fetching availability for teacher:", teacherId);
 
-  console.log("getTeacherAvailability called with teacherId:", teacherId);
+    const response = await apiClient.get<TeacherAvailability[]>(
+      `/scheduling-service/scheduling/teachers/${teacherId}/availability`
+    );
 
-  // For now, return mock data with a simulated delay
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      // Return all mock availabilities for any teacher (for testing)
-      // In production, filter by actual teacherId
-      const filteredData = mockAvailabilities.filter(
-        (availability) => availability.teacher_id === teacherId
-      );
+    // Map the API response to TeacherAvailability objects, converting date strings to Date objects
+    const availabilities: TeacherAvailability[] = response.data.map(
+      (availability: any) => ({
+        availability_id: availability.availability_id,
+        teacher_id: availability.teacher_id,
+        start_time: new Date(availability.start_time),
+        end_time: new Date(availability.end_time),
+        is_booked: availability.is_booked,
+        is_paid: availability.is_paid,
+        price_per_session: availability.price_per_session,
+        session_description: availability.session_description,
+        created_at: new Date(availability.created_at),
+        updated_at: new Date(availability.updated_at),
+      })
+    );
 
-      console.log("Filtered availabilities:", filteredData);
+    console.log(
+      "✅ Teacher availability fetched successfully:",
+      availabilities
+    );
+    return availabilities;
+  } catch (error: any) {
+    console.error("❌ Failed to fetch teacher availability:", error);
 
-      // If no matches found but teacherId is provided, return all for demo purposes
-      if (filteredData.length === 0 && teacherId) {
-        console.log("No matches found, returning all mock data for demo");
-        resolve(mockAvailabilities);
-      } else {
-        resolve(filteredData);
-      }
-    }, 500); // Simulate network delay
-  });
+    // Fallback to mock data if API call fails
+    console.warn("⚠️ Falling back to mock data");
+    return mockAvailabilities.filter(
+      (availability) => availability.teacher_id === teacherId
+    );
+  }
 }
 
 // Mock data for all group sessions
@@ -645,6 +655,96 @@ export async function enrollInGroupSession(
         error.response?.data?.message ||
         error.message ||
         "Failed to enroll in session",
+    };
+  }
+}
+
+// Types for booking session
+export interface BookSessionParams {
+  availabilityId: string;
+}
+
+export interface BookSessionResponse {
+  session_id: string;
+  teacher_id: string;
+  session_type: "ONE_ON_ONE" | "GROUP";
+  title: string;
+  description: string;
+  start_time: string;
+  end_time: string;
+  status: "SCHEDULED" | "COMPLETED" | "CANCELLED";
+  is_paid: boolean;
+  price: number | null;
+  max_attendees: number;
+  video_conference_link: string;
+  attendees_count: number;
+  zoom_meeting_id: string;
+  zoom_join_url: string;
+  zoom_start_url?: string;
+}
+
+/**
+ * Books a one-on-one session with a teacher using an availability slot
+ * @param availabilityId - The ID of the availability slot to book
+ * @returns Promise with the created session details
+ */
+export async function bookSession(
+  availabilityId: string
+): Promise<{ success: boolean; data?: Session; message: string }> {
+  try {
+    console.log("====== Booking Session ======");
+    console.log("Availability ID:", availabilityId);
+
+    const response = await apiClient.post<BookSessionResponse>(
+      "/scheduling-service/scheduling/book-session",
+      { availabilityId: availabilityId }
+    );
+
+    console.log("✅ API Response received:", response.data);
+
+    // Map the response to Session object
+    const session: Session = {
+      session_id: response.data.session_id,
+      teacher_id: response.data.teacher_id,
+      session_type: response.data.session_type,
+      title: response.data.title,
+      description: response.data.description,
+      start_time: new Date(response.data.start_time),
+      end_time: new Date(response.data.end_time),
+      status: response.data.status,
+      is_paid: response.data.is_paid,
+      price: response.data.price,
+      max_attendees: response.data.max_attendees,
+      video_conference_link: response.data.video_conference_link,
+      attendees_count: response.data.attendees_count,
+      zoom_meeting_id: response.data.zoom_meeting_id,
+      zoom_join_url: response.data.zoom_join_url,
+      zoom_start_url: response.data.zoom_start_url || "",
+      zoom_password: "", // Not provided in response
+    };
+
+    console.log("✅ Session booked successfully:", session);
+
+    return {
+      success: true,
+      data: session,
+      message: "Session booked successfully!",
+    };
+  } catch (error: any) {
+    console.error("❌ Failed to book session:", error);
+    console.error("Error details:", {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+    });
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to book session",
     };
   }
 }

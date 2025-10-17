@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { BookOneOnOneSession } from "@/services/schedulingService";
+import { bookSession, BookOneOnOneSession } from "@/services/schedulingService";
 
 interface PayForBookingModalProps {
   isOpen: boolean;
@@ -77,25 +77,26 @@ const PayForBookingModal: React.FC<PayForBookingModalProps> = ({
         }
       }
 
-      // Call the booking function
-      await BookOneOnOneSession({
-        teacherId: teacherDetails.teacherId,
-        availabilityId: slotDetails.availabilityId,
-        startTime: `${slotDetails.date}T${slotDetails.startTime}`,
-        endTime: `${slotDetails.date}T${slotDetails.endTime}`,
-        price: slotDetails.price,
-        isPaid: slotDetails.isPaid,
-        paymentDetails: isFreeSession
-          ? null
-          : {
-              cardNumber,
-              expiryDate,
-              cvv,
-              cardholderName,
-            },
-      });
+      // Call the booking function with availabilityId
+      console.log("====== Submitting Booking ======");
+      console.log("Availability ID:", slotDetails.availabilityId);
+      console.log("Is Free Session:", isFreeSession);
+      console.log("Payment Details:", !isFreeSession ? { cardNumber: cardNumber.slice(-4), expiryDate } : "N/A");
+
+      const bookingResult = await bookSession(slotDetails.availabilityId);
+
+      if (!bookingResult.success) {
+        setError(bookingResult.message || "Failed to book session");
+        setIsProcessing(false);
+        return;
+      }
+
+      console.log("✅ Booking successful:", bookingResult.data);
 
       // Success
+      alert(
+        `✅ Session booked successfully with ${teacherDetails.teacherName}!`
+      );
       onBookingComplete();
       onClose();
 

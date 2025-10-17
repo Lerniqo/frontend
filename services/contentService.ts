@@ -1294,18 +1294,14 @@ export async function getAllQuestionsByTeacher(): Promise<QuestionResponse[]> {
       return [];
     }
 
-    // For other errors, log and throw
-    console.error("Error retrieving teacher questions:", error);
-    console.error("Error details:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      url: error.config?.url,
-    });
-    throw new Error(
-      `Failed to retrieve teacher questions: ${
-        error.response?.data?.message || error.message
-      }`
-    );
+    // // For other errors, log and throw
+    // console.error("Error retrieving teacher questions:", error);
+    // console.error("Error details:", {
+    //   message: error.message,
+    //   response: error.response?.data,
+    //   status: error.response?.status,
+    //   url: error.config?.url,
+    // });
+    return [];
   }
 }

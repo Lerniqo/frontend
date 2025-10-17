@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { DaySchedule, TimeSlot, SelectedSlot } from "@/types/auth.types";
-import { TeacherAvailability, Session } from "@/services/schedulingService";
+import { TeacherAvailability, Session, getTeacherAvailability } from "@/services/schedulingService";
 import PayForBookingModal from "./PayForBookingModal";
 
 interface TeacherBookingModalProps {
@@ -159,6 +159,8 @@ export default function TeacherBookingModal({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [_refreshingAvailability, setRefreshingAvailability] = useState(false);
+  const [dayAvailabilities, setDayAvailabilities] = useState<TeacherAvailability[]>([]);
 
   // Generate schedule from availability data
   useEffect(() => {
@@ -212,14 +214,38 @@ export default function TeacherBookingModal({
     }
   };
 
-  const handleDateClick = (date: string) => {
-    const day = schedule.find((d) => d.date === date);
-    if (day && day.timeSlots.some((slot) => slot.isAvailable)) {
-      setSelectedDate(date);
-      setSelectedSlot(null);
+  const handleDateClick = async (date: string) => {
+    try {
       setError(null);
-    } else {
-      setError("This day has no available time slots.");
+      setRefreshingAvailability(true);
+
+      // Fetch fresh availability data from API for this teacher
+      const freshAvailabilities = await getTeacherAvailability(teacherId);
+
+      // Filter availabilities for the selected date
+      const dateKey = date; // date is already in YYYY-MM-DD format
+      const dayAvailabilities = freshAvailabilities.filter((avail) => {
+        const availDate = new Date(avail.start_time).toISOString().split("T")[0];
+        return availDate === dateKey && !avail.is_booked; // Only show non-booked slots
+      });
+
+      if (dayAvailabilities.length > 0) {
+        setSelectedDate(date);
+        setDayAvailabilities(dayAvailabilities);
+        setSelectedSlot(null);
+        setError(null);
+      } else {
+        setError(`No available time slots for this teacher on ${date}`);
+        setSelectedDate(null);
+        setDayAvailabilities([]);
+      }
+    } catch (err) {
+      console.error("Error fetching availability:", err);
+      setError("Failed to load available time slots for this date");
+      setSelectedDate(null);
+      setDayAvailabilities([]);
+    } finally {
+      setRefreshingAvailability(false);
     }
   };
 
@@ -273,9 +299,30 @@ export default function TeacherBookingModal({
 
   // Filter slots for selected date
   const getSlotsForSelectedDate = () => {
-    if (!selectedDate) return [];
-    const daySchedule = schedule.find((day) => day.date === selectedDate);
-    return daySchedule ? daySchedule.timeSlots : [];
+    if (!selectedDate || dayAvailabilities.length === 0) return [];
+
+    // Format times from the API availability data
+    const formatTime = (date: Date): string => {
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const period = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      return `${hours.toString().padStart(2, "0")}:${minutes
+        .toString()
+        .padStart(2, "0")} ${period}`;
+    };
+
+    return dayAvailabilities.map((avail) => ({
+      id: avail.availability_id,
+      startTime: formatTime(new Date(avail.start_time)),
+      endTime: formatTime(new Date(avail.end_time)),
+      isAvailable: !avail.is_booked,
+      price: avail.price_per_session,
+      description: avail.session_description,
+      isPaid: avail.is_paid,
+      isBookedByUser: false, // These are fresh from API, not booked by user
+      availabilityId: avail.availability_id,
+    }));
   };
 
   if (!isOpen) return null;

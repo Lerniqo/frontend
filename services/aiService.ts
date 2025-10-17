@@ -1,6 +1,8 @@
 // AI Service for handling AI tutor interactions
 // Currently using mock data until AI service backend is implemented
 
+import apiClient from "@/services/apiClient";
+
 export interface ChatMessage {
   message: string;
 }
@@ -1072,4 +1074,115 @@ export const getMockLearningPathForUser = (
       ],
     },
   };
+};
+
+// Types for AI-generated quiz
+export interface AIQuizOption {
+  option_id: string;
+  text: string;
+  is_correct: boolean;
+}
+
+export interface AIQuizQuestion {
+  question_id: number;
+  question_type: "multiple_choice";
+  question_text: string;
+  options: AIQuizOption[];
+  correct_answer: string;
+  explanation: string;
+  difficulty: "easy" | "medium" | "hard";
+  concepts: string[];
+}
+
+export interface AIGeneratedQuizResponse {
+  topic: string;
+  total_questions: number;
+  questions: AIQuizQuestion[];
+}
+
+export interface AIQuizGenerationRequest {
+  topic: string;
+  num_questions: number;
+  difficulty: "easy" | "medium" | "hard";
+}
+
+/**
+ * Generates AI quiz questions based on topic, number of questions, and difficulty
+ * Calls the AI service endpoint to generate dynamic quiz questions
+ *
+ * @param request - The quiz generation request with topic, num_questions, and difficulty
+ * @returns Promise<AIGeneratedQuizResponse> - The generated quiz with questions
+ */
+export const getAIGeneratedQuizz = async (
+  request: AIQuizGenerationRequest
+): Promise<AIGeneratedQuizResponse> => {
+  try {
+    // Validate input parameters
+    if (!request.topic || request.topic.trim().length === 0) {
+      throw new Error("Topic is required to generate a quiz");
+    }
+
+    if (request.num_questions < 5 || request.num_questions > 10) {
+      throw new Error("Number of questions must be between 5 and 10");
+    }
+
+    const validDifficulties = ["easy", "medium", "hard"];
+    if (!validDifficulties.includes(request.difficulty)) {
+      throw new Error("Difficulty must be one of: easy, medium, hard");
+    }
+
+    // Make API call to AI service
+    const response = await apiClient.post(
+      "/ai-service/llm/questions/generate",
+      request
+    );
+
+    // Validate response structure
+    if (!response.data || !response.data.questions) {
+      throw new Error("Invalid response structure from AI service");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error generating AI quiz:", error);
+    console.error("Error details:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      url: error.config?.url,
+    });
+    throw new Error(
+      `Failed to generate AI quiz: ${
+        error.response?.data?.message || error.message
+      }`
+    );
+  }
+};
+
+/**
+ * Validates AI quiz generation parameters
+ */
+export const validateAIQuizParams = (
+  request: AIQuizGenerationRequest
+): { isValid: boolean; error?: string } => {
+  if (!request.topic || request.topic.trim().length === 0) {
+    return { isValid: false, error: "Topic is required" };
+  }
+
+  if (request.num_questions < 5 || request.num_questions > 10) {
+    return {
+      isValid: false,
+      error: "Number of questions must be between 5 and 10",
+    };
+  }
+
+  const validDifficulties = ["easy", "medium", "hard"];
+  if (!validDifficulties.includes(request.difficulty)) {
+    return {
+      isValid: false,
+      error: "Difficulty must be one of: easy, medium, hard",
+    };
+  }
+
+  return { isValid: true };
 };

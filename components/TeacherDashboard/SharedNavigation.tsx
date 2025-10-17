@@ -31,7 +31,6 @@ export default function SharedNavigation({
       label: "Schedule",
       path: "/schedule-management",
     },
-    { id: "contests", label: "Contests", path: "/contests" },
     {
       id: "resource-library",
       label: "Resource Library",

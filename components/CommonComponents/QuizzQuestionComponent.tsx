@@ -106,7 +106,10 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
     setShowResult(true);
     setIsAnswered(true);
 
-    const isCorrect = choice === answer;
+    // Normalize both answers to lowercase for case-insensitive comparison
+    const normalizedChoice = choice.toLowerCase().trim();
+    const normalizedAnswer = answer.toLowerCase().trim();
+    const isCorrect = normalizedChoice === normalizedAnswer;
 
     // Call the callback after a short delay to show the result
     setTimeout(() => {
@@ -119,12 +122,19 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
       return "bg-white border-2 border-gray-300 hover:border-purple-400 hover:bg-purple-50 cursor-pointer transition-all duration-200";
     }
 
-    if (choice === answer) {
+    // Normalize for comparison
+    const normalizedChoice = choice.toLowerCase().trim();
+    const normalizedAnswer = answer.toLowerCase().trim();
+
+    if (normalizedChoice === normalizedAnswer) {
       // Correct answer - light blue
       return "bg-blue-100 border-2 border-blue-400 text-blue-800";
     }
 
-    if (choice === selectedChoice && choice !== answer) {
+    if (
+      normalizedChoice === selectedChoice?.toLowerCase().trim() &&
+      normalizedChoice !== normalizedAnswer
+    ) {
       // Wrong selected answer - red
       return "bg-red-100 border-2 border-red-400 text-red-800";
     }
@@ -188,7 +198,8 @@ const QuizzQuestionComponent: React.FC<QuizzQuestionComponentProps> = ({
           className="mt-6 p-4 rounded-lg bg-gray-50 border-l-4 border-purple-500"
         >
           <div className="flex items-center space-x-2">
-            {selectedChoice === answer ? (
+            {selectedChoice?.toLowerCase().trim() ===
+            answer.toLowerCase().trim() ? (
               <>
                 <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <svg

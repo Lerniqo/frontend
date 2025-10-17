@@ -18,7 +18,11 @@ interface NavigationItem {
   isActive?: boolean;
 }
 
-export default function NavigationPanel() {
+interface NavigationPanelProps {
+  onOpenAIQuiz?: () => void;
+}
+
+export default function NavigationPanel({ onOpenAIQuiz }: NavigationPanelProps) {
   const [activeItem, setActiveItem] = useState("dashboard");
 
   const navigationItems: NavigationItem[] = [
@@ -35,6 +39,14 @@ export default function NavigationPanel() {
     { id: "settings", label: "Settings", icon: CogIcon },
   ];
 
+  const handleItemClick = (id: string) => {
+    if (id === "ai-tutor") {
+      onOpenAIQuiz?.();
+    } else {
+      setActiveItem(id);
+    }
+  };
+
   return (
     <div className="flex-1 h-full pointer-events-auto">
       <div className="bg-gradient-to-br from-purple-800/40 to-blue-900/40 p-6 rounded-xl shadow-2xl h-full w-full backdrop-blur-sm border border-purple-400/30">
@@ -50,7 +62,7 @@ export default function NavigationPanel() {
             return (
               <button
                 key={item.id}
-                onClick={() => setActiveItem(item.id)}
+                onClick={() => handleItemClick(item.id)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 group ${
                   isActive
                     ? "bg-purple-600/50 text-white border border-purple-400/40 shadow-lg"

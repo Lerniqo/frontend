@@ -22,13 +22,19 @@ interface NavigationPanelProps {
   onOpenAIQuiz?: () => void;
 }
 
-export default function NavigationPanel({ onOpenAIQuiz }: NavigationPanelProps) {
+export default function NavigationPanel({
+  onOpenAIQuiz,
+}: NavigationPanelProps) {
   const [activeItem, setActiveItem] = useState("dashboard");
 
   const navigationItems: NavigationItem[] = [
     { id: "dashboard", label: "Dashboard", icon: HomeIcon },
     // { id: "profile", label: "Profile", icon: UserIcon },
-    { id: "lesson-library", label: "Lesson Library", icon: BuildingLibraryIcon },
+    {
+      id: "lesson-library",
+      label: "Lesson Library",
+      icon: BuildingLibraryIcon,
+    },
     { id: "learning-path", label: "Learning Path", icon: AcademicCapIcon },
     { id: "teachers", label: "Teachers", icon: UserGroupIcon },
     { id: "progress", label: "Progress", icon: ChartBarIcon },

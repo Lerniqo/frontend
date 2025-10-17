@@ -3,11 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
-import {
-  getAIGeneratedQuizz,
-  AIGeneratedQuizResponse,
-  AIQuizQuestion,
-} from "@/services/aiService";
+import { getAIGeneratedQuizz, AIQuizQuestion } from "@/services/aiService";
 import QuizzQuestionComponent from "@/components/CommonComponents/QuizzQuestionComponent";
 import GeneralLoadingComponent from "@/components/CommonComponents/GeneralLoadingComponent";
 
@@ -24,14 +20,8 @@ export default function AIQuizPage() {
     (searchParams.get("difficulty") as "easy" | "medium" | "hard") || "easy";
 
   const [phase, setPhase] = useState<QuizPhase>("loading");
-  const [quizData, setQuizData] = useState<AIGeneratedQuizResponse | null>(
-    null
-  );
   const [quizQuestions, setQuizQuestions] = useState<AIQuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<
-    Array<{ questionId: number; selectedOption: string; isCorrect: boolean }>
-  >([]);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [incorrectAnswers, setIncorrectAnswers] = useState(0);
   const [loadingError, setLoadingError] = useState<string>("");
@@ -47,7 +37,13 @@ export default function AIQuizPage() {
       router.push("/dashboard");
       return;
     }
-    loadAIQuiz();
+
+    const initQuiz = async () => {
+      await loadAIQuiz();
+    };
+
+    initQuiz();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic, numQuestions, difficulty]);
 
   // GSAP animations when phase changes
@@ -100,31 +96,32 @@ export default function AIQuizPage() {
         difficulty,
       });
 
-      setQuizData(quizResponse);
       setQuizQuestions(quizResponse.questions);
       setPhase("quiz");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error loading AI quiz:", error);
-      setLoadingError(
-        error.message || "Failed to generate quiz. Please try again."
-      );
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate quiz. Please try again.";
+      setLoadingError(errorMessage);
       setPhase("quiz"); // Show error in quiz phase
     }
   };
 
-  const handleAnswer = (selectedAnswer: string, isCorrect: boolean) => {
+  const handleAnswer = (selectedAnswer: string, _isCorrect: boolean) => {
     const currentQuestion = quizQuestions[currentQuestionIndex];
 
-    setAnswers((prev) => [
-      ...prev,
-      {
-        questionId: currentQuestion.question_id,
-        selectedOption: selectedAnswer,
-        isCorrect,
-      },
-    ]);
+    // Determine correct answer
+    const correctOption = currentQuestion.options.find((opt) => opt.is_correct);
+    const correctAnswerText = correctOption ? correctOption.text : "";
 
-    if (isCorrect) {
+    // Normalize and compare
+    const normalizedSelected = selectedAnswer.toLowerCase().trim();
+    const normalizedCorrect = correctAnswerText.toLowerCase().trim();
+    const isAnswerCorrect = normalizedSelected === normalizedCorrect;
+
+    if (isAnswerCorrect) {
       setCorrectAnswers((prev) => prev + 1);
     } else {
       setIncorrectAnswers((prev) => prev + 1);
@@ -145,7 +142,6 @@ export default function AIQuizPage() {
 
   const handleRetakeQuiz = async () => {
     setCurrentQuestionIndex(0);
-    setAnswers([]);
     setCorrectAnswers(0);
     setIncorrectAnswers(0);
     setPhase("loading");
@@ -232,7 +228,7 @@ export default function AIQuizPage() {
             question={currentQuestion.question_text}
             choices={currentQuestion.options.map((opt) => opt.text)}
             answer={correctAnswerText}
-            onAnswer={(selectedAnswer: string, isCorrect: boolean) => {
+            onAnswer={(selectedAnswer: string, _isCorrect: boolean) => {
               // Normalize both answers to lowercase for case-insensitive comparison
               const normalizedSelected = selectedAnswer.toLowerCase().trim();
               const normalizedCorrect = correctAnswerText.toLowerCase().trim();
@@ -289,7 +285,7 @@ export default function AIQuizPage() {
                 Quiz Complete!
               </h2>
               <p className="text-gray-600">
-                You've completed the AI-generated quiz on {topic}.
+                You&apos;ve completed the AI-generated quiz on {topic}.
               </p>
             </div>
 

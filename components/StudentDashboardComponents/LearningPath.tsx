@@ -11,8 +11,6 @@ import {
   Target,
   Play,
   Clock,
-  Gem,
-  Sparkles,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import SpotlightCard from "@/components/reactbits/SpotlightCard";
@@ -57,19 +55,6 @@ const LearningPath: React.FC<LearningPathProps> = ({ learningPathData }) => {
 
     fetchLearningPath();
   }, [learningPathData]);
-
-  const getDifficultyColor = (status?: string) => {
-    switch (status) {
-      case "done":
-        return "from-green-400 to-emerald-500";
-      case "progressing":
-        return "from-blue-400 to-cyan-500";
-      case "waiting":
-        return "from-gray-400 to-gray-500";
-      default:
-        return "from-gray-400 to-gray-500";
-    }
-  };
 
   const getStepIcon = (step: LearningStep) => {
     const status = step.status || "waiting";
@@ -172,7 +157,6 @@ const LearningPath: React.FC<LearningPathProps> = ({ learningPathData }) => {
                 index={index}
                 isHovered={hoveredStep === step.stepNumber}
                 onHover={setHoveredStep}
-                getDifficultyColor={getDifficultyColor}
                 getStepIcon={getStepIcon}
                 totalSteps={steps.length}
               />
@@ -214,7 +198,6 @@ interface PremiumLearningStepProps {
   index: number;
   isHovered: boolean;
   onHover: (id: number | null) => void;
-  getDifficultyColor: (status?: string) => string;
   getStepIcon: (step: LearningStep) => React.ReactElement;
   totalSteps: number;
 }
@@ -224,7 +207,6 @@ const PremiumLearningStep: React.FC<PremiumLearningStepProps> = ({
   index,
   isHovered,
   onHover,
-  getDifficultyColor,
   getStepIcon,
   totalSteps,
 }) => {

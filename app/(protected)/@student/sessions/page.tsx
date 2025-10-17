@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 // Helper function to format price safely
-const formatPrice = (price: any): string => {
+const formatPrice = (price: number | string | null | undefined): string => {
   if (!price) return "Free";
   const numPrice = typeof price === "string" ? parseFloat(price) : price;
   return isNaN(numPrice) ? "Free" : `$${numPrice.toFixed(2)}`;
@@ -178,8 +178,6 @@ export default function SessionsPage() {
         getMySessions(),
       ]);
 
-      console.log("Fetched group sessions:", groupSessions);
-
       setAllGroupSessions(groupSessions);
       setMySessions(userSessions);
     } catch (error) {
@@ -202,16 +200,10 @@ export default function SessionsPage() {
   const handleRegister = async (sessionId: string) => {
     try {
       setRegistering(sessionId);
-      console.log(`Registering for session: ${sessionId}`);
 
       const response = await enrollInGroupSession(sessionId);
 
-      console.log("Enrollment response:", response);
-
       if (response.success) {
-        console.log("✅ Successfully registered for session");
-        console.log("Response message:", response.message);
-
         // Show success message only if there's no "network" warning
         if (!response.message.toLowerCase().includes("network")) {
           alert("✅ Successfully registered for the session!");

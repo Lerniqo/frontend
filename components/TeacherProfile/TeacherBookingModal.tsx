@@ -159,7 +159,7 @@ export default function TeacherBookingModal({
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [refreshingAvailability, setRefreshingAvailability] = useState(false);
+  const [_refreshingAvailability, setRefreshingAvailability] = useState(false);
   const [dayAvailabilities, setDayAvailabilities] = useState<TeacherAvailability[]>([]);
 
   // Generate schedule from availability data
@@ -219,8 +219,6 @@ export default function TeacherBookingModal({
       setError(null);
       setRefreshingAvailability(true);
 
-      console.log(`Fetching availability for teacher ${teacherId} on ${date}`);
-
       // Fetch fresh availability data from API for this teacher
       const freshAvailabilities = await getTeacherAvailability(teacherId);
 
@@ -230,8 +228,6 @@ export default function TeacherBookingModal({
         const availDate = new Date(avail.start_time).toISOString().split("T")[0];
         return availDate === dateKey && !avail.is_booked; // Only show non-booked slots
       });
-
-      console.log(`Found ${dayAvailabilities.length} available slots for ${date}`, dayAvailabilities);
 
       if (dayAvailabilities.length > 0) {
         setSelectedDate(date);

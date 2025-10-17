@@ -692,15 +692,10 @@ export async function bookSession(
   availabilityId: string
 ): Promise<{ success: boolean; data?: Session; message: string }> {
   try {
-    console.log("====== Booking Session ======");
-    console.log("Availability ID:", availabilityId);
-
     const response = await apiClient.post<BookSessionResponse>(
       "/scheduling-service/scheduling/book-session",
       { availabilityId: availabilityId }
     );
-
-    console.log("✅ API Response received:", response.data);
 
     // Map the response to Session object
     const session: Session = {
@@ -722,8 +717,6 @@ export async function bookSession(
       zoom_start_url: response.data.zoom_start_url || "",
       zoom_password: "", // Not provided in response
     };
-
-    console.log("✅ Session booked successfully:", session);
 
     return {
       success: true,

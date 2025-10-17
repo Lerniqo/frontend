@@ -383,9 +383,6 @@ export default function QuestionBankManager({
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <span className="px-3 py-1.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
-              {question.topic || question.subject}
-            </span>
             <span
               className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
                 difficultyColors[question.difficulty]

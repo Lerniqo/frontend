@@ -250,7 +250,6 @@ export default function QuestionBankManager({
         tags: result.tags || tags,
       };
 
-      console.log("Mapped question:", mappedQuestion); // Debug log
       setQuestions([...questions, mappedQuestion]);
       setIsAddingQuestion(false);
       setIsSubmittingQuestion(false);

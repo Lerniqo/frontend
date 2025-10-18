@@ -73,7 +73,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     password: string
   ): Promise<{ success: boolean; message: string }> => {
     try {
-      const response = await userService.login({ email, password });
+      const response = await userService.login({
+        email: email.toLowerCase(),
+        password,
+      }); // Convert email to lowercase
 
       if (response.success && response.data) {
         setUser(response.data.user);
@@ -82,9 +85,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         await trackEvent<LoginEventData>({
           type: TrackingEventType.LOGIN,
           data: {
-            loginMethod: 'email',
+            loginMethod: "email",
             deviceType: navigator.userAgent,
-            browser: navigator.userAgent.split(' ').pop() || 'unknown',
+            browser: navigator.userAgent.split(" ").pop() || "unknown",
             isSuccessful: true,
           },
           userId: response.data.user.userId,
@@ -96,30 +99,101 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         return { success: true, message: response.message };
       } else {
-        // Track failed login attempt
+        // Handle specific error scenarios
+        const errorMessage = response.message || "Login failed";
+
+        // Check if email not verified
+        if (
+          errorMessage.toLowerCase().includes("email not verified") ||
+          errorMessage.toLowerCase().includes("verify your email")
+        ) {
+          // Track failed login attempt
+          await trackEvent<LoginEventData>({
+            type: TrackingEventType.LOGIN,
+            data: {
+              loginMethod: "email",
+              deviceType: navigator.userAgent,
+              browser: navigator.userAgent.split(" ").pop() || "unknown",
+              isSuccessful: false,
+              failureReason: "Email not verified",
+            },
+          });
+
+          // Resend verification code automatically
+          await userService.resendVerificationCode(email.toLowerCase());
+
+          // Redirect to verify-email page
+          router.push(
+            `/signup/verify-email?email=${encodeURIComponent(
+              email.toLowerCase()
+            )}&fromLogin=true`
+          );
+
+          return {
+            success: false,
+            message:
+              "Email not verified. We've sent a new verification code to your email.",
+          };
+        }
+
+        // Check if profile not completed
+        if (
+          errorMessage.toLowerCase().includes("profile not completed") ||
+          errorMessage.toLowerCase().includes("complete your profile")
+        ) {
+          // Track failed login attempt
+          await trackEvent<LoginEventData>({
+            type: TrackingEventType.LOGIN,
+            data: {
+              loginMethod: "email",
+              deviceType: navigator.userAgent,
+              browser: navigator.userAgent.split(" ").pop() || "unknown",
+              isSuccessful: false,
+              failureReason: "Profile not completed",
+            },
+          });
+
+          // Extract userId from response data if available
+          if (response.data?.user?.userId && response.data?.user?.role) {
+            // Redirect to complete-profile page
+            router.push(
+              `/signup/complete-profile?userId=${encodeURIComponent(
+                response.data.user.userId
+              )}&role=${encodeURIComponent(response.data.user.role)}`
+            );
+
+            return {
+              success: false,
+              message: "Please complete your profile to continue.",
+            };
+          }
+        }
+
+        // Track failed login attempt for other errors
         await trackEvent<LoginEventData>({
           type: TrackingEventType.LOGIN,
           data: {
-            loginMethod: 'email',
+            loginMethod: "email",
             deviceType: navigator.userAgent,
-            browser: navigator.userAgent.split(' ').pop() || 'unknown',
+            browser: navigator.userAgent.split(" ").pop() || "unknown",
             isSuccessful: false,
-            failureReason: response.message || 'Unknown error',
+            failureReason: errorMessage,
           },
         });
 
-        return { success: false, message: response.message || "Login failed" };
+        return { success: false, message: errorMessage };
       }
     } catch (error) {
       // Track failed login attempt
       await trackEvent<LoginEventData>({
         type: TrackingEventType.LOGIN,
         data: {
-          loginMethod: 'email',
+          loginMethod: "email",
           deviceType: navigator.userAgent,
-          browser: navigator.userAgent.split(' ').pop() || 'unknown',
+          browser: navigator.userAgent.split(" ").pop() || "unknown",
           isSuccessful: false,
-          failureReason: error instanceof Error ? error.message : 'Unknown error',
+          failureReason:
+            error instanceof Error ? error.message : "Unknown error",
         },
       });
 

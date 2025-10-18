@@ -11,19 +11,23 @@ import { VerifyEmailSuccessData } from "@/types/auth.types";
 function VerifyEmailPageContent() {
   const [loading, setLoading] = useState(false);
   const [error, _setError] = useState("");
-  
+
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
-  const role = searchParams.get('role') || '';
+  const email = searchParams.get("email") || "";
+  const role = searchParams.get("role") || "";
+  const fromLogin = searchParams.get("fromLogin") === "true";
 
   useEffect(() => {
     // Validate required parameters
-    if (!email || !role || (role !== 'student' && role !== 'teacher')) {
-      router.push('/signup');
+    if (!email) {
+      router.push("/signup");
       return;
     }
+
+    // If coming from login, role might not be set, which is okay
+    // We'll get it from the verification response
 
     // Initial animation for the card
     gsap.fromTo(
@@ -31,36 +35,59 @@ function VerifyEmailPageContent() {
       { opacity: 0, y: 50, scale: 0.95 },
       { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
     );
-  }, [email, role, router]);
+  }, [email, router]);
 
   const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
-    // Validate role consistency
-    const normalizedVerifiedRole = userData.role.toLowerCase();
-    const normalizedSelectedRole = role.toLowerCase();
-    
-    if (normalizedVerifiedRole !== normalizedSelectedRole) {
-      console.warn(
-        `Role mismatch: Selected '${role}' but verified as '${userData.role}'. Using verified role.`
+    // If coming from login, redirect to complete-profile or login
+    if (fromLogin) {
+      // Redirect to complete-profile with user data
+      router.push(
+        `/signup/complete-profile?userId=${encodeURIComponent(
+          userData.userId
+        )}&role=${encodeURIComponent(userData.role)}`
       );
+      return;
     }
-    
+
+    // Validate role consistency for normal signup flow
+    if (role) {
+      const normalizedVerifiedRole = userData.role.toLowerCase();
+      const normalizedSelectedRole = role.toLowerCase();
+
+      if (normalizedVerifiedRole !== normalizedSelectedRole) {
+        console.warn(
+          `Role mismatch: Selected '${role}' but verified as '${userData.role}'. Using verified role.`
+        );
+      }
+    }
+
     // Redirect to profile completion with user data
-    router.push(`/signup/complete-profile?userId=${encodeURIComponent(userData.userId)}&role=${encodeURIComponent(userData.role)}`);
+    router.push(
+      `/signup/complete-profile?userId=${encodeURIComponent(
+        userData.userId
+      )}&role=${encodeURIComponent(userData.role)}`
+    );
   };
 
   const handleBack = () => {
-    router.push(`/signup/register?role=${encodeURIComponent(role)}`);
+    if (fromLogin) {
+      router.push("/login");
+    } else {
+      router.push(`/signup/register?role=${encodeURIComponent(role)}`);
+    }
   };
 
-  if (!email || !role) {
+  if (!email) {
     return (
       <PublicRoute>
         <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white flex items-center justify-center p-4">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Invalid Request</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              Invalid Request
+            </h1>
             <p className="text-gray-600 mb-6">Missing required parameters.</p>
             <button
-              onClick={() => router.push('/signup')}
+              onClick={() => router.push("/signup")}
               className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
             >
               Back to Signup
@@ -86,7 +113,8 @@ function VerifyEmailPageContent() {
                 Verify Your Email
               </h1>
               <p className="text-gray-600">
-                We sent a verification code to <span className="font-semibold text-blue-600">{email}</span>
+                We sent a verification code to{" "}
+                <span className="font-semibold text-blue-600">{email}</span>
               </p>
             </div>
           </div>
@@ -115,11 +143,7 @@ function VerifyEmailPageContent() {
               >
                 ← Back
               </button>
-              
-              <div className="text-sm text-gray-500">
-                Step 2 of 3
-              </div>
-              
+              <div className="text-sm text-gray-500">Step 2 of 3</div>
               <div className="w-32"></div> {/* Spacer for centering */}
             </div>
           </div>

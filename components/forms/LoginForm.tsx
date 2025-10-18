@@ -176,12 +176,14 @@ export default function LoginForm({
 
   // Handle input changes with validation
   const handleInputChange = (field: keyof FormState, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    // Convert email to lowercase
+    const processedValue = field === "email" ? value.toLowerCase() : value;
+    setFormData((prev) => ({ ...prev, [field]: processedValue }));
 
     // Validate field
     let fieldValidation;
     if (field === "email") {
-      fieldValidation = validateEmail(value);
+      fieldValidation = validateEmail(processedValue);
     } else {
       fieldValidation = validatePassword(value);
     }

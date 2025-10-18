@@ -5,6 +5,29 @@
 
 'use client';
 
+// Lightweight types for socket example payloads
+interface ChatMessage {
+  userId: string;
+  text: string;
+  timestamp?: number;
+}
+
+interface NotificationItem {
+  title: string;
+  message: string;
+}
+
+interface DashboardStats {
+  users: number;
+  messages: number;
+  activeRooms: number;
+}
+
+interface UserItem {
+  id: string;
+  name: string;
+}
+
 import { useState } from 'react';
 import {
   useSocket,
@@ -18,13 +41,13 @@ import {
 // Example 1: Simple Chat Component
 // ============================================================================
 export function SimpleChatComponent() {
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const { isConnected } = useSocket();
   const { publish } = useSocketPublish();
 
   // Subscribe to incoming messages
-  useSocketEvent('chat:message', (message) => {
+  useSocketEvent<ChatMessage>('chat:message', (message) => {
     setMessages((prev) => [...prev, message]);
   });
 
@@ -78,11 +101,11 @@ export function SimpleChatComponent() {
 // Example 2: Real-time Notifications
 // ============================================================================
 export function NotificationComponent() {
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const { isConnected } = useSocket();
 
   // Subscribe to notifications
-  useSocketEvent('notification', (notification) => {
+  useSocketEvent<NotificationItem>('notification', (notification) => {
     setNotifications((prev) => [notification, ...prev].slice(0, 10)); // Keep last 10
   });
 
@@ -128,7 +151,7 @@ export function NotificationComponent() {
 // ============================================================================
 export function RoomChatComponent() {
   const [room, setRoom] = useState('general');
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   
   const { isConnected } = useSocket();
@@ -136,7 +159,7 @@ export function RoomChatComponent() {
   const { isJoined } = useSocketRoom(room);
 
   // Subscribe to room messages
-  useSocketEvent(`room:${room}:message`, (message) => {
+  useSocketEvent<ChatMessage>(`room:${room}:message`, (message) => {
     setMessages((prev) => [...prev, message]);
   });
 
@@ -227,7 +250,7 @@ export function RoomChatComponent() {
 // Example 4: Dashboard with Real-time Stats
 // ============================================================================
 export function DashboardComponent() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     users: 0,
     messages: 0,
     activeRooms: 0,
@@ -235,11 +258,11 @@ export function DashboardComponent() {
   const { isConnected, socketId } = useSocketStatus();
 
   // Subscribe to dashboard updates
-  useSocketEvent('dashboard:stats', (newStats) => {
+  useSocketEvent<DashboardStats>('dashboard:stats', (newStats) => {
     setStats(newStats);
   });
 
-  useSocketEvent('dashboard:user-count', (count) => {
+  useSocketEvent<number>('dashboard:user-count', (count) => {
     setStats((prev) => ({ ...prev, users: count }));
   });
 
@@ -287,13 +310,14 @@ export function FormWithAckComponent() {
     setSuccess(false);
 
     try {
-      const response = await publishWithAck('form:submit', {
+      // Avoid implicit `any` by providing a conservative response type
+      const response = await publishWithAck<Record<string, unknown>>('form:submit', {
         name,
         email,
         message,
       });
 
-      console.log('Server response:', response);
+      console.warn('Server response:', response);
       setSuccess(true);
       setName('');
       setEmail('');
@@ -369,19 +393,19 @@ export function FormWithAckComponent() {
 // Example 6: Online Users List
 // ============================================================================
 export function OnlineUsersComponent() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserItem[]>([]);
   const { isConnected } = useSocket();
 
   // Subscribe to user events
-  useSocketEvent('user:online', (user) => {
+  useSocketEvent<UserItem>('user:online', (user) => {
     setUsers((prev) => [...prev, user]);
   });
 
-  useSocketEvent('user:offline', (userId) => {
+  useSocketEvent<string>('user:offline', (userId) => {
     setUsers((prev) => prev.filter((u) => u.id !== userId));
   });
 
-  useSocketEvent('users:list', (userList) => {
+  useSocketEvent<UserItem[]>('users:list', (userList) => {
     setUsers(userList);
   });
 

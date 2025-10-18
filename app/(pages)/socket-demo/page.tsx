@@ -314,13 +314,13 @@ export default function SocketDemoPage() {
             <div>
               <h4 className="font-semibold mb-1">Subscribe to event:</h4>
               <code className="bg-gray-800 text-green-400 px-2 py-1 rounded block">
-                ioClient.subscribe('event', callback)
+                {`ioClient.subscribe('event', callback)`}
               </code>
             </div>
             <div>
               <h4 className="font-semibold mb-1">Publish event:</h4>
               <code className="bg-gray-800 text-green-400 px-2 py-1 rounded block">
-                ioClient.publish('event', data)
+                {`ioClient.publish('event', data)`}
               </code>
             </div>
             <div>

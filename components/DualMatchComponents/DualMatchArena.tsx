@@ -42,6 +42,39 @@ interface MatchResult {
   totalQuestions: number;
 }
 
+// Add typed payload interfaces for socket events to avoid `any`
+interface MatchFoundPayload {
+  opponentIsBot?: boolean;
+  isBot?: boolean;
+  opponentUserId?: string;
+  opponent?: {
+    id?: string;
+    name?: string;
+    avatar?: string;
+    score?: number;
+    type?: string;
+  };
+  opponentName?: string;
+  opponentAvatar?: string;
+  matchId?: string;
+  playerRole?: 'playerA' | 'playerB';
+  questions?: Question[];
+}
+
+interface MatchStateUpdatePayload {
+  playerA?: { score?: number };
+  playerB?: { score?: number };
+  isMatchComplete?: boolean;
+}
+
+interface MatchAnswerResultPayload {
+  isCorrect?: boolean;
+}
+
+interface MatchmakingErrorPayload {
+  message?: string;
+}
+
 const DualMatchArena: React.FC = () => {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>('searching');
@@ -75,7 +108,8 @@ const DualMatchArena: React.FC = () => {
   const searchStartRef = useRef<number | null>(null);
   const botRejectionsRef = useRef<number>(0);
   const MAX_BOT_REJECTIONS = 20; // safety cap to avoid endless loops
-  const [requireHuman, setRequireHuman] = useState<boolean>(true);
+  // Only the current value is used — remove the unused setter to satisfy lint rules
+  const [requireHuman] = useState<boolean>(true);
 
   // Initialize socket connection and join matchmaking
   useEffect(() => {
@@ -102,7 +136,8 @@ const DualMatchArena: React.FC = () => {
           }
         });
 
-        console.log('Socket connected, joining matchmaking...');
+        // Use warn to keep logs allowed by eslint configuration (warn/error are permitted)
+        console.warn('Socket connected, joining matchmaking...');
 
         // Join matchmaking queue (include human-only preference when supported by server)
         // mark when we started searching so very-early "bot" matches can be handled
@@ -123,8 +158,8 @@ const DualMatchArena: React.FC = () => {
         }, 500);
 
         // Subscribe to match found event and reject bot matches when human-only mode is enabled
-        unsubscribeMatchFound = IOClient.subscribe('match:found', (data: any) => {
-          console.log('Match found (raw):', data);
+        unsubscribeMatchFound = IOClient.subscribe('match:found', (data: MatchFoundPayload) => {
+          console.warn('Match found (raw):', data);
 
           // Heuristic detection for bot opponents — servers may expose flags like isBot/opponentIsBot
           const opponentIsBot =
@@ -172,19 +207,20 @@ const DualMatchArena: React.FC = () => {
           setSearchProgress(100);
 
           setQuestions(data.questions || []);
-          setMatchId(data.matchId);
+          // Ensure matchId is explicitly null when not provided
+          setMatchId(data.matchId ?? null);
 
           // Backend now tells us which player we are
           const weArePlayerA = data.playerRole === 'playerA';
           setIsPlayerA(weArePlayerA);
 
-          // Use server-provided opponent object when available
-          const opp = data.opponent || {
-            id: data.opponentUserId || 'opponent',
-            name: data.opponentName || 'Opponent',
-            avatar: data.opponentAvatar || '🎯',
-            score: 0,
-            isOnline: true
+          // Construct a complete Player object from the payload (fill defaults if fields are missing)
+          const opp: Player = {
+            id: data.opponent?.id ?? data.opponentUserId ?? 'opponent',
+            name: data.opponent?.name ?? data.opponentName ?? 'Opponent',
+            avatar: data.opponent?.avatar ?? data.opponentAvatar ?? '🎯',
+            score: data.opponent?.score ?? 0,
+            isOnline: true,
           };
           setOpponent(opp);
 
@@ -195,275 +231,275 @@ const DualMatchArena: React.FC = () => {
         });
 
         // Subscribe to matchmaking errors
-        unsubscribeError = IOClient.subscribe('matchmaking:error', (data) => {
+        unsubscribeError = IOClient.subscribe('matchmaking:error', (data: MatchmakingErrorPayload) => {
           console.error('Matchmaking error:', data);
-          setError(data.message || 'An error occurred during matchmaking');
-          if (searchProgressInterval) {
-            clearInterval(searchProgressInterval);
-          }
-        });
-      } catch (error) {
-        console.error('Error initializing matchmaking:', error);
-        setError('Failed to connect to matchmaking service');
-        if (searchProgressInterval) {
-          clearInterval(searchProgressInterval);
-        }
-      }
-    };
+           setError(data.message || 'An error occurred during matchmaking');
+           if (searchProgressInterval) {
+             clearInterval(searchProgressInterval);
+           }
+         });
+       } catch (error) {
+         console.error('Error initializing matchmaking:', error);
+         setError('Failed to connect to matchmaking service');
+         if (searchProgressInterval) {
+           clearInterval(searchProgressInterval);
+         }
+       }
+     };
 
-    initializeMatchmaking();
+     initializeMatchmaking();
 
-    // Cleanup on unmount or state change
-    return () => {
-      if (unsubscribeMatchFound) {
-        unsubscribeMatchFound();
-      }
-      if (unsubscribeError) {
-        unsubscribeError();
-      }
-      if (searchProgressInterval) {
-        clearInterval(searchProgressInterval);
-      }
-    };
-  }, [IOClient, user, gameState, soundEnabled, requireHuman]);
+     // Cleanup on unmount or state change
+     return () => {
+       if (unsubscribeMatchFound) {
+         unsubscribeMatchFound();
+       }
+       if (unsubscribeError) {
+         unsubscribeError();
+       }
+       if (searchProgressInterval) {
+         clearInterval(searchProgressInterval);
+       }
+     };
+   }, [IOClient, user, gameState, soundEnabled, requireHuman]);
 
-  // Function definitions
-  const endGame = useCallback(() => {
-    const winner = playerScore > opponentScore ? currentPlayer : opponent!;
-    const loser = playerScore > opponentScore ? opponent! : currentPlayer;
-    const playerWon = playerScore > opponentScore;
-    
-    setMatchResult({
-      winner,
-      loser,
-      winnerScore: Math.max(playerScore, opponentScore),
-      loserScore: Math.min(playerScore, opponentScore),
-      totalQuestions: questions.length
-    });
-    
-    // Play appropriate sound and particles
-    if (soundEnabled) {
-      if (playerWon) {
-        gameSounds.victory();
-      } else {
-        gameSounds.defeat();
-      }
-    }
-    
-    if (playerWon) {
-      setParticleType('victory');
-      setShowParticles(true);
-    }
-    
-    setGameState('finished');
-  }, [currentPlayer, opponent, playerScore, opponentScore, soundEnabled, questions.length]);
+   // Function definitions
+   const endGame = useCallback(() => {
+     const winner = playerScore > opponentScore ? currentPlayer : opponent!;
+     const loser = playerScore > opponentScore ? opponent! : currentPlayer;
+     const playerWon = playerScore > opponentScore;
+     
+     setMatchResult({
+       winner,
+       loser,
+       winnerScore: Math.max(playerScore, opponentScore),
+       loserScore: Math.min(playerScore, opponentScore),
+       totalQuestions: questions.length
+     });
+     
+     // Play appropriate sound and particles
+     if (soundEnabled) {
+       if (playerWon) {
+         gameSounds.victory();
+       } else {
+         gameSounds.defeat();
+       }
+     }
+     
+     if (playerWon) {
+       setParticleType('victory');
+       setShowParticles(true);
+     }
+     
+     setGameState('finished');
+   }, [currentPlayer, opponent, playerScore, opponentScore, soundEnabled, questions.length]);
 
-  const handleNextQuestion = useCallback(() => {
-    if (currentQuestionIndex >= questions.length - 1) {
-      endGame();
-      return;
-    }
-    
-    setCurrentQuestionIndex(prev => prev + 1);
-    setSelectedAnswer(null);
-    setQuestionTimeLeft(15);
-  }, [currentQuestionIndex, questions.length, endGame]);
+   const handleNextQuestion = useCallback(() => {
+     if (currentQuestionIndex >= questions.length - 1) {
+       endGame();
+       return;
+     }
+     
+     setCurrentQuestionIndex(prev => prev + 1);
+     setSelectedAnswer(null);
+     setQuestionTimeLeft(15);
+   }, [currentQuestionIndex, questions.length, endGame]);
 
-  // Subscribe to match state updates for real-time opponent progress
-  useEffect(() => {
-    if (gameState !== 'playing' || !matchId) return;
+   // Subscribe to match state updates for real-time opponent progress
+   useEffect(() => {
+     if (gameState !== 'playing' || !matchId) return;
 
-    const unsubscribeStateUpdate = IOClient.subscribe('match:stateUpdate', (data) => {
-      console.log('Match state update:', data);
-      
-      // Update scores based on which player we are
-      if (data.playerA && data.playerB) {
-        if (isPlayerA) {
-          // We are playerA
-          setPlayerScore(data.playerA.score);
-          setOpponentScore(data.playerB.score);
-        } else {
-          // We are playerB
-          setPlayerScore(data.playerB.score);
-          setOpponentScore(data.playerA.score);
-        }
-      }
+    const unsubscribeStateUpdate = IOClient.subscribe('match:stateUpdate', (data: MatchStateUpdatePayload) => {
+      console.warn('Match state update:', data);
+       
+       // Update scores based on which player we are
+       if (data.playerA && data.playerB) {
+         if (isPlayerA) {
+           // We are playerA
+           setPlayerScore(data.playerA.score ?? 0);
+           setOpponentScore(data.playerB.score ?? 0);
+         } else {
+           // We are playerB
+           setPlayerScore(data.playerB.score ?? 0);
+           setOpponentScore(data.playerA.score ?? 0);
+         }
+       }
 
-      // Check if match is complete
-      if (data.isMatchComplete) {
-        endGame();
-      }
-    });
+       // Check if match is complete
+       if (data.isMatchComplete) {
+         endGame();
+       }
+     });
 
-    // Subscribe to answer feedback
-    const unsubscribeAnswerResult = IOClient.subscribe('match:answerResult', (data) => {
-      console.log('Answer result:', data);
-      
-      // Show appropriate feedback based on correctness
-      if (data.isCorrect) {
-        setParticleType('success');
-        if (soundEnabled) gameSounds.correctAnswer();
-      } else {
-        setParticleType('error');
-        if (soundEnabled) gameSounds.incorrectAnswer();
-      }
-    });
+     // Subscribe to answer feedback
+    const unsubscribeAnswerResult = IOClient.subscribe('match:answerResult', (data: MatchAnswerResultPayload) => {
+      console.warn('Answer result:', data);
+       
+       // Show appropriate feedback based on correctness
+       if (data.isCorrect) {
+         setParticleType('success');
+         if (soundEnabled) gameSounds.correctAnswer();
+       } else {
+         setParticleType('error');
+         if (soundEnabled) gameSounds.incorrectAnswer();
+       }
+     });
 
-    return () => {
-      unsubscribeStateUpdate();
-      unsubscribeAnswerResult();
-    };
-  }, [gameState, matchId, IOClient, isPlayerA, soundEnabled, endGame]);
+     return () => {
+       unsubscribeStateUpdate();
+       unsubscribeAnswerResult();
+     };
+   }, [gameState, matchId, IOClient, isPlayerA, soundEnabled, endGame]);
 
-  // Countdown timer
-  useEffect(() => {
-    if (gameState === 'countdown') {
-      const interval = setInterval(() => {
-        setCountdownValue(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            return 0;
-          }
-          if (soundEnabled && prev > 0) gameSounds.countdown();
-          return prev - 1;
-        });
-      }, 1000);
+   // Countdown timer
+   useEffect(() => {
+     if (gameState === 'countdown') {
+       const interval = setInterval(() => {
+         setCountdownValue(prev => {
+           if (prev <= 1) {
+             clearInterval(interval);
+             return 0;
+           }
+           if (soundEnabled && prev > 0) gameSounds.countdown();
+           return prev - 1;
+         });
+       }, 1000);
 
-      return () => clearInterval(interval);
-    }
-  }, [gameState, soundEnabled]);
+       return () => clearInterval(interval);
+     }
+   }, [gameState, soundEnabled]);
 
-  const handleCountdownComplete = () => {
-    setGameState('playing');
-    setTimeLeft(300); // Reset to 5 minutes
-    setQuestionTimeLeft(15);
-    if (soundEnabled) gameSounds.gameStart();
-  };
+   const handleCountdownComplete = () => {
+     setGameState('playing');
+     setTimeLeft(300); // Reset to 5 minutes
+     setQuestionTimeLeft(15);
+     if (soundEnabled) gameSounds.gameStart();
+   };
 
-  // Game timer
-  useEffect(() => {
-    if (gameState === 'playing' && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft(prev => {
-          if (prev <= 1) {
-            endGame();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [gameState, timeLeft, endGame]);
+   // Game timer
+   useEffect(() => {
+     if (gameState === 'playing' && timeLeft > 0) {
+       const timer = setInterval(() => {
+         setTimeLeft(prev => {
+           if (prev <= 1) {
+             endGame();
+             return 0;
+           }
+           return prev - 1;
+         });
+       }, 1000);
+       return () => clearInterval(timer);
+     }
+   }, [gameState, timeLeft, endGame]);
 
-  // Question timer
-  useEffect(() => {
-    if (gameState === 'playing' && questionTimeLeft > 0) {
-      const timer = setInterval(() => {
-        setQuestionTimeLeft(prev => {
-          if (prev <= 1) {
-            handleNextQuestion();
-            return 15;
-          }
-          // Play warning sound when time is running out
-          if (soundEnabled && prev === 6) gameSounds.timerWarning();
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [gameState, questionTimeLeft, handleNextQuestion, soundEnabled]);
+   // Question timer
+   useEffect(() => {
+     if (gameState === 'playing' && questionTimeLeft > 0) {
+       const timer = setInterval(() => {
+         setQuestionTimeLeft(prev => {
+           if (prev <= 1) {
+             handleNextQuestion();
+             return 15;
+           }
+           // Play warning sound when time is running out
+           if (soundEnabled && prev === 6) gameSounds.timerWarning();
+           return prev - 1;
+         });
+       }, 1000);
+       return () => clearInterval(timer);
+     }
+   }, [gameState, questionTimeLeft, handleNextQuestion, soundEnabled]);
 
-  const handleAnswerSelect = (answerIndex: number) => {
-    if (selectedAnswer !== null || !matchId) return;
-    
-    setSelectedAnswer(answerIndex);
-    const currentQuestion = questions[currentQuestionIndex];
-    const selectedOption = currentQuestion.options[answerIndex];
-    
-    // Submit answer to backend
-    IOClient.publish('match:submitAnswer', {
-      matchId: matchId,
-      questionId: currentQuestion.id,
-      answer: selectedOption,
-      timer: questionTimeLeft
-    });
+   const handleAnswerSelect = (answerIndex: number) => {
+     if (selectedAnswer !== null || !matchId) return;
+     
+     setSelectedAnswer(answerIndex);
+     const currentQuestion = questions[currentQuestionIndex];
+     const selectedOption = currentQuestion.options[answerIndex];
+     
+     // Submit answer to backend
+     IOClient.publish('match:submitAnswer', {
+       matchId: matchId,
+       questionId: currentQuestion.id,
+       answer: selectedOption,
+       timer: questionTimeLeft
+     });
 
-    // Show feedback animation
-    setShowParticles(true);
-    if (soundEnabled) gameSounds.correctAnswer();
-    
-    // The backend will send match:stateUpdate with updated scores
-    // Move to next question after delay
-    setTimeout(() => {
-      handleNextQuestion();
-      setShowParticles(false);
-    }, 2000);
-  };
+     // Show feedback animation
+     setShowParticles(true);
+     if (soundEnabled) gameSounds.correctAnswer();
+     
+     // The backend will send match:stateUpdate with updated scores
+     // Move to next question after delay
+     setTimeout(() => {
+       handleNextQuestion();
+       setShowParticles(false);
+     }, 2000);
+   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+   const formatTime = (seconds: number) => {
+     const mins = Math.floor(seconds / 60);
+     const secs = seconds % 60;
+     return `${mins}:${secs.toString().padStart(2, '0')}`;
+   };
 
-  const handleBackToDashboard = () => {
-    // Leave matchmaking/match if still active
-    if (matchId) {
-      IOClient.publish('match:leave', { matchId });
-    } else if (gameState === 'searching' || gameState === 'waiting') {
-      IOClient.publish('matchmaking:leave', { userId: user?.userId });
-    }
-    
-    // Clear all subscriptions
-    IOClient.clearAllSubscriptions();
-    
-    router.push('/dashboard');
-  };
+   const handleBackToDashboard = () => {
+     // Leave matchmaking/match if still active
+     if (matchId) {
+       IOClient.publish('match:leave', { matchId });
+     } else if (gameState === 'searching' || gameState === 'waiting') {
+       IOClient.publish('matchmaking:leave', { userId: user?.userId });
+     }
+     
+     // Clear all subscriptions
+     IOClient.clearAllSubscriptions();
+     
+     router.push('/dashboard');
+   };
 
-  const handlePlayAgain = () => {
-    // Ensure previous subscriptions and any active match are cleaned up before re-searching
-    if (matchId) {
-      IOClient.publish('match:leave', { matchId });
-    } else {
-      IOClient.publish('matchmaking:leave', { userId: user?.userId });
-    }
-    IOClient.clearAllSubscriptions();
-    botRejectionsRef.current = 0;
-    setError(null);
-    // Reset all state
-    setGameState('searching');
-    setCurrentQuestionIndex(0);
-    setPlayerScore(0);
-    setOpponentScore(0);
-    setTimeLeft(300);
-    setQuestionTimeLeft(15);
-    setSelectedAnswer(null);
-    setMatchResult(null);
-    setOpponent(null);
-    setSearchProgress(0);
-    setCountdownValue(3);
-    setMatchId(null);
-    setQuestions([]);
-  };
+   const handlePlayAgain = () => {
+     // Ensure previous subscriptions and any active match are cleaned up before re-searching
+     if (matchId) {
+       IOClient.publish('match:leave', { matchId });
+     } else {
+       IOClient.publish('matchmaking:leave', { userId: user?.userId });
+     }
+     IOClient.clearAllSubscriptions();
+     botRejectionsRef.current = 0;
+     setError(null);
+     // Reset all state
+     setGameState('searching');
+     setCurrentQuestionIndex(0);
+     setPlayerScore(0);
+     setOpponentScore(0);
+     setTimeLeft(300);
+     setQuestionTimeLeft(15);
+     setSelectedAnswer(null);
+     setMatchResult(null);
+     setOpponent(null);
+     setSearchProgress(0);
+     setCountdownValue(3);
+     setMatchId(null);
+     setQuestions([]);
+   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      // Leave matchmaking/match if still active
-      if (matchId) {
-        IOClient.publish('match:leave', { matchId });
-      } else if (gameState === 'searching' || gameState === 'waiting') {
-        IOClient.publish('matchmaking:leave', { userId: user?.userId });
-      }
-      
-      // Clear all subscriptions
-      IOClient.clearAllSubscriptions();
-    };
-  }, [matchId, gameState, user, IOClient]);
+   // Cleanup on unmount
+   useEffect(() => {
+     return () => {
+       // Leave matchmaking/match if still active
+       if (matchId) {
+         IOClient.publish('match:leave', { matchId });
+       } else if (gameState === 'searching' || gameState === 'waiting') {
+         IOClient.publish('matchmaking:leave', { userId: user?.userId });
+       }
+       
+       // Clear all subscriptions
+       IOClient.clearAllSubscriptions();
+     };
+   }, [matchId, gameState, user, IOClient]);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
+   return (
+     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>

@@ -38,7 +38,7 @@ export default function ContentManagement() {
             getResources(),
             getParticlesAndTopics(),
           ]);
-        console.log("Questions from API:", questionsFromApi);
+        // Debug information removed to comply with linting rules
         // Map API response to Question format for UI
         const mappedQuestions: Question[] = questionsFromApi.map(
           (q: QuestionResponse) => {

@@ -36,10 +36,14 @@ export default function CreateGroupSessionModal({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value, type } = e.target as any;
+    const target = e.target as
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | HTMLSelectElement;
+    const { name, value, type } = target;
 
     if (type === "checkbox") {
-      const checked = (e.target as HTMLInputElement).checked;
+      const checked = (target as HTMLInputElement).checked;
       setFormData((prev) => ({
         ...prev,
         [name]: checked,
@@ -103,8 +107,6 @@ export default function CreateGroupSessionModal({
         endTime: convertToISO(formData.endTime),
       };
 
-      console.log("Submitting group session with data:", requestData);
-
       // Create the session
       const response = await createNewGroupSession(requestData);
 
@@ -113,7 +115,6 @@ export default function CreateGroupSessionModal({
       }
 
       setSuccess(true);
-      console.log("Group session created successfully:", response.data);
       // Reset form
       setFormData({
         title: "",
@@ -130,9 +131,10 @@ export default function CreateGroupSessionModal({
         onSessionCreated();
         onClose();
       }, 1000);
-    } catch (err: any) {
-      setError(err.message || "An error occurred while creating the session");
-      console.error("Error creating group session:", err);
+    } catch (error) {
+      const errMessage = error instanceof Error ? error.message : String(error);
+      setError(errMessage || "An error occurred while creating the session");
+      console.error("Error creating group session:", error);
     } finally {
       setLoading(false);
     }

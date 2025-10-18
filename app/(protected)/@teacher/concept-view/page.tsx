@@ -49,7 +49,6 @@ function ConceptViewContent() {
         setLoading(true);
         setError(null);
         const data = await getConceptByConceptId(conceptId);
-        console.log("data", data);
         setConceptData(data);
       } catch (err) {
         const errorMessage =

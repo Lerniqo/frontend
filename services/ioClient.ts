@@ -1,10 +1,10 @@
-import { io, Socket } from 'socket.io-client';
-import { userService } from './userService'
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 
 /**
  * Callback function type for socket event listeners
  */
-type SocketCallback = (data: any) => void;
+type SocketCallback<T = unknown> = (data: T) => void;
 
 /**
  * Configuration options for the Socket.IO client
@@ -28,7 +28,12 @@ interface SocketConfig {
 class IOClient {
   private static instance: IOClient;
   private socket: Socket | null = null;
-  private subscriptions: Map<string, Set<SocketCallback>> = new Map();
+  private subscriptions: Map<string, Set<(data: unknown) => void>> = new Map();
+  /**
+   * Maps topic -> (original callback -> wrapped handler)
+   * We use WeakMap for per-topic mapping so original callback functions can be garbage collected.
+   */
+  private subscriptionWrappers: Map<string, WeakMap<(...args: unknown[]) => unknown, (data: unknown) => void>> = new Map();
   private config: SocketConfig = {
     url: process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
     options: {
@@ -64,10 +69,10 @@ class IOClient {
    * @param config Optional configuration to override defaults
    * @returns Promise that resolves when connected
    */
-  public async connect(config?: SocketConfig): Promise<void> {
+  public connect(config?: SocketConfig): Promise<void> {
     if (this.socket?.connected) {
-      console.log('Socket already connected');
-      return;
+      console.debug('Socket already connected');
+      return Promise.resolve();
     }
 
     // Merge custom config with defaults
@@ -80,11 +85,12 @@ class IOClient {
 
     return new Promise((resolve, reject) => {
       try {
-        this.socket = io(this.config.url!, this.config.options);
+        const url = this.config.url ?? 'http://localhost:3001';
+        this.socket = io(url, this.config.options);
 
         // Setup connection event handlers
         this.socket.on('connect', () => {
-          console.log('Socket connected:', this.socket?.id);
+          console.debug('Socket connected:', this.socket?.id);
           this.resubscribeAll();
           resolve();
         });
@@ -95,11 +101,11 @@ class IOClient {
         });
 
         this.socket.on('disconnect', (reason) => {
-          console.log('Socket disconnected:', reason);
+          console.debug('Socket disconnected:', reason);
         });
 
         this.socket.on('reconnect', (attemptNumber) => {
-          console.log('Socket reconnected after', attemptNumber, 'attempts');
+          console.debug('Socket reconnected after', attemptNumber, 'attempts');
           this.resubscribeAll();
         });
 
@@ -127,7 +133,7 @@ class IOClient {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      console.log('Socket disconnected manually');
+      console.debug('Socket disconnected manually');
     }
   }
 
@@ -153,22 +159,43 @@ class IOClient {
    * @param callback Function to call when event is received
    * @returns Function to unsubscribe
    */
-  public subscribe(topic: string, callback: SocketCallback): () => void {
+  public subscribe<T = unknown>(topic: string, callback: SocketCallback<T>): () => void {
     if (!this.socket) {
       console.warn('Socket not initialized. Call connect() first.');
       return () => {};
     }
 
-    // Add callback to subscriptions map
-    if (!this.subscriptions.has(topic)) {
-      this.subscriptions.set(topic, new Set());
+    const socket = this.socket;
+
+    // Ensure we have a WeakMap to find wrappers for this topic
+    let wrappersForTopic = this.subscriptionWrappers.get(topic);
+    if (!wrappersForTopic) {
+      wrappersForTopic = new WeakMap<(...args: unknown[]) => unknown, (data: unknown) => void>();
+      this.subscriptionWrappers.set(topic, wrappersForTopic);
     }
-    this.subscriptions.get(topic)!.add(callback);
+
+    // Create a wrapper that performs a safe cast to the expected payload type
+    const wrapped = (data: unknown) => {
+      try {
+        callback(data as T);
+      } catch (err) {
+        console.error('Error in socket callback for topic:', topic, err);
+      }
+    };
+
+    // Store the wrapper in our internal subscriptions set
+    let callbacks = this.subscriptions.get(topic);
+    if (!callbacks) {
+      callbacks = new Set<(data: unknown) => void>();
+      this.subscriptions.set(topic, callbacks);
+    }
+    callbacks.add(wrapped);
+    wrappersForTopic.set(callback as (...args: unknown[]) => unknown, wrapped);
 
     // Register the event listener with socket.io
-    this.socket.on(topic, callback);
+    socket.on(topic, wrapped);
 
-    console.log(`Subscribed to topic: ${topic}`);
+    console.debug(`Subscribed to topic: ${topic}`);
 
     // Return unsubscribe function
     return () => this.unsubscribe(topic, callback);
@@ -179,22 +206,36 @@ class IOClient {
    * @param topic The event name
    * @param callback The callback function to remove
    */
-  public unsubscribe(topic: string, callback: SocketCallback): void {
-    if (!this.socket) return;
+  public unsubscribe<T = unknown>(topic: string, callback: SocketCallback<T>): void {
+    const socket = this.socket;
+    if (!socket) return;
 
-    // Remove from subscriptions map
+    // Try to find the wrapper for the original callback
+    const wrappersForTopic = this.subscriptionWrappers.get(topic);
+    const wrapped = wrappersForTopic?.get(callback as (...args: unknown[]) => unknown);
     const callbacks = this.subscriptions.get(topic);
-    if (callbacks) {
-      callbacks.delete(callback);
+
+    if (wrapped) {
+      wrappersForTopic?.delete(callback as (...args: unknown[]) => unknown);
+      callbacks?.delete(wrapped);
+      socket.off(topic, wrapped);
+      if (callbacks && callbacks.size === 0) {
+        this.subscriptions.delete(topic);
+      }
+      console.debug(`Unsubscribed from topic: ${topic}`);
+      return;
+    }
+
+    // Fallback: maybe the provided callback was previously passed directly as the handler
+    if (callbacks && callbacks.has(callback as unknown as (data: unknown) => void)) {
+      const direct = callback as unknown as (data: unknown) => void;
+      callbacks.delete(direct);
+      socket.off(topic, direct);
       if (callbacks.size === 0) {
         this.subscriptions.delete(topic);
       }
+      console.debug(`Unsubscribed from topic: ${topic}`);
     }
-
-    // Remove event listener from socket
-    this.socket.off(topic, callback);
-
-    console.log(`Unsubscribed from topic: ${topic}`);
   }
 
   /**
@@ -202,16 +243,20 @@ class IOClient {
    * @param topic The event name
    */
   public unsubscribeAll(topic: string): void {
-    if (!this.socket) return;
+    const socket = this.socket;
+    if (!socket) return;
 
     const callbacks = this.subscriptions.get(topic);
     if (callbacks) {
-      callbacks.forEach((callback) => {
-        this.socket?.off(topic, callback);
+      callbacks.forEach((wrapped) => {
+        socket.off(topic, wrapped);
       });
       this.subscriptions.delete(topic);
-      console.log(`Unsubscribed all callbacks from topic: ${topic}`);
     }
+
+    // Remove wrapper map for topic (WeakMap cannot be iterated; removing reference is sufficient)
+    this.subscriptionWrappers.delete(topic);
+    console.debug(`Unsubscribed all callbacks from topic: ${topic}`);
   }
 
   /**
@@ -220,7 +265,7 @@ class IOClient {
    * @param data The data to send
    * @param callback Optional acknowledgment callback
    */
-  public publish(topic: string, data?: any, callback?: (response: any) => void): void {
+  public publish(topic: string, data?: unknown, callback?: (response: unknown) => void): void {
     if (!this.socket) {
       console.warn('Socket not initialized. Call connect() first.');
       return;
@@ -231,12 +276,12 @@ class IOClient {
     }
 
     if (callback) {
-      this.socket.emit(topic, data, callback);
+      this.socket.emit(topic, data, callback as (...args: unknown[]) => void);
     } else {
       this.socket.emit(topic, data);
     }
 
-    console.log(`Published to topic: ${topic}`, data);
+    console.debug(`Published to topic: ${topic}`, data);
   }
 
   /**
@@ -246,8 +291,8 @@ class IOClient {
    * @param timeout Optional timeout in milliseconds (default: 5000)
    * @returns Promise that resolves with the server response
    */
-  public async publishWithAck(topic: string, data?: any, timeout: number = 5000): Promise<any> {
-    return new Promise((resolve, reject) => {
+  public publishWithAck<T = unknown>(topic: string, data?: unknown, timeout = 5000): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
       if (!this.socket || !this.socket.connected) {
         reject(new Error('Socket not connected'));
         return;
@@ -257,9 +302,9 @@ class IOClient {
         reject(new Error(`Acknowledgment timeout for topic: ${topic}`));
       }, timeout);
 
-      this.socket.emit(topic, data, (response: any) => {
+      this.socket.emit(topic, data, (response: unknown) => {
         clearTimeout(timer);
-        resolve(response);
+        resolve(response as T);
       });
     });
   }
@@ -285,15 +330,16 @@ class IOClient {
    * @private
    */
   private resubscribeAll(): void {
-    if (!this.socket) return;
+    const socket = this.socket;
+    if (!socket) return;
 
     this.subscriptions.forEach((callbacks, topic) => {
-      callbacks.forEach((callback) => {
-        this.socket?.on(topic, callback);
+      callbacks.forEach((wrapped) => {
+        socket.on(topic, wrapped);
       });
     });
 
-    console.log('Resubscribed to all topics after reconnection');
+    console.debug('Resubscribed to all topics after reconnection');
   }
 
   /**
@@ -308,10 +354,24 @@ class IOClient {
    * Clear all subscriptions
    */
   public clearAllSubscriptions(): void {
+    const socket = this.socket;
+    if (!socket) {
+      // Clear internal maps even when socket is not present
+      this.subscriptions.clear();
+      this.subscriptionWrappers.clear();
+      console.debug('Cleared all subscriptions');
+      return;
+    }
+
     this.subscriptions.forEach((callbacks, topic) => {
-      this.unsubscribeAll(topic);
+      callbacks.forEach((wrapped) => {
+        socket.off(topic, wrapped);
+      });
     });
-    console.log('Cleared all subscriptions');
+
+    this.subscriptions.clear();
+    this.subscriptionWrappers.clear();
+    console.debug('Cleared all subscriptions');
   }
 }
 

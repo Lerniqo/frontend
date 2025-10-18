@@ -181,8 +181,8 @@ export function useSocketPublish() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await ioClient.publishWithAck(event, data, timeout);
-        return response;
+        const response = await ioClient.publishWithAck<T>(event, data, timeout);
+        return response as T;
       } catch (err) {
         setError(err as Error);
         throw err;

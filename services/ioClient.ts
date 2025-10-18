@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { userService } from './userService'
 
 /**
  * Callback function type for socket event listeners
@@ -29,10 +30,13 @@ class IOClient {
   private socket: Socket | null = null;
   private subscriptions: Map<string, Set<SocketCallback>> = new Map();
   private config: SocketConfig = {
-    url: (process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001').concat('realtime-service'),
+    url: process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001',
     options: {
       autoConnect: false,
       reconnection: true,
+      transports: ['polling', 'websocket'],
+      withCredentials: true,
+      path: '/dev/socket.io',
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
       timeout: 20000,

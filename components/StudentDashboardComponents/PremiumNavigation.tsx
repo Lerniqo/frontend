@@ -8,7 +8,6 @@ import {
   Users,
   Trophy,
   Calendar,
-  MessageCircle,
   HelpCircle,
   Sparkles,
   Crown,
@@ -32,6 +31,7 @@ interface NavigationItem {
 interface PremiumNavigationProps {
   activeNav: string;
   onNavChange: (nav: string) => void;
+  onOpenAIQuiz?: () => void;
 }
 
 const navigationItems: NavigationItem[] = [
@@ -67,13 +67,6 @@ const navigationItems: NavigationItem[] = [
     count: 3,
   },
   {
-    icon: MessageCircle,
-    label: "Study Groups",
-    description: "Collaborative learning",
-    gradient: "from-blue-500 via-cyan-500 to-purple-500",
-    count: 24,
-  },
-  {
     icon: HelpCircle,
     label: "AI Quizzes",
     description: "Adaptive testing",
@@ -85,6 +78,7 @@ const navigationItems: NavigationItem[] = [
 const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
   activeNav,
   onNavChange,
+  onOpenAIQuiz,
 }) => {
   const router = useRouter();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
@@ -102,6 +96,8 @@ const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
       router.push("/resource-library");
     } else if (item.label === "Live Sessions") {
       router.push("/sessions");
+    } else if (item.label === "AI Quizzes") {
+      onOpenAIQuiz?.();
     }
   };
 
@@ -179,7 +175,6 @@ const PremiumNavigation: React.FC<PremiumNavigationProps> = ({
     </SpotlightCard>
   );
 };
-
 interface PremiumNavItemProps {
   item: NavigationItem;
   isActive: boolean;

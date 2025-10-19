@@ -38,7 +38,7 @@ export default function ContentManagement() {
             getResources(),
             getParticlesAndTopics(),
           ]);
-
+        // Debug information removed to comply with linting rules
         // Map API response to Question format for UI
         const mappedQuestions: Question[] = questionsFromApi.map(
           (q: QuestionResponse) => {
@@ -54,6 +54,7 @@ export default function ContentManagement() {
               options: q.options,
               correctAnswer: correctAnswerIndex >= 0 ? correctAnswerIndex : 0,
               difficulty: "easy" as "easy" | "medium" | "hard", // Default to easy since API doesn't provide this
+              tags: q.tags || [], // Include tags from API response
             };
           }
         );

@@ -779,10 +779,19 @@ export function getParticlesFromAtom(
 }
 
 // Types for learning path structure
-export interface LearningPathConcept {
-  conceptName: string;
-  conceptId: string;
-  status: "done" | "progressing" | "waiting";
+export interface LearningPathStep {
+  stepNumber: number;
+  title: string;
+  estimatedDuration: string;
+  description: string;
+  prerequisites: string[];
+  resources: string[];
+}
+
+export interface LearningPathConcept extends LearningPathStep {
+  conceptName?: string;
+  conceptId?: string;
+  status?: "done" | "progressing" | "waiting";
 }
 
 /**
@@ -796,56 +805,113 @@ export async function getLearningPath(): Promise<LearningPathConcept[]> {
     // const data = await response.json();
     // return data;
 
-    // Mock data for testing purposes
+    // Mock data for testing purposes - Circle Learning Path
     const mockLearningPath: LearningPathConcept[] = [
       {
-        conceptName: "Linear Equations",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000001",
+        stepNumber: 1,
+        title: "Introduction to Shapes",
+        conceptName: "Introduction to Shapes",
+        conceptId: "circle-step-1",
+        estimatedDuration: "1 day",
+        description:
+          "Learn the basic concept of shapes and their properties. Understand what defines a shape and how it differs from other objects. Focus on identifying different 2D shapes.",
+        prerequisites: [],
+        resources: [
+          "Khan Academy: Introduction to Geometry (basic shapes)",
+          "YouTube: Videos explaining basic shapes for kids",
+        ],
         status: "done",
       },
       {
-        conceptName: "Quadratic Equations",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000002",
+        stepNumber: 2,
+        title: "Defining a Circle: The Basics",
+        conceptName: "Defining a Circle: The Basics",
+        conceptId: "circle-step-2",
+        estimatedDuration: "1 day",
+        description:
+          "Introduce the concept of a circle as a 2D shape. Explain that a circle is a closed shape with all points equidistant from a central point. Use visual aids to demonstrate.",
+        prerequisites: ["Introduction to Shapes"],
+        resources: [
+          "Interactive Geometry Websites: Circle definition and demonstrations",
+          "Simple illustrations of circles and their components",
+        ],
         status: "done",
       },
       {
-        conceptName: "Factorization",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000003",
-        status: "done",
-      },
-      {
-        conceptName: "Pythagorean Theorem",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000004",
+        stepNumber: 3,
+        title: "Key Components of a Circle: Center, Radius, and Diameter",
+        conceptName: "Key Components of a Circle: Center, Radius, and Diameter",
+        conceptId: "circle-step-3",
+        estimatedDuration: "1 day",
+        description:
+          "Explain and define the center, radius, and diameter of a circle. Provide clear diagrams and examples of each component.",
+        prerequisites: ["Defining a Circle: The Basics"],
+        resources: [
+          "Online Geometry Tutorials: Radius and diameter explanations",
+          "Worksheets with circle diagrams for labeling",
+        ],
         status: "progressing",
       },
       {
-        conceptName: "Trigonometric Ratios",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000005",
+        stepNumber: 4,
+        title: "Circumference of a Circle",
+        conceptName: "Circumference of a Circle",
+        conceptId: "circle-step-4",
+        estimatedDuration: "1 day",
+        description:
+          "Introduce the concept of circumference, the distance around a circle. Explain the formula for calculating circumference (C = πd or C = 2πr) without going into complex calculations at this stage.",
+        prerequisites: [
+          "Key Components of a Circle: Center, Radius, and Diameter",
+        ],
+        resources: [
+          "YouTube: Videos explaining circumference",
+          "Simple visual aids showing how to measure the circumference of a circle (e.g., using string)",
+        ],
         status: "waiting",
       },
       {
-        conceptName: "Geometry — Circles",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000006",
+        stepNumber: 5,
+        title: "Practice and Review",
+        conceptName: "Practice and Review",
+        conceptId: "circle-step-5",
+        estimatedDuration: "1 day",
+        description:
+          "Complete practice exercises and quizzes to reinforce understanding. Review all the concepts learned so far.",
+        prerequisites: ["Circumference of a Circle"],
+        resources: [
+          "Online quizzes on circle definitions and components",
+          "Worksheets with different circle-related problems",
+        ],
         status: "waiting",
       },
       {
-        conceptName: "Coordinate Geometry",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000007",
+        stepNumber: 6,
+        title: "Real-World Examples of Circles",
+        conceptName: "Real-World Examples of Circles",
+        conceptId: "circle-step-6",
+        estimatedDuration: "1 day",
+        description:
+          "Identify and discuss real-world examples of circles. This helps solidify understanding and shows the practical application of the concept.",
+        prerequisites: ["Practice and Review"],
+        resources: [
+          "Images and videos showing circles in everyday life (e.g., wheels, plates, clock faces)",
+          "A list of examples for the user to brainstorm",
+        ],
         status: "waiting",
       },
       {
-        conceptName: "Probability",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000008",
-        status: "waiting",
-      },
-      {
-        conceptName: "Statistics (Mean, Median, Mode)",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000009",
-        status: "waiting",
-      },
-      {
-        conceptName: "Inequalities",
-        conceptId: "c1d4f9a0-1a2b-4c3d-8e5f-000000000010",
+        stepNumber: 7,
+        title: "Final Explanation and Self-Assessment",
+        conceptName: "Final Explanation and Self-Assessment",
+        conceptId: "circle-step-7",
+        estimatedDuration: "1 day",
+        description:
+          "Summarize all the key concepts. Practice explaining what a circle is in your own words. Self-assess your understanding.",
+        prerequisites: ["Real-World Examples of Circles"],
+        resources: [
+          "Write down a definition of a circle and its key components in your own words.",
+          "Reflect on what you have learned, and identify any remaining questions.",
+        ],
         status: "waiting",
       },
     ];
@@ -1228,18 +1294,14 @@ export async function getAllQuestionsByTeacher(): Promise<QuestionResponse[]> {
       return [];
     }
 
-    // For other errors, log and throw
-    console.error("Error retrieving teacher questions:", error);
-    console.error("Error details:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      url: error.config?.url,
-    });
-    throw new Error(
-      `Failed to retrieve teacher questions: ${
-        error.response?.data?.message || error.message
-      }`
-    );
+    // // For other errors, log and throw
+    // console.error("Error retrieving teacher questions:", error);
+    // console.error("Error details:", {
+    //   message: error.message,
+    //   response: error.response?.data,
+    //   status: error.response?.status,
+    //   url: error.config?.url,
+    // });
+    return [];
   }
 }

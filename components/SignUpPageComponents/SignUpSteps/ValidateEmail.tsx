@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { userService } from "../../../services/userService";
 import { VerifyEmailSuccessData } from "../../../types/auth.types";
+import { useToast } from "@/components/CommonComponents/ToastContainer";
 
 interface ValidateEmailProps {
   email: string;
@@ -27,6 +28,7 @@ export default function ValidateEmail({
   const formRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   const successRef = useRef<HTMLDivElement>(null);
+  const toast = useToast();
 
   useEffect(() => {
     // Initial animation
@@ -115,29 +117,19 @@ export default function ValidateEmail({
 
     try {
       const result = await userService.resendVerificationCode(email);
-      
+
       if (result.success) {
         // Show success message and reset timer
         setResendTimer(60); // 60 seconds cooldown
-        // Show a temporary success message
-        const successDiv = document.createElement('div');
-        successDiv.className = 'text-green-600 text-sm text-center mt-2';
-        successDiv.textContent = 'New verification code sent!';
-        
-        const form = formRef.current;
-        if (form) {
-          form.appendChild(successDiv);
-          setTimeout(() => {
-            if (form.contains(successDiv)) {
-              form.removeChild(successDiv);
-            }
-          }, 3000);
-        }
+        toast.success("New verification code sent to your email!");
       } else {
         setError(result.message || "Failed to resend verification code");
+        toast.error(result.message || "Failed to resend verification code");
       }
     } catch (_error: unknown) {
-      setError("Network error. Please try again.");
+      const errorMsg = "Network error. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setIsResending(false);
     }

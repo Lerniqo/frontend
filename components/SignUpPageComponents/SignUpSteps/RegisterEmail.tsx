@@ -133,7 +133,9 @@ export default function RegisterEmail({
 
   // Handle input changes
   const handleInputChange = (field: string, value: string) => {
-    const newFormData = { ...formData, [field]: value };
+    // Convert email to lowercase
+    const processedValue = field === "email" ? value.toLowerCase() : value;
+    const newFormData = { ...formData, [field]: processedValue };
     setFormData(newFormData);
 
     // Calculate password strength for password field

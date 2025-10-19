@@ -97,6 +97,7 @@ export default function QuestionBankManager({
     null
   );
   const [isAddingQuestion, setIsAddingQuestion] = useState(false);
+  const [isSubmittingQuestion, setIsSubmittingQuestion] = useState(false);
   const [formData, setFormData] = useState({
     subject: "",
     question: "",
@@ -107,6 +108,26 @@ export default function QuestionBankManager({
     correctAnswer: 0,
     difficulty: "easy" as "easy" | "medium" | "hard",
   });
+
+  // Helper function to resolve tag IDs to their names
+  const resolveTagNames = (tagIds: string[] | undefined): string[] => {
+    if (!tagIds || tagIds.length === 0) return [];
+
+    return tagIds
+      .map((tagId) => {
+        // Search in particles
+        const particle = particles?.find((p) => p.conceptId === tagId);
+        if (particle) return particle.name;
+
+        // Search in topics
+        const topic = topics?.find((t) => t.conceptId === tagId);
+        if (topic) return topic.name;
+
+        // If not found, return the ID itself as fallback
+        return tagId;
+      })
+      .filter((name) => name !== undefined);
+  };
 
   const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,6 +217,7 @@ export default function QuestionBankManager({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAddQuestionSave = async (newQuestion: any) => {
     try {
+      setIsSubmittingQuestion(true);
       // Map selected particles and topics to tags array (conceptIds)
       const tags = [
         ...(newQuestion.particles || []),
@@ -215,20 +237,26 @@ export default function QuestionBankManager({
       const result = await createQuestion(questionData);
 
       // Map the API response to the local Question type for UI display
+      // Ensure options is always an array
       const mappedQuestion: Question = {
         id: result.id,
         subject: newQuestion.topic || "General",
         question: result.questionText,
-        options: result.options,
+        options: Array.isArray(result.options)
+          ? result.options
+          : newQuestion.options || [],
         correctAnswer: newQuestion.correctAnswer, // Keep as index for UI
         difficulty: newQuestion.difficulty || "easy",
+        tags: result.tags || tags,
       };
 
       setQuestions([...questions, mappedQuestion]);
       setIsAddingQuestion(false);
+      setIsSubmittingQuestion(false);
     } catch (error) {
       console.error("Error adding question:", error);
       alert("Failed to add question. Please try again.");
+      setIsSubmittingQuestion(false);
     }
   };
 
@@ -309,50 +337,51 @@ export default function QuestionBankManager({
           </div>
         </div>
         <div className="mt-5 space-y-3">
-          {question.options.map((option: string, index: number) => (
-            <div
-              key={index}
-              className={`px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
-                index === question.correctAnswer
-                  ? "bg-green-50 text-green-800 font-semibold border-l-4 border-green-500 shadow-sm"
-                  : "bg-gray-50 text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <div className="flex items-center">
-                <span
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${
-                    index === question.correctAnswer
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-300 text-gray-600"
-                  }`}
-                >
-                  {String.fromCharCode(65 + index)}
-                </span>
-                {option}
-                {index === question.correctAnswer && (
-                  <svg
-                    className="w-4 h-4 text-green-600 ml-auto"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+          {question.options && Array.isArray(question.options) ? (
+            question.options.map((option: string, index: number) => (
+              <div
+                key={index}
+                className={`px-4 py-3 rounded-lg text-sm transition-all duration-200 ${
+                  index === question.correctAnswer
+                    ? "bg-green-50 text-green-800 font-semibold border-l-4 border-green-500 shadow-sm"
+                    : "bg-gray-50 text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <div className="flex items-center">
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${
+                      index === question.correctAnswer
+                        ? "bg-green-500 text-white"
+                        : "bg-gray-300 text-gray-600"
+                    }`}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
+                    {String.fromCharCode(65 + index)}
+                  </span>
+                  {option}
+                  {index === question.correctAnswer && (
+                    <svg
+                      className="w-4 h-4 text-green-600 ml-auto"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No options available</p>
+          )}
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <span className="px-3 py-1.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
-              {question.topic || question.subject}
-            </span>
             <span
               className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
                 difficultyColors[question.difficulty]
@@ -365,6 +394,18 @@ export default function QuestionBankManager({
             ID: {question.id?.slice(-6)}
           </div>
         </div>
+        {question.tags && question.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {resolveTagNames(question.tags).map((tagName, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 border border-purple-200"
+              >
+                #{tagName}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     );
   };
@@ -375,6 +416,7 @@ export default function QuestionBankManager({
     onSave,
     onCancel,
     isNew = false,
+    isSubmitting = false,
   }: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     question: any;
@@ -382,16 +424,45 @@ export default function QuestionBankManager({
     onSave: (q: any) => void;
     onCancel: () => void;
     isNew?: boolean;
+    isSubmitting?: boolean;
   }) => {
+    // Helper function to separate tags into particles and topics
+    const separateTagsByType = (
+      tags: string[] | undefined
+    ): { particles: string[]; topics: string[] } => {
+      if (!tags || tags.length === 0) return { particles: [], topics: [] };
+
+      const particles_list: string[] = [];
+      const topics_list: string[] = [];
+
+      tags.forEach((tagId) => {
+        // Check if tag is in particles
+        if (particles?.find((p) => p.conceptId === tagId)) {
+          particles_list.push(tagId);
+        }
+        // Check if tag is in topics
+        else if (topics?.find((t) => t.conceptId === tagId)) {
+          topics_list.push(tagId);
+        }
+      });
+
+      return { particles: particles_list, topics: topics_list };
+    };
+
+    // Initialize particles and topics from question tags
+    const initialTags = separateTagsByType(
+      question.tags || question.particles || []
+    );
+
     const [editedQuestion, setEditedQuestion] = useState(question);
     const [mappingType, setMappingType] = useState<"particle" | "topic">(
       "particle"
     );
     const [selectedParticles, setSelectedParticles] = useState<string[]>(
-      question.particles || []
+      question.particles || initialTags.particles
     );
     const [selectedTopics, setSelectedTopics] = useState<string[]>(
-      question.topics || []
+      question.topics || initialTags.topics
     );
     const [particleSearch, setParticleSearch] = useState("");
     const [topicSearch, setTopicSearch] = useState("");
@@ -705,15 +776,53 @@ export default function QuestionBankManager({
         <div className="flex justify-end space-x-4 pt-4 border-t border-purple-200">
           <button
             onClick={onCancel}
-            className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 hover:scale-105 border border-gray-300"
+            disabled={isSubmitting}
+            className={`px-6 py-3 text-sm font-medium rounded-xl transition-all duration-200 border ${
+              isSubmitting
+                ? "text-gray-500 bg-gray-100 cursor-not-allowed opacity-50 border-gray-300"
+                : "text-gray-700 bg-gray-100 hover:bg-gray-200 hover:scale-105 border-gray-300"
+            }`}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-xl transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg"
+            disabled={isSubmitting}
+            className={`px-6 py-3 text-sm font-medium rounded-xl transition-all duration-200 shadow-md ${
+              isSubmitting
+                ? "bg-gradient-to-r from-purple-400 to-purple-500 text-white cursor-not-allowed opacity-70 hover:shadow-md"
+                : "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 hover:scale-105 hover:shadow-lg"
+            }`}
           >
-            {isNew ? "Add Question" : "Save Changes"}
+            {isSubmitting ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 mr-2 inline"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                {isNew ? "Adding..." : "Saving..."}
+              </>
+            ) : isNew ? (
+              "Add Question"
+            ) : (
+              "Save Changes"
+            )}
           </button>
         </div>
       </div>
@@ -740,10 +849,43 @@ export default function QuestionBankManager({
             setIsAddingQuestion(true);
             setEditingQuestionId(null);
           }}
-          className="flex items-center justify-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+          disabled={isSubmittingQuestion || isAddingQuestion}
+          className={`flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-all duration-200 shadow-sm ${
+            isSubmittingQuestion || isAddingQuestion
+              ? "bg-purple-400 text-white cursor-not-allowed opacity-70"
+              : "bg-purple-600 text-white hover:bg-purple-700 hover:shadow-md hover:-translate-y-0.5"
+          }`}
         >
-          <PlusIcon className="h-5 w-5 mr-2" />
-          Add New
+          {isSubmittingQuestion ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Submitting...
+            </>
+          ) : (
+            <>
+              <PlusIcon className="h-5 w-5 mr-2" />
+              Add New
+            </>
+          )}
         </button>
       </div>
 
@@ -760,6 +902,7 @@ export default function QuestionBankManager({
             onSave={handleAddQuestionSave}
             onCancel={handleCancelEdit}
             isNew={true}
+            isSubmitting={isSubmittingQuestion}
           />
         </div>
       )}
@@ -814,6 +957,7 @@ export default function QuestionBankManager({
                   question={q}
                   onSave={handleSaveQuestion}
                   onCancel={handleCancelEdit}
+                  isSubmitting={isSubmittingQuestion}
                 />
               ) : (
                 <QuestionCard

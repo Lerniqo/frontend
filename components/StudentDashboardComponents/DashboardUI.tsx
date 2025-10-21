@@ -34,7 +34,6 @@ import AIQuizModal from "@/components/CommonComponents/AIQuizModal";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const router = useRouter();
-  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeNav, setActiveNav] = useState("dashboard");

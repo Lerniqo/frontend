@@ -19,6 +19,7 @@ import SubMenu from "./SubMenu";
 import SharedNavigation from "./SharedNavigation";
 import TeacherFooter from "./TeacherFooter";
 import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ContentManagement() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -28,6 +29,7 @@ export default function ContentManagement() {
   const [loading, setLoading] = useState(true);
   const [activeContentSubsection, setActiveContentSubsection] =
     useState("questions");
+  const { logout } = useAuth();
 
   useEffect(() => {
     const loadData = async () => {
@@ -96,12 +98,7 @@ export default function ContentManagement() {
   return (
     <div className="min-h-screen bg-white relative overflow-hidden flex flex-col">
       {/* Navigation */}
-      <SharedNavigation
-        onLogout={() => {
-          // Handle logout logic here
-          console.warn("Logout functionality not implemented");
-        }}
-      />
+      <SharedNavigation onLogout={logout} />
 
       <section className="relative z-10 py-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">

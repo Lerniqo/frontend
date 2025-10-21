@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import userService from "@/services/userService";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Search,
   Trophy,
@@ -34,6 +34,7 @@ import AIQuizModal from "@/components/CommonComponents/AIQuizModal";
 
 export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   const router = useRouter();
+  const { logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeNav, setActiveNav] = useState("dashboard");
@@ -547,6 +548,7 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
   { isOpen: boolean; setIsOpen: (open: boolean) => void }
 >(({ isOpen, setIsOpen }, ref) => {
   const router = useRouter();
+  const { logout } = useAuth();
 
   const menuItems = [
     {
@@ -577,14 +579,7 @@ const PremiumUserAvatarWithPopup = React.forwardRef<
 
   const handleClick = async (item: (typeof menuItems)[0]) => {
     if (item.label === "Sign Out") {
-      try {
-        await userService.logout();
-        router.push("/login");
-      } catch (error) {
-        console.error("Logout error:", error);
-        // Even if logout fails, redirect to login
-        router.push("/login");
-      }
+      await logout();
     } else if (item.url) {
       router.push(item.url);
     }

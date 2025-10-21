@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import React, { useState, useEffect, useRef } from "react";
 import { BarChart3, Bell, User, Settings, LogOut } from "lucide-react";
 import AdminFooter from "@/components/AdminDashboard/AdminFooter";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showNotificationPopup, setShowNotificationPopup] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const { logout } = useAuth();
 
   const notificationRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -105,7 +107,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
     setShowMobileMenu(false);
   };
 
-  const handleProfileAction = (action: string) => {
+  const handleProfileAction = async (action: string) => {
     setShowProfileDropdown(false);
     switch (action) {
       case "profile":
@@ -118,8 +120,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         router.push("/settings");
         break;
       case "logout":
-        // Handle logout logic here
-        console.warn("Logging out...");
+        await logout();
         break;
       default:
         break;

@@ -60,7 +60,6 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       label: "Resource Library",
       path: "/resource-library",
     },
-    { id: "analytics", label: "Analytics", path: "/analytics" },
   ];
 
   // Sample notification data
@@ -92,15 +91,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       read: false,
       color: "yellow",
     },
-    {
-      id: 4,
-      type: "analytics",
-      title: "Weekly report ready",
-      message: "Your weekly analytics report is ready for review",
-      time: "1 day ago",
-      read: true,
-      color: "purple",
-    },
+
   ];
 
   const unreadCount = notifications.filter((n) => !n.read).length;

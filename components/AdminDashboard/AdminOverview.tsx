@@ -1,23 +1,44 @@
 "use client";
 
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { getAllUsers, getTeachersList } from "@/services/userService";
 import {
   Users,
-  BarChart3,
-  CheckCircle,
   UserCheck,
-  FileText,
-  Globe,
-  Shield,
+  CheckCircle,
   Clock,
 } from "lucide-react";
 
 
+interface Teacher {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: string;
+  isVerified: boolean;
+  isProfileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Student {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: string;
+  isVerified: boolean;
+  isProfileCompleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const AdminOverview = () => {
 
  const [totalUsers, setTotalUsers] = useState<number | null>(null);
+ const [teachers, setTeachers] = useState<Teacher[]>([]);
+ const [students, setStudents] = useState<Student[]>([]);
+ const [loadingTeachers, setLoadingTeachers] = useState(true);
+ const [loadingStudents, setLoadingStudents] = useState(true);
 
  useEffect(() => {
    const fetchTotalUsers = async () => {
@@ -37,10 +58,13 @@ const AdminOverview = () => {
   useEffect(() => {
     const fetchActiveTeachers = async () => {
       try {
-        const teachers = await getTeachersList();
-        setActiveTeachers(teachers.length);
+        const teachersList = await getTeachersList();
+        setTeachers(teachersList);
+        setActiveTeachers(teachersList.length);
+        setLoadingTeachers(false);
       } catch (error) {
         console.error("Error fetching active teachers:", error);
+        setLoadingTeachers(false);
       }
     };
 
@@ -53,16 +77,18 @@ const AdminOverview = () => {
     const fetchActiveStudents = async () => {
       try {
         const users = await getAllUsers();  
-        const students = users.filter((user) => user.role === "Student");
-        setActiveStudents(students.length);
+        const studentsList = users.filter((user) => user.role === "Student");
+        setStudents(studentsList);
+        setActiveStudents(studentsList.length);
+        setLoadingStudents(false);
       } catch (error) {
         console.error("Error fetching active students:", error);
+        setLoadingStudents(false);
       }     
     };
 
     fetchActiveStudents();
-  }
-, []);
+  }, []);
 
   const stats = [
     {
@@ -133,172 +159,91 @@ const AdminOverview = () => {
         })}
       </div>
 
-      {/* Quick Actions */}
-      <div
-        className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 hover:shadow-lg transition-all duration-300 animate-fade-in-up"
-        style={{ animationDelay: "600ms" }}
-      >
-        <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Quick Actions
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: Shield,
-              label: "Review Teacher Applications",
-              color: "from-blue-500 to-blue-600",
-              href: "/user-management", // <-- target route
-            },
-            {
-              icon: FileText,
-              label: "Moderate Content",
-              color: "from-purple-600 to-purple-700",
-              href: "/content", // <-- target route
-            },
-            {
-              icon: Globe,
-              label: "Update Knowledge Graph",
-              color: "from-indigo-500 to-indigo-600",
-              href: "/knowledge-graph", // <-- target route
-            },
-          ].map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <Link key={index} href={action.href}>
-                <div
-                  className={`group relative flex items-center space-x-4 p-6 bg-gradient-to-r ${action.color} text-white rounded-xl hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl overflow-hidden cursor-pointer`}
-                >
-                  <div className="relative z-10 flex items-center space-x-4">
-                    <IconComponent className="w-6 h-6" />
-                    <span className="font-semibold">{action.label}</span>
-                  </div>
-                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Recent Platform Activity */}
+      {/* Teachers and Students Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Teachers Section */}
+        <div
+          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-fade-in-up"
+          style={{ animationDelay: "600ms" }}
+        >
+          <h3 className="text-xl font-bold text-gray-900 mb-6">
+            Teachers ({teachers.length})
+          </h3>
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {loadingTeachers ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-gray-500">Loading teachers...</p>
+              </div>
+            ) : teachers.length > 0 ? (
+              teachers.map((teacher) => (
+                <div
+                  key={teacher.userId}
+                  className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-blue-50 transition-all duration-300"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <UserCheck className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900 font-medium truncate">
+                      {teacher.fullName || "N/A"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {teacher.email}
+                    </p>
+                  </div>
+                  {teacher.isVerified && (
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-gray-500">No teachers found</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Students Section */}
         <div
           className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-fade-in-up"
           style={{ animationDelay: "750ms" }}
         >
           <h3 className="text-xl font-bold text-gray-900 mb-6">
-            Recent Activity
+            Students ({students.length})
           </h3>
-          <div className="space-y-4">
-            {[
-              {
-                type: "user",
-                message: "New teacher application from Dr. Sarah Johnson",
-                time: "5 min ago",
-                icon: UserCheck,
-                color: "text-blue-500",
-              },
-              {
-                type: "content",
-                message: "Content approved: Advanced Calculus",
-                time: "1 hour ago",
-                icon: CheckCircle,
-                color: "text-green-500",
-              },
-              {
-                type: "analytics",
-                message: "Weekly analytics report generated",
-                time: "2 hours ago",
-                icon: BarChart3,
-                color: "text-purple-500",
-              },
-              {
-                type: "system",
-                message: "Knowledge graph updated",
-                time: "4 hours ago",
-                icon: Globe,
-                color: "text-indigo-500",
-              },
-            ].map((activity, index) => {
-              const IconComponent = activity.icon;
-              return (
-                <div
-                  key={index}
-                  className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-gray-100 transition-all duration-300"
-                >
-                  <IconComponent className={`w-5 h-5 ${activity.color}`} />
-                  <div className="flex-1">
-                    <p className="text-sm text-gray-900 font-medium">
-                      {activity.message}
-                    </p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* System Health Overview */}
-        <div
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 animate-fade-in-up"
-          style={{ animationDelay: "900ms" }}
-        >
-          <h3 className="text-xl font-bold text-gray-900 mb-6">
-            System Health
-          </h3>
-          <div className="space-y-4">
-            {[
-              {
-                label: "Server Uptime",
-                value: "99.9%",
-                color: "text-green-600",
-              },
-              {
-                label: "Response Time",
-                value: "145ms",
-                color: "text-blue-600",
-              },
-              {
-                label: "Active Sessions",
-                value: "1,789",
-                color: "text-purple-600",
-              },
-              { label: "Error Rate", value: "0.01%", color: "text-orange-600" },
-            ].map((metric, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100"
-              >
-                <span className="text-gray-600 font-medium">
-                  {metric.label}
-                </span>
-                <span className={`font-bold text-lg ${metric.color}`}>
-                  {metric.value}
-                </span>
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {loadingStudents ? (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-gray-500">Loading students...</p>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h4 className="text-lg font-semibold text-gray-900 mb-4">
-              Today&apos;s Stats
-            </h4>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: "New Users", value: "34" },
-                { label: "Content Uploads", value: "12" },
-                { label: "Support Tickets", value: "8" },
-                { label: "Revenue", value: "$1,234" },
-              ].map((stat, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">
-                    {stat.value}
+            ) : students.length > 0 ? (
+              students.map((student) => (
+                <div
+                  key={student.userId}
+                  className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl border border-gray-100 hover:bg-purple-50 transition-all duration-300"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Users className="w-5 h-5 text-white" />
                   </div>
-                  <div className="text-xs text-gray-500">{stat.label}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-900 font-medium truncate">
+                      {student.fullName || "N/A"}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {student.email}
+                    </p>
+                  </div>
+                  {student.isVerified && (
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                  )}
                 </div>
-              ))}
-            </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <p className="text-gray-500">No students found</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

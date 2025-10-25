@@ -32,8 +32,10 @@ import WebinarManager from "./WebinarManager";
 import ContestManager from "./ContestManager";
 import SubMenu from "./SubMenu";
 import GeneralLoadingComponent from "../CommonComponents/GeneralLoadingComponent";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function TeacherDashboard() {
+  const { logout } = useAuth();
   const [activeSection, setActiveSection] = useState("overview");
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -672,10 +674,7 @@ export default function TeacherDashboard() {
           onSectionChange={setActiveSection}
           notifications={notifications}
           setNotifications={setNotifications}
-          onLogout={() => {
-            // Handle logout logic here
-            // You can add actual logout logic like clearing tokens, redirecting, etc.
-          }}
+          onLogout={logout}
           showNotificationPopup={showNotificationPopup}
           showProfileDropdown={showProfileDropdown}
           setShowNotificationPopup={setShowNotificationPopup}

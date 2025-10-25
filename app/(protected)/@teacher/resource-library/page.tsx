@@ -4,8 +4,10 @@ import React from "react";
 import ResourceLibrary from "@/components/ResourceLibrary/ResourceLibrary";
 import SharedNavigation from "@/components/TeacherDashboard/SharedNavigation";
 import TeacherFooter from "@/components/TeacherDashboard/TeacherFooter";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ResourceLibraryPage() {
+  const { logout } = useAuth();
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-purple-50 relative overflow-hidden flex flex-col">
       {/* Subtle grid pattern */}
@@ -17,12 +19,7 @@ export default function ResourceLibraryPage() {
       ></div>
 
       {/* Navigation */}
-      <SharedNavigation
-        onLogout={() => {
-          // Handle logout logic here
-          console.warn("Logout functionality not implemented");
-        }}
-      />
+      <SharedNavigation onLogout={logout} />
 
       {/* Main content */}
       <main>

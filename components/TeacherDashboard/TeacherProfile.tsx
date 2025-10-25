@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import SharedNavigation from './SharedNavigation';
 import TeacherFooter from './TeacherFooter';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function TeacherProfile() {
+  const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: 'John',
@@ -49,12 +51,7 @@ export default function TeacherProfile() {
       }}></div>
 
       {/* Navigation */}
-      <SharedNavigation
-        onLogout={() => {
-          // Handle logout logic here
-          console.warn('Logout functionality not implemented');
-        }}
-      />
+      <SharedNavigation onLogout={logout} />
 
       <section className="relative z-10 py-16">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">

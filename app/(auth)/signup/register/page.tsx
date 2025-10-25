@@ -19,17 +19,17 @@ function RegisterPageContent() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
+
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || '';
+  const role = searchParams.get("role") || "";
   const trackEvent = useTracker();
 
   useEffect(() => {
     // Validate role parameter
-    if (!role || (role !== 'student' && role !== 'teacher')) {
-      router.push('/signup');
+    if (!role || (role !== "student" && role !== "teacher")) {
+      router.push("/signup");
       return;
     }
 
@@ -61,7 +61,7 @@ function RegisterPageContent() {
 
     try {
       const result = await userService.basicRegister({
-        email: formData.email,
+        email: formData.email.toLowerCase(), // Convert email to lowercase
         password: formData.password,
         role: role as "Student" | "Teacher",
       });
@@ -71,20 +71,24 @@ function RegisterPageContent() {
         await trackEvent<SignupEventData>({
           type: TrackingEventType.SIGNUP,
           data: {
-            userRole: role as 'Student' | 'Teacher',
+            userRole: role as "Student" | "Teacher",
             isSuccessful: true,
             completedProfile: false, // Profile completion happens in next step
           },
         });
 
         // Redirect to email verification with email parameter
-        router.push(`/signup/verify-email?email=${encodeURIComponent(formData.email)}&role=${encodeURIComponent(role)}`);
+        router.push(
+          `/signup/verify-email?email=${encodeURIComponent(
+            formData.email.toLowerCase()
+          )}&role=${encodeURIComponent(role)}`
+        );
       } else {
         // Track failed signup
         await trackEvent<SignupEventData>({
           type: TrackingEventType.SIGNUP,
           data: {
-            userRole: role as 'Student' | 'Teacher',
+            userRole: role as "Student" | "Teacher",
             isSuccessful: false,
             completedProfile: false,
           },
@@ -93,13 +97,14 @@ function RegisterPageContent() {
         setError(result.message || "Registration failed");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
-      
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+
       // Track failed signup
       await trackEvent<SignupEventData>({
         type: TrackingEventType.SIGNUP,
         data: {
-          userRole: role as 'Student' | 'Teacher',
+          userRole: role as "Student" | "Teacher",
           isSuccessful: false,
           completedProfile: false,
         },
@@ -112,7 +117,7 @@ function RegisterPageContent() {
   };
 
   const handleBack = () => {
-    router.push('/signup');
+    router.push("/signup");
   };
 
   return (
@@ -130,7 +135,10 @@ function RegisterPageContent() {
                 Create Your Account
               </h1>
               <p className="text-gray-600">
-                Register as a <span className="capitalize font-semibold text-blue-600">{role}</span>
+                Register as a{" "}
+                <span className="capitalize font-semibold text-blue-600">
+                  {role}
+                </span>
               </p>
             </div>
           </div>
@@ -158,21 +166,19 @@ function RegisterPageContent() {
               >
                 ← Back
               </button>
-              
-              <div className="text-sm text-gray-500">
-                Step 1 of 3
-              </div>
-              
+
+              <div className="text-sm text-gray-500">Step 1 of 3</div>
+
               <button
                 onClick={handleRegister}
                 disabled={!isValid || loading}
                 className={`px-6 py-3 font-medium rounded-lg transition-all duration-200 transform ${
                   isValid && !loading
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
                 }`}
               >
-                {loading ? 'Creating Account...' : 'Create Account →'}
+                {loading ? "Creating Account..." : "Create Account →"}
               </button>
             </div>
           </div>

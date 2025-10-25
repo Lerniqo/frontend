@@ -69,6 +69,7 @@ const basicRegister = async (
   try {
     const apiData = {
       ...data,
+      email: data.email.toLowerCase(), // Convert email to lowercase
       role: data.role.charAt(0).toUpperCase() + data.role.slice(1),
     };
 
@@ -87,7 +88,6 @@ const basicRegister = async (
   } catch (error: any) {
     const errorMessage =
       error.response?.data?.message || error.message || "Registration failed";
-    alert(`Registration Error: ${errorMessage}`);
 
     return {
       success: false,
@@ -105,7 +105,7 @@ const verifyEmail = async (
   email: string
 ): Promise<ApiResponse<VerifyEmailSuccessData>> => {
   try {
-    const payload: VerifyEmailData = { code, email };
+    const payload: VerifyEmailData = { code, email: email.toLowerCase() }; // Convert email to lowercase
 
     // The API returns a direct response format: {message, userId, role}
     const response = await apiClient.post<VerifyEmailResponse>(
@@ -152,7 +152,9 @@ const resendVerificationCode = async (email: string): Promise<ApiResponse> => {
     const response = await apiClient.post<{
       success: boolean;
       message: string;
-    }>("/user-service/users/resend-verification", { email });
+    }>("/user-service/users/resend-verification", {
+      email: email.toLowerCase(),
+    }); // Convert email to lowercase
 
     return {
       success: response.data.success,
@@ -174,8 +176,6 @@ export const getAllUsers = async (): Promise<User[]> => {
   const response = await apiClient.get("/user-service/users");
   return response.data.data.users; // returns array of users
 };
-
-
 
 // Fetch only teachers (for internal use)
 export const getTeachersList = async (): Promise<User[]> => {
@@ -347,7 +347,10 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
   try {
     const response = await apiClient.post(
       "/user-service/users/login",
-      data,
+      {
+        email: data.email.toLowerCase(), // Convert email to lowercase
+        password: data.password,
+      },
       { withCredentials: true } // Important for HTTP-only refresh token cookies
     );
 
@@ -378,16 +381,35 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
     }
   } catch (error: any) {
     console.error("❌ Login failed:", error);
+
+    // Extract error message and handle specific scenarios
+    const errorMessage =
+      error.response?.data?.message || error.message || "Login failed";
+    const errorResponse = error.response?.data;
+
+    // Return error with additional data for special cases
     return {
       success: false,
-      message: error.response?.data?.message || error.message || "Login failed",
+      message: errorMessage,
       error: error.response?.data?.error || error.message || "Unknown error",
+      data: errorResponse?.userId
+        ? ({
+            user: {
+              userId: errorResponse.userId,
+              email: data.email.toLowerCase(),
+              role: errorResponse.role || "Student",
+              fullName: "",
+              isVerified: errorResponse.profileCompleted !== false,
+              isProfileCompleted: errorResponse.profileCompleted === true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            accessToken: "",
+          } as AuthResponse)
+        : undefined,
     };
   }
 };
-
-
-
 
 /**
  * Get current user profile

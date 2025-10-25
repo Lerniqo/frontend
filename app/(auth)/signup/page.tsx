@@ -51,15 +51,16 @@ export default function SignUpPage() {
   };
 
   const handleSelectRole = (selectedRole: string) => {
-    // Only allow student and teacher roles
-    if (selectedRole.toLowerCase() !== 'student' && selectedRole.toLowerCase() !== 'teacher') {
-      alert('Only students and teachers can register. Admin accounts are created by administrators.');
-      return;
+    // Only allow student and teacher roles (admin option should not be shown in UI)
+    const normalizedRole = selectedRole.toLowerCase();
+
+    if (normalizedRole !== "student" && normalizedRole !== "teacher") {
+      return; // Silently ignore invalid roles
     }
-    
+
     setUserType(selectedRole);
     // Redirect to registration page with role parameter
-    router.push(`/signup/register?role=${encodeURIComponent(selectedRole.toLowerCase())}`);
+    router.push(`/signup/register?role=${encodeURIComponent(normalizedRole)}`);
   };
 
   const _handleNextStep = () => {
@@ -110,11 +111,11 @@ export default function SignUpPage() {
           >
             ← Back
           </button>
-          
+
           <div className="text-sm text-gray-500">
             Step {currentStep + 1} of 2
           </div>
-          
+
           {userType && (
             <button
               onClick={() => handleSelectRole(userType)}

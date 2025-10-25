@@ -1,10 +1,10 @@
 import { IOClient } from '@/services/ioClient'
-import React from 'react'
+import userService from '@/services/userService';
+import React, { useEffect } from 'react'
 
 const useIOClient = () => {
-  const ioClient = React.useMemo(() => IOClient.getInstance(), [])
-
-  return ioClient
+  const instance = IOClient.getInstance();
+  return instance;
 }
 
-export default useIOClient
+export default useIOClient;

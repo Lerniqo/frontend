@@ -104,6 +104,7 @@ const DualMatchArena: React.FC = () => {
   const [matchId, setMatchId] = useState<string | null>(null);
   const [isPlayerA, setIsPlayerA] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
   // Enforce human-only matchmaking by default and track bot rejections
   const searchStartRef = useRef<number | null>(null);
   const botRejectionsRef = useRef<number>(0);
@@ -111,9 +112,56 @@ const DualMatchArena: React.FC = () => {
   // Only the current value is used — remove the unused setter to satisfy lint rules
   const [requireHuman] = useState<boolean>(true);
 
-  // Initialize socket connection and join matchmaking
+  // Initialize socket connection first
   useEffect(() => {
-    if (gameState !== 'searching') return;
+    let isSubscribed = true;
+
+    const connectSocket = async () => {
+      try {
+        // Get JWT token for authentication
+        const token = userService.getToken();
+        if (!token) {
+          if (isSubscribed) {
+            setError('No authentication token found. Please log in.');
+            console.error('No authentication token found');
+          }
+          return;
+        }
+
+        if (!IOClient.isConnected()) {
+          await IOClient.connect({
+            options: {
+              auth: { token }
+            }
+          });
+          if (isSubscribed) {
+            setIsSocketConnected(true);
+            console.warn('Socket connected successfully');
+          }
+        } else {
+          if (isSubscribed) {
+            setIsSocketConnected(true);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to connect socket:', error);
+        if (isSubscribed) {
+          setIsSocketConnected(false);
+          setError('Failed to connect to matchmaking service');
+        }
+      }
+    };
+
+    connectSocket();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [IOClient]);
+
+  // Initialize matchmaking after socket is connected
+  useEffect(() => {
+    if (gameState !== 'searching' || !isSocketConnected) return;
 
     let unsubscribeMatchFound: (() => void) | null = null;
     let unsubscribeError: (() => void) | null = null;
@@ -121,21 +169,6 @@ const DualMatchArena: React.FC = () => {
 
     const initializeMatchmaking = async () => {
       try {
-        // Get JWT token for authentication
-        const token = userService.getToken();
-        if (!token) {
-          setError('No authentication token found. Please log in.');
-          console.error('No authentication token found');
-          return;
-        }
-
-        // Connect with authentication
-        await IOClient.connect({
-          options: {
-            auth: { token }
-          }
-        });
-
         // Use warn to keep logs allowed by eslint configuration (warn/error are permitted)
         console.warn('Socket connected, joining matchmaking...');
 
@@ -174,10 +207,16 @@ const DualMatchArena: React.FC = () => {
             console.warn('Detected bot opponent while in human-only mode — rejecting and re-queuing.', data);
             botRejectionsRef.current += 1;
 
-            if (data?.matchId) {
-              IOClient.publish('match:leave', { matchId: data.matchId });
-            } else {
-              IOClient.publish('matchmaking:leave', { userId: user?.userId });
+            if (isSocketConnected) {
+              try {
+                if (data?.matchId) {
+                  IOClient.publish('match:leave', { matchId: data.matchId });
+                } else {
+                  IOClient.publish('matchmaking:leave', { userId: user?.userId });
+                }
+              } catch (error) {
+                console.error('Error rejecting bot match:', error);
+              }
             }
 
             // Reset visual progress and keep searching unless we've hit the safety cap
@@ -189,12 +228,14 @@ const DualMatchArena: React.FC = () => {
 
             // Re-join the queue after a short delay
             setTimeout(() => {
-              searchStartRef.current = Date.now();
-              IOClient.publish('matchmaking:join', {
-                userId: user?.userId,
-                gameType: '1v1_rapid_quiz',
-                requireHuman: requireHuman
-              });
+              if (isSocketConnected) {
+                searchStartRef.current = Date.now();
+                IOClient.publish('matchmaking:join', {
+                  userId: user?.userId,
+                  gameType: '1v1_rapid_quiz',
+                  requireHuman: requireHuman
+                });
+              }
             }, 1200);
 
             return;
@@ -261,7 +302,7 @@ const DualMatchArena: React.FC = () => {
          clearInterval(searchProgressInterval);
        }
      };
-   }, [IOClient, user, gameState, soundEnabled, requireHuman]);
+   }, [IOClient, user, gameState, soundEnabled, requireHuman, isSocketConnected]);
 
    // Function definitions
    const endGame = useCallback(() => {
@@ -411,30 +452,36 @@ const DualMatchArena: React.FC = () => {
    }, [gameState, questionTimeLeft, handleNextQuestion, soundEnabled]);
 
    const handleAnswerSelect = (answerIndex: number) => {
-     if (selectedAnswer !== null || !matchId) return;
+     if (selectedAnswer !== null || !matchId || !isSocketConnected) return;
      
      setSelectedAnswer(answerIndex);
      const currentQuestion = questions[currentQuestionIndex];
      const selectedOption = currentQuestion.options[answerIndex];
      
      // Submit answer to backend
-     IOClient.publish('match:submitAnswer', {
-       matchId: matchId,
-       questionId: currentQuestion.id,
-       answer: selectedOption,
-       timer: questionTimeLeft
-     });
+     try {
+       IOClient.publish('match:submitAnswer', {
+         matchId: matchId,
+         questionId: currentQuestion.id,
+         answer: selectedOption,
+         timer: questionTimeLeft
+       });
 
-     // Show feedback animation
-     setShowParticles(true);
-     if (soundEnabled) gameSounds.correctAnswer();
-     
-     // The backend will send match:stateUpdate with updated scores
-     // Move to next question after delay
-     setTimeout(() => {
-       handleNextQuestion();
-       setShowParticles(false);
-     }, 2000);
+       // Show feedback animation
+       setShowParticles(true);
+       if (soundEnabled) gameSounds.correctAnswer();
+       
+       // The backend will send match:stateUpdate with updated scores
+       // Move to next question after delay
+       setTimeout(() => {
+         handleNextQuestion();
+         setShowParticles(false);
+       }, 2000);
+     } catch (error) {
+       console.error('Failed to submit answer:', error);
+       // Reset selection on error
+       setSelectedAnswer(null);
+     }
    };
 
    const formatTime = (seconds: number) => {
@@ -445,26 +492,39 @@ const DualMatchArena: React.FC = () => {
 
    const handleBackToDashboard = () => {
      // Leave matchmaking/match if still active
-     if (matchId) {
-       IOClient.publish('match:leave', { matchId });
-     } else if (gameState === 'searching' || gameState === 'waiting') {
-       IOClient.publish('matchmaking:leave', { userId: user?.userId });
+     if (isSocketConnected) {
+       try {
+         if (matchId) {
+           IOClient.publish('match:leave', { matchId });
+         } else if (gameState === 'searching' || gameState === 'waiting') {
+           IOClient.publish('matchmaking:leave', { userId: user?.userId });
+         }
+         
+         // Clear all subscriptions
+         IOClient.clearAllSubscriptions();
+       } catch (error) {
+         console.error('Error leaving match:', error);
+       }
      }
-     
-     // Clear all subscriptions
-     IOClient.clearAllSubscriptions();
      
      router.push('/dashboard');
    };
 
    const handlePlayAgain = () => {
      // Ensure previous subscriptions and any active match are cleaned up before re-searching
-     if (matchId) {
-       IOClient.publish('match:leave', { matchId });
-     } else {
-       IOClient.publish('matchmaking:leave', { userId: user?.userId });
+     if (isSocketConnected) {
+       try {
+         if (matchId) {
+           IOClient.publish('match:leave', { matchId });
+         } else {
+           IOClient.publish('matchmaking:leave', { userId: user?.userId });
+         }
+         IOClient.clearAllSubscriptions();
+       } catch (error) {
+         console.error('Error cleaning up match:', error);
+       }
      }
-     IOClient.clearAllSubscriptions();
+     
      botRejectionsRef.current = 0;
      setError(null);
      // Reset all state
@@ -487,16 +547,22 @@ const DualMatchArena: React.FC = () => {
    useEffect(() => {
      return () => {
        // Leave matchmaking/match if still active
-       if (matchId) {
-         IOClient.publish('match:leave', { matchId });
-       } else if (gameState === 'searching' || gameState === 'waiting') {
-         IOClient.publish('matchmaking:leave', { userId: user?.userId });
+       if (isSocketConnected) {
+         try {
+           if (matchId) {
+             IOClient.publish('match:leave', { matchId });
+           } else if (gameState === 'searching' || gameState === 'waiting') {
+             IOClient.publish('matchmaking:leave', { userId: user?.userId });
+           }
+           
+           // Clear all subscriptions
+           IOClient.clearAllSubscriptions();
+         } catch (error) {
+           console.error('Error during cleanup:', error);
+         }
        }
-       
-       // Clear all subscriptions
-       IOClient.clearAllSubscriptions();
      };
-   }, [matchId, gameState, user, IOClient]);
+   }, [matchId, gameState, user, IOClient, isSocketConnected]);
 
    return (
      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 relative overflow-hidden">

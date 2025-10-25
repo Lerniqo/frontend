@@ -1,196 +1,296 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
-import Loading from "@/components/CommonComponents/Loading";
-import PublicRoute from "@/components/CommonComponents/PublicRoute";
-import RegisterEmail from "@/components/SignUpPageComponents/SignUpSteps/RegisterEmail";
 import { userService } from "@/services/userService";
-import useTracker from "@/hooks/useTracker";
-import { TrackingEventType, SignupEventData } from "@/types/tracking.types";
 
 function RegisterPageContent() {
-  const [isValid, setIsValid] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const role = searchParams.get("role") as "Student" | "Teacher" | null;
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const cardRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const role = searchParams.get("role") || "";
-  const trackEvent = useTracker();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Redirect to signup if no valid role
   useEffect(() => {
-    // Validate role parameter
-    if (!role || (role !== "student" && role !== "teacher")) {
+    if (!role || !["Student", "Teacher"].includes(role)) {
       router.push("/signup");
-      return;
     }
-
-    // Initial animation for the card
-    gsap.fromTo(
-      cardRef.current,
-      { opacity: 0, y: 50, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
-    );
   }, [role, router]);
 
-  const handleValidationChange = (valid: boolean) => {
-    setIsValid(valid);
+  useEffect(() => {
+    // Animation
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: 50, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
+      );
+    }
+  }, []);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleDataChange = (data: {
-    email: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
-    setFormData(data);
-  };
-
-  const handleRegister = async () => {
-    if (!isValid) return;
-
-    setLoading(true);
-    setError("");
-
-    try {
-      const result = await userService.basicRegister({
-        email: formData.email.toLowerCase(), // Convert email to lowercase
-        password: formData.password,
-        role: role as "Student" | "Teacher",
-      });
-
-      if (result.success) {
-        // Track successful signup
-        await trackEvent<SignupEventData>({
-          type: TrackingEventType.SIGNUP,
-          data: {
-            userRole: role as "Student" | "Teacher",
-            isSuccessful: true,
-            completedProfile: false, // Profile completion happens in next step
-          },
-        });
-
-        // Redirect to email verification with email parameter
-        router.push(
-          `/signup/verify-email?email=${encodeURIComponent(
-            formData.email.toLowerCase()
-          )}&role=${encodeURIComponent(role)}`
-        );
-      } else {
-        // Track failed signup
-        await trackEvent<SignupEventData>({
-          type: TrackingEventType.SIGNUP,
-          data: {
-            userRole: role as "Student" | "Teacher",
-            isSuccessful: false,
-            completedProfile: false,
-          },
-        });
-
-        setError(result.message || "Registration failed");
-      }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "An unexpected error occurred";
-
-      // Track failed signup
-      await trackEvent<SignupEventData>({
-        type: TrackingEventType.SIGNUP,
-        data: {
-          userRole: role as "Student" | "Teacher",
-          isSuccessful: false,
-          completedProfile: false,
-        },
-      });
-
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
-  const handleBack = () => {
-    router.push("/signup");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+    if (!role) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await userService.basicRegister({
+        email: formData.email,
+        password: formData.password,
+        role: role,
+      });
+
+      if (response.success) {
+        // Store registration data for later use (needed for profile not completed scenario)
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "userRegistrationData",
+            JSON.stringify({
+              email: formData.email,
+              role: role,
+            })
+          );
+        }
+
+        // Redirect to verify email page
+        router.push(
+          `/signup/verify-email?email=${encodeURIComponent(formData.email)}`
+        );
+      } else {
+        // Check if email already exists
+        if (
+          response.message
+            ?.toLowerCase()
+            .includes("user with this email already exists")
+        ) {
+          setErrors({
+            email: "This email is already registered. Please log in instead.",
+          });
+        } else {
+          setErrors({
+            submit:
+              response.message || "Registration failed. Please try again.",
+          });
+        }
+      }
+    } catch (error) {
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <PublicRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white flex items-center justify-center p-4">
-        {loading && <Loading />}
-        <div
-          ref={cardRef}
-          className="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden"
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b border-gray-100">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                Create Your Account
-              </h1>
-              <p className="text-gray-600">
-                Register as a{" "}
-                <span className="capitalize font-semibold text-blue-600">
-                  {role}
-                </span>
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white flex items-center justify-center p-4">
+      <div
+        ref={cardRef}
+        className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-8 text-center">
+          <h1 className="text-3xl font-bold text-white mb-1">Create Account</h1>
+          <p className="text-blue-100">
+            {role === "Student" ? "Student" : "Teacher"} Account
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Field */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                placeholder="Enter your email"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
-          </div>
 
-          {/* Content Section */}
-          <div className="p-8">
-            <RegisterEmail
-              onValidationChange={handleValidationChange}
-              onDataChange={handleDataChange}
-            />
+            {/* Password Field */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                  disabled={isLoading}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
+            </div>
 
-            {error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{error}</p>
+            {/* Confirm Password Field */}
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
+                  disabled={isLoading}
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+
+            {/* Submit Error */}
+            {errors.submit && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{errors.submit}</p>
               </div>
             )}
-          </div>
 
-          {/* Navigation Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <button
-                onClick={handleBack}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-200"
-              >
-                ← Back
-              </button>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
 
-              <div className="text-sm text-gray-500">Step 1 of 3</div>
-
-              <button
-                onClick={handleRegister}
-                disabled={!isValid || loading}
-                className={`px-6 py-3 font-medium rounded-lg transition-all duration-200 transform ${
-                  isValid && !loading
-                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:shadow-lg hover:scale-105"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              >
-                {loading ? "Creating Account..." : "Create Account →"}
-              </button>
-            </div>
-          </div>
+          {/* Footer */}
+          <p className="text-center text-gray-600 text-sm mt-6">
+            Already have an account?{" "}
+            <button
+              onClick={() => router.push("/login")}
+              className="text-blue-600 hover:underline font-medium"
+              disabled={isLoading}
+            >
+              Sign In
+            </button>
+          </p>
         </div>
       </div>
-    </PublicRoute>
+    </div>
   );
 }
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
       <RegisterPageContent />
     </Suspense>
   );

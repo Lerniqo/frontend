@@ -2,10 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
-import {
-  FaChalkboardTeacher,
-  FaUserGraduate,
-} from "react-icons/fa";
+import { FaChalkboardTeacher, FaUserGraduate } from "react-icons/fa";
 
 interface UserTypeSelectorProps {
   onSelectRole: (selectedRole: string) => void;
@@ -175,7 +172,7 @@ export default function UserTypeSelector({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-xl mx-auto">
         {userTypes.map((userType, index) => {
           const IconComponent = userType.icon;
           const isSelected = selectedRole === userType.id;

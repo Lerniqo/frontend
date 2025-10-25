@@ -71,7 +71,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (
     email: string,
     password: string
-  ): Promise<{ success: boolean; message: string }> => {
+  ): Promise<{ success: boolean; message: string; data?: any }> => {
     try {
       const response = await userService.login({
         email: email.toLowerCase(),
@@ -82,16 +82,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(response.data.user);
 
         // Track successful login
-        await trackEvent<LoginEventData>({
-          type: TrackingEventType.LOGIN,
-          data: {
-            loginMethod: "email",
-            deviceType: navigator.userAgent,
-            browser: navigator.userAgent.split(" ").pop() || "unknown",
-            isSuccessful: true,
-          },
-          userId: response.data.user.userId,
-        });
+        try {
+          await trackEvent<LoginEventData>({
+            type: TrackingEventType.LOGIN,
+            data: {
+              loginMethod: "email",
+              deviceType: navigator.userAgent,
+              browser: navigator.userAgent.split(" ").pop() || "unknown",
+              isSuccessful: true,
+            },
+            userId: response.data.user.userId,
+          });
+        } catch (trackingError) {
+          console.warn("Failed to track login event:", trackingError);
+          // Continue anyway - don't block the login
+        }
 
         // After successful login, redirect to dashboard
         // The protected route will handle role-based routing
@@ -107,32 +112,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           errorMessage.toLowerCase().includes("email not verified") ||
           errorMessage.toLowerCase().includes("verify your email")
         ) {
-          // Track failed login attempt
-          await trackEvent<LoginEventData>({
-            type: TrackingEventType.LOGIN,
-            data: {
-              loginMethod: "email",
-              deviceType: navigator.userAgent,
-              browser: navigator.userAgent.split(" ").pop() || "unknown",
-              isSuccessful: false,
-              failureReason: "Email not verified",
-            },
-          });
+          // Try to track failed login attempt, but don't block if it fails
+          try {
+            await trackEvent<LoginEventData>({
+              type: TrackingEventType.LOGIN,
+              data: {
+                loginMethod: "email",
+                deviceType: navigator.userAgent,
+                browser: navigator.userAgent.split(" ").pop() || "unknown",
+                isSuccessful: false,
+                failureReason: "Email not verified",
+              },
+            });
+          } catch (trackingError) {
+            console.warn("Failed to track login event:", trackingError);
+            // Continue anyway - don't block the redirect
+          }
 
-          // Resend verification code automatically
-          await userService.resendVerificationCode(email.toLowerCase());
-
-          // Redirect to verify-email page
-          router.push(
-            `/signup/verify-email?email=${encodeURIComponent(
-              email.toLowerCase()
-            )}&fromLogin=true`
-          );
-
+          // Don't auto-redirect; let the login page handle it
           return {
             success: false,
             message:
-              "Email not verified. We've sent a new verification code to your email.",
+              "Email not verified. Please check your email for the verification code.",
           };
         }
 
@@ -141,7 +142,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           errorMessage.toLowerCase().includes("profile not completed") ||
           errorMessage.toLowerCase().includes("complete your profile")
         ) {
-          // Track failed login attempt
+          // Try to track failed login attempt, but don't block if it fails
+          try {
+            await trackEvent<LoginEventData>({
+              type: TrackingEventType.LOGIN,
+              data: {
+                loginMethod: "email",
+                deviceType: navigator.userAgent,
+                browser: navigator.userAgent.split(" ").pop() || "unknown",
+                isSuccessful: false,
+                failureReason: "Profile not completed",
+              },
+            });
+          } catch (trackingError) {
+            console.warn("Failed to track login event:", trackingError);
+            // Continue anyway - don't block the redirect
+          }
+
+          // Don't auto-redirect; let the login page handle it
+          // Return the data from the error response so we have userId and role
+          return {
+            success: false,
+            message: "Please complete your profile to continue.",
+            data: response.data, // <-- RETURN THE DATA HERE
+          };
+        }
+
+        // Track failed login attempt for other errors
+        try {
           await trackEvent<LoginEventData>({
             type: TrackingEventType.LOGIN,
             data: {
@@ -149,27 +177,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               deviceType: navigator.userAgent,
               browser: navigator.userAgent.split(" ").pop() || "unknown",
               isSuccessful: false,
-              failureReason: "Profile not completed",
+              failureReason: errorMessage,
             },
           });
-
-          // Extract userId from response data if available
-          if (response.data?.user?.userId && response.data?.user?.role) {
-            // Redirect to complete-profile page
-            router.push(
-              `/signup/complete-profile?userId=${encodeURIComponent(
-                response.data.user.userId
-              )}&role=${encodeURIComponent(response.data.user.role)}`
-            );
-
-            return {
-              success: false,
-              message: "Please complete your profile to continue.",
-            };
-          }
+        } catch (trackingError) {
+          console.warn("Failed to track login event:", trackingError);
+          // Continue anyway - don't block the redirect
         }
 
-        // Track failed login attempt for other errors
+        return { success: false, message: errorMessage };
+      }
+    } catch (error) {
+      // Try to track failed login attempt, but don't block if it fails
+      try {
         await trackEvent<LoginEventData>({
           type: TrackingEventType.LOGIN,
           data: {
@@ -177,25 +197,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             deviceType: navigator.userAgent,
             browser: navigator.userAgent.split(" ").pop() || "unknown",
             isSuccessful: false,
-            failureReason: errorMessage,
+            failureReason:
+              error instanceof Error ? error.message : "Unknown error",
           },
         });
-
-        return { success: false, message: errorMessage };
+      } catch (trackingError) {
+        console.warn("Failed to track login event:", trackingError);
+        // Continue anyway - don't block the error handling
       }
-    } catch (error) {
-      // Track failed login attempt
-      await trackEvent<LoginEventData>({
-        type: TrackingEventType.LOGIN,
-        data: {
-          loginMethod: "email",
-          deviceType: navigator.userAgent,
-          browser: navigator.userAgent.split(" ").pop() || "unknown",
-          isSuccessful: false,
-          failureReason:
-            error instanceof Error ? error.message : "Unknown error",
-        },
-      });
 
       return {
         success: false,

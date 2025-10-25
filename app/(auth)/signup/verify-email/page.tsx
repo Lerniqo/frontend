@@ -1,161 +1,291 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { gsap } from "gsap";
-import Loading from "@/components/CommonComponents/Loading";
-import PublicRoute from "@/components/CommonComponents/PublicRoute";
-import ValidateEmail from "@/components/SignUpPageComponents/SignUpSteps/ValidateEmail";
-import { VerifyEmailSuccessData } from "@/types/auth.types";
+import { userService } from "@/services/userService";
 
 function VerifyEmailPageContent() {
-  const [loading, setLoading] = useState(false);
-  const [error, _setError] = useState("");
-
-  const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
-  const role = searchParams.get("role") || "";
-  const fromLogin = searchParams.get("fromLogin") === "true";
+  const email = searchParams.get("email");
+  const cardRef = useRef<HTMLDivElement>(null);
 
+  const [code, setCode] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showResend, setShowResend] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
+
+  // Redirect if no email
   useEffect(() => {
-    // Validate required parameters
     if (!email) {
       router.push("/signup");
-      return;
     }
-
-    // If coming from login, role might not be set, which is okay
-    // We'll get it from the verification response
-
-    // Initial animation for the card
-    gsap.fromTo(
-      cardRef.current,
-      { opacity: 0, y: 50, scale: 0.95 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
-    );
   }, [email, router]);
 
-  const handleEmailVerificationSuccess = (userData: VerifyEmailSuccessData) => {
-    // If coming from login, redirect to complete-profile or login
-    if (fromLogin) {
-      // Redirect to complete-profile with user data
-      router.push(
-        `/signup/complete-profile?userId=${encodeURIComponent(
-          userData.userId
-        )}&role=${encodeURIComponent(userData.role)}`
+  useEffect(() => {
+    // Animation
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: 50, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power2.out" }
       );
-      return;
+    }
+  }, []);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!code) {
+      newErrors.code = "Verification code is required";
+    } else if (!/^\d{6}$/.test(code)) {
+      newErrors.code = "Please enter a valid 6-digit code";
     }
 
-    // Validate role consistency for normal signup flow
-    if (role) {
-      const normalizedVerifiedRole = userData.role.toLowerCase();
-      const normalizedSelectedRole = role.toLowerCase();
-
-      if (normalizedVerifiedRole !== normalizedSelectedRole) {
-        console.warn(
-          `Role mismatch: Selected '${role}' but verified as '${userData.role}'. Using verified role.`
-        );
-      }
-    }
-
-    // Redirect to profile completion with user data
-    router.push(
-      `/signup/complete-profile?userId=${encodeURIComponent(
-        userData.userId
-      )}&role=${encodeURIComponent(userData.role)}`
-    );
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleBack = () => {
-    if (fromLogin) {
-      router.push("/login");
-    } else {
-      router.push(`/signup/register?role=${encodeURIComponent(role)}`);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "").slice(0, 6);
+    setCode(value);
+    if (errors.code) {
+      setErrors((prev) => ({
+        ...prev,
+        code: "",
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+    if (!email) return;
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      const response = await userService.verifyEmail(code, email);
+
+      if (response.success) {
+        // Store user data for later use (needed for profile not completed scenario)
+        const userData = response.data;
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "userRegistrationData",
+            JSON.stringify({
+              userId: userData.userId,
+              role: userData.role,
+              email: email,
+            })
+          );
+        }
+
+        // Redirect to complete profile page
+        router.push(
+          `/signup/complete-profile?userId=${encodeURIComponent(
+            userData.userId
+          )}&role=${encodeURIComponent(userData.role)}`
+        );
+      } else {
+        // Handle specific errors
+        if (
+          response.message
+            ?.toLowerCase()
+            .includes("verification code has expired")
+        ) {
+          setShowResend(true);
+          setErrors({
+            code: response.message,
+          });
+        } else if (
+          response.message
+            ?.toLowerCase()
+            .includes("invalid email or verification code")
+        ) {
+          setErrors({
+            code: "Invalid verification code. Please try again.",
+          });
+        } else {
+          setErrors({
+            submit:
+              response.message || "Verification failed. Please try again.",
+          });
+        }
+      }
+    } catch (error) {
+      setErrors({
+        submit:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (!email) return;
+
+    setResendLoading(true);
+    setMessage("");
+
+    try {
+      const response = await userService.resendVerificationCode(email);
+
+      if (response.success) {
+        setMessage("A new verification code has been sent to your email.");
+        setCode("");
+        setShowResend(false);
+        setErrors({});
+      } else {
+        setErrors({
+          resend:
+            response.message || "Failed to resend code. Please try again.",
+        });
+      }
+    } catch (error) {
+      setErrors({
+        resend:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+    } finally {
+      setResendLoading(false);
     }
   };
 
   if (!email) {
-    return (
-      <PublicRoute>
-        <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white flex items-center justify-center p-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">
-              Invalid Request
-            </h1>
-            <p className="text-gray-600 mb-6">Missing required parameters.</p>
-            <button
-              onClick={() => router.push("/signup")}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-200"
-            >
-              Back to Signup
-            </button>
-          </div>
-        </div>
-      </PublicRoute>
-    );
+    return null;
   }
 
   return (
-    <PublicRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white flex items-center justify-center p-4">
-        {loading && <Loading />}
-        <div
-          ref={cardRef}
-          className="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden"
-        >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-b border-gray-100">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                Verify Your Email
-              </h1>
-              <p className="text-gray-600">
-                We sent a verification code to{" "}
-                <span className="font-semibold text-blue-600">{email}</span>
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white flex items-center justify-center p-4">
+      <div
+        ref={cardRef}
+        className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-8 text-center">
+          <h1 className="text-3xl font-bold text-white mb-1">Verify Email</h1>
+          <p className="text-blue-100 text-sm">
+            We sent a 6-digit code to {email}
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="p-8">
+          {message && (
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
+              <p className="text-sm text-green-700">{message}</p>
             </div>
-          </div>
+          )}
 
-          {/* Content Section */}
-          <div className="p-8">
-            <ValidateEmail
-              email={email}
-              onSuccess={handleEmailVerificationSuccess}
-              setLoading={setLoading}
-            />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Verification Code Field */}
+            <div>
+              <label
+                htmlFor="code"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Verification Code
+              </label>
+              <input
+                id="code"
+                type="text"
+                value={code}
+                onChange={handleInputChange}
+                disabled={isLoading}
+                placeholder="000000"
+                maxLength={6}
+                className="w-full px-4 py-3 text-center text-2xl tracking-widest border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed font-mono"
+              />
+              {errors.code && (
+                <p className="mt-1 text-sm text-red-600">{errors.code}</p>
+              )}
+            </div>
 
-            {error && (
-              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-600 text-sm">{error}</p>
+            {/* Submit Error */}
+            {errors.submit && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{errors.submit}</p>
               </div>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading || code.length !== 6}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Verifying..." : "Verify Email"}
+            </button>
+          </form>
+
+          {/* Resend Section */}
+          <div className="mt-6 text-center">
+            {showResend ? (
+              <>
+                <p className="text-gray-600 text-sm mb-3">
+                  Didn't receive the code?
+                </p>
+                <button
+                  onClick={handleResendCode}
+                  disabled={resendLoading}
+                  className="text-blue-600 hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resendLoading ? "Sending..." : "Resend Code"}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowResend(true)}
+                className="text-gray-600 hover:text-gray-800 text-sm"
+              >
+                Didn't receive it?{" "}
+                <span className="text-blue-600 hover:underline">Try again</span>
+              </button>
+            )}
+
+            {errors.resend && (
+              <p className="mt-2 text-sm text-red-600">{errors.resend}</p>
             )}
           </div>
 
-          {/* Navigation Section */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 border-t border-gray-100">
-            <div className="flex justify-between items-center">
-              <button
-                onClick={handleBack}
-                className="px-6 py-2 text-gray-600 hover:text-gray-800 font-medium rounded-lg hover:bg-gray-100 transition-all duration-200"
-              >
-                ← Back
-              </button>
-              <div className="text-sm text-gray-500">Step 2 of 3</div>
-              <div className="w-32"></div> {/* Spacer for centering */}
-            </div>
-          </div>
+          {/* Footer */}
+          <p className="text-center text-gray-600 text-sm mt-6">
+            Wrong email?{" "}
+            <button
+              onClick={() => router.push("/signup")}
+              className="text-blue-600 hover:underline font-medium"
+              disabled={isLoading}
+            >
+              Start over
+            </button>
+          </p>
         </div>
       </div>
-    </PublicRoute>
+    </div>
   );
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<Loading />}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-white flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
       <VerifyEmailPageContent />
     </Suspense>
   );

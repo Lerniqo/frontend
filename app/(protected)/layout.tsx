@@ -18,14 +18,14 @@ const Protected = ({
 
   useEffect(() => {
     if (!isLoading && (!user || !isAuthenticated)) {
-      router.push("/login");
+      // router.push("/login");
     }
   }, [user, isAuthenticated, isLoading, router]);
   // return student;
   if (isLoading) return <GeneralLoadingComponent text="Loading..." />;
 
   if (!user || !isAuthenticated) {
-    return <div>Redirecting to login...</div>;
+    return <GeneralLoadingComponent text="Redirecting to login..." />;
   }
 
   if (user.role === "Teacher") return teacher;

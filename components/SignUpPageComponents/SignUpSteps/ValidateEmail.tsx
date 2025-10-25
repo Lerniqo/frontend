@@ -31,12 +31,32 @@ export default function ValidateEmail({
   const toast = useToast();
 
   useEffect(() => {
-    // Initial animation
+    // Initial animation with staggered elements
     if (formRef.current) {
-      gsap.fromTo(
+      const tl = gsap.timeline();
+
+      // Fade in main container
+      tl.fromTo(
         formRef.current,
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+
+      // Animate content elements
+      const contentElements = formRef.current.querySelectorAll(
+        ".verify-content > *"
+      );
+      tl.fromTo(
+        contentElements,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.12,
+        },
+        0.2
       );
     }
   }, []);
@@ -56,8 +76,8 @@ export default function ValidateEmail({
     if (error && errorRef.current) {
       gsap.fromTo(
         errorRef.current,
-        { opacity: 0, y: -10 },
-        { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+        { opacity: 0, y: -15, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)" }
       );
     }
   }, [error]);
@@ -147,7 +167,7 @@ export default function ValidateEmail({
         ref={formRef}
         className="bg-white p-8 w-full max-w-md relative overflow-hidden"
       >
-        <div className="relative z-10">
+        <div className="relative z-10 verify-content">
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">

@@ -164,13 +164,21 @@ export function useSocketPublish() {
   const [error, setError] = useState<Error | null>(null);
 
   const publish = useCallback(
-    (event: string, data?: any, callback?: (response: any) => void) => {
+    async (event: string, data?: any, callback?: (response: any) => void) => {
       try {
         setError(null);
+        
+        // Ensure socket is connected before publishing
+        if (!ioClient.isConnected()) {
+          console.warn('Socket not connected, attempting to connect...');
+          await ioClient.connect();
+        }
+        
         ioClient.publish(event, data, callback);
       } catch (err) {
         setError(err as Error);
         console.error('Failed to publish:', err);
+        throw err;
       }
     },
     []
@@ -181,6 +189,13 @@ export function useSocketPublish() {
       try {
         setIsLoading(true);
         setError(null);
+        
+        // Ensure socket is connected before publishing
+        if (!ioClient.isConnected()) {
+          console.warn('Socket not connected, attempting to connect...');
+          await ioClient.connect();
+        }
+        
         const response = await ioClient.publishWithAck<T>(event, data, timeout);
         return response as T;
       } catch (err) {

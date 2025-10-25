@@ -41,7 +41,7 @@ function CompleteProfilePageContent() {
   const handleProfileComplete = () => {
     // This will be called when ProfileDetailsForm completes successfully
     // Redirect to success page
-    router.push('/signup/success');
+    router.push('/dashboard');
   };
 
   if (!userId || !role) {

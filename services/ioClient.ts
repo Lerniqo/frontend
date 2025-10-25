@@ -267,12 +267,13 @@ class IOClient {
    */
   public publish(topic: string, data?: unknown, callback?: (response: unknown) => void): void {
     if (!this.socket) {
-      console.warn('Socket not initialized. Call connect() first.');
-      return;
+      console.error('Socket not initialized. Call connect() first.');
+      throw new Error('Socket not initialized');
     }
 
     if (!this.socket.connected) {
-      console.warn('Socket not connected. Data may not be sent.');
+      console.error('Socket not connected. Message may not be sent.');
+      throw new Error('Socket not connected');
     }
 
     if (callback) {

@@ -3,6 +3,7 @@
 ## Problem Identified ✅
 
 The profile redirect countdown was failing because:
+
 1. When profile not completed, tracking event was trying to be recorded
 2. Tracking requires a valid token, but we don't have one
 3. Tracking call was `await`ing, which meant if it failed, it blocked everything
@@ -33,12 +34,14 @@ Countdown never shows, no redirect ❌
 Wrapped all `trackEvent` calls in try-catch blocks so they don't block the login flow:
 
 ### Before (❌ Blocking)
+
 ```typescript
 await trackEvent<LoginEventData>({...});  // ❌ If fails, blocks everything
 return {success: false, data: {...}};      // ❌ Never reaches here
 ```
 
 ### After (✅ Non-Blocking)
+
 ```typescript
 try {
   await trackEvent<LoginEventData>({...});  // ✅ Try to track
@@ -52,18 +55,23 @@ return {success: false, data: {...}};      // ✅ Always reaches here
 ## Changes Made
 
 ### 1. ✅ Successful Login Tracking (Lines ~85-98)
+
 Wrapped in try-catch so tracking failure doesn't prevent dashboard redirect
 
 ### 2. ✅ Email Not Verified Tracking (Lines ~110-128)
+
 Wrapped in try-catch so tracking failure doesn't prevent email verification redirect
 
 ### 3. ✅ Profile Not Completed Tracking (Lines ~130-148)
+
 Wrapped in try-catch so tracking failure doesn't prevent countdown and redirect
 
 ### 4. ✅ Other Errors Tracking (Lines ~150-158)
+
 Wrapped in try-catch so tracking failure doesn't prevent error message return
 
 ### 5. ✅ Catch Block Tracking (Lines ~189-200)
+
 Wrapped in try-catch so tracking failure doesn't prevent error handling
 
 ---
@@ -102,17 +110,21 @@ SUCCESS ✅
 ## Why This Works
 
 ### Before
+
 ```
 Tracking awaits → fails → throws error → blocks everything
 ```
 
 ### After
+
 ```
 Tracking tries → if fails, logs warning → continues anyway
 ```
 
 ### Key Insight
+
 The tracking is **non-critical** for the login flow. It's nice-to-have for analytics, but:
+
 - Should NOT block user login
 - Should NOT block profile completion redirect
 - Should NOT prevent error messages
@@ -124,6 +136,7 @@ By wrapping in try-catch, we make tracking **optional** while keeping core funct
 ## Testing
 
 ### Test 1: Profile Not Completed
+
 1. Register account
 2. Verify email
 3. **Skip profile completion**
@@ -136,6 +149,7 @@ By wrapping in try-catch, we make tracking **optional** while keeping core funct
    - ✅ Complete-profile page loads
 
 ### Test 2: Monitor Console
+
 ```
 // Console should show:
 🚀 API Request: POST /user-service/users/login
@@ -157,8 +171,8 @@ Role: Student
 
 ## Files Modified
 
-| File | Changes | Lines |
-|------|---------|-------|
+| File                        | Changes                                | Lines                                     |
+| --------------------------- | -------------------------------------- | ----------------------------------------- |
 | `/contexts/AuthContext.tsx` | Wrap all trackEvent calls in try-catch | 85-98, 110-128, 130-148, 150-158, 189-200 |
 
 ---
@@ -169,13 +183,14 @@ Role: Student
 ✅ **Errors are logged** - But don't stop flow  
 ✅ **All return statements reachable** - Response always returned  
 ✅ **Core functionality preserved** - Login/redirect works  
-✅ **Analytics still recorded** - When token is valid  
+✅ **Analytics still recorded** - When token is valid
 
 ---
 
 ## Before vs After
 
 ### Before ❌
+
 ```
 User with incomplete profile tries login
   ↓
@@ -195,6 +210,7 @@ User stuck on login page
 ```
 
 ### After ✅
+
 ```
 User with incomplete profile tries login
   ↓
@@ -220,16 +236,20 @@ User can complete profile
 ## Console Output
 
 ### Expected Warnings (✅ Normal)
+
 ```
 Failed to track login event: AxiosError {status: 401, ...}
 ```
+
 This is expected and OK! It just means analytics couldn't be recorded due to missing token.
 
 ### NOT Expected (❌ Problem)
+
 ```
 ❌ Missing userId or role in response
 Error: Unable to retrieve profile information
 ```
+
 If you see this, it means response.data is still not being passed through.
 
 ---
@@ -237,14 +257,17 @@ If you see this, it means response.data is still not being passed through.
 ## Verification
 
 ### Code Check
+
 Open `/contexts/AuthContext.tsx`:
+
 - [ ] Line ~85-98: Tracking wrapped in try-catch
-- [ ] Line ~110-128: Tracking wrapped in try-catch  
+- [ ] Line ~110-128: Tracking wrapped in try-catch
 - [ ] Line ~130-148: Tracking wrapped in try-catch
 - [ ] Line ~150-158: Tracking wrapped in try-catch
 - [ ] Line ~189-200: Tracking wrapped in try-catch
 
 ### Runtime Check
+
 1. Register fresh account
 2. Verify email
 3. Skip profile
@@ -258,7 +281,7 @@ Open `/contexts/AuthContext.tsx`:
 **Issue:** Tracking event failures were blocking the profile redirect flow  
 **Solution:** Wrap tracking in try-catch so it's non-blocking  
 **Result:** Profile redirect now works, tracking is optional  
-**Impact:** Users with incomplete profiles can now complete them  
+**Impact:** Users with incomplete profiles can now complete them
 
 ---
 
@@ -268,4 +291,4 @@ Open `/contexts/AuthContext.tsx`:
 
 ---
 
-*Fix Applied: October 25, 2025*
+_Fix Applied: October 25, 2025_

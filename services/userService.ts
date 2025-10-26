@@ -211,7 +211,10 @@ const formatStudentProfileData = (
     fullName: data.fullName.trim(),
     school: formatOptionalString(data.school),
     birthday: formatOptionalString(data.birthday),
-    gradeLevel: data.gradeLevel,
+    gradeLevel:
+      typeof data.gradeLevel === "string"
+        ? parseInt(data.gradeLevel, 10)
+        : data.gradeLevel,
     gender: formatGender(data.gender),
     parentGuardianName: formatOptionalString(data.parentGuardianName),
     relationship: formatOptionalString(data.relationship),
@@ -240,7 +243,10 @@ const formatTeacherProfileData = (
     address: formatOptionalString(data.address),
     phoneNumber: formatOptionalString(data.phoneNumber),
     nationalIdPassport: formatOptionalString(data.nationalIdPassport),
-    yearsOfExperience: data.yearsOfExperience,
+    yearsOfExperience:
+      typeof data.yearsOfExperience === "string"
+        ? parseInt(data.yearsOfExperience, 10)
+        : data.yearsOfExperience,
     highestEducationLevel: formatOptionalString(data.highestEducationLevel),
     qualifications: formatOptionalString(data.qualifications),
     shortBio: formatOptionalString(data.shortBio),

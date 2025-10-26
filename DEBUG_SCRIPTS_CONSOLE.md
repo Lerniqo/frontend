@@ -1,6 +1,7 @@
 # 🧪 Debugging Script - Run in Browser Console
 
 ## Before You Start
+
 1. Open browser DevTools (F12)
 2. Go to Console tab
 3. Clear localStorage: `localStorage.clear()`
@@ -46,7 +47,7 @@ if (verifyData) {
     console.log("  Email:", parsed.email);
     console.log("  Role:", parsed.role);
     console.log("  UserId:", parsed.userId);
-    
+
     // Verify all required fields
     if (parsed.email && parsed.role && parsed.userId) {
       console.log("✅ ALL REQUIRED FIELDS PRESENT");
@@ -76,7 +77,7 @@ console.log("=== SIMULATING ERROR RESPONSE HANDLING ===");
 const errorResponse = {
   userId: "cmh6jtl6v000pp301ejnvp306",
   profileCompleted: false,
-  message: "Profile not completed. Please complete your profile first."
+  message: "Profile not completed. Please complete your profile first.",
 };
 
 console.log("Backend error response:", errorResponse);
@@ -101,7 +102,10 @@ if (storedData) {
 }
 
 console.log("Final user role:", userRole);
-console.log("Will redirect with:", { userId: errorResponse.userId, role: userRole });
+console.log("Will redirect with:", {
+  userId: errorResponse.userId,
+  role: userRole,
+});
 ```
 
 ---
@@ -121,19 +125,28 @@ const mockContextResponse = {
     user: {
       userId: "cmh6jtl6v000pp301ejnvp306",
       role: "Student", // <-- This should now be present
-      email: "test@example.com"
-    }
-  }
+      email: "test@example.com",
+    },
+  },
 };
 
 console.log("Expected response structure:");
 console.log(JSON.stringify(mockContextResponse, null, 2));
 
 // Check if data exists
-if (mockContextResponse.data?.user?.userId && mockContextResponse.data?.user?.role) {
+if (
+  mockContextResponse.data?.user?.userId &&
+  mockContextResponse.data?.user?.role
+) {
   console.log("✅ Response structure is CORRECT");
-  console.log("✅ Login page can access userId:", mockContextResponse.data.user.userId);
-  console.log("✅ Login page can access role:", mockContextResponse.data.user.role);
+  console.log(
+    "✅ Login page can access userId:",
+    mockContextResponse.data.user.userId
+  );
+  console.log(
+    "✅ Login page can access role:",
+    mockContextResponse.data.user.role
+  );
 } else {
   console.log("❌ Response structure is INCOMPLETE");
 }
@@ -152,7 +165,9 @@ console.log("EXPECTED OUTCOME (✅):");
 console.log("  📋 Profile not completed - Countdown starting...");
 console.log("  User ID: [uuid]");
 console.log("  Role: Student");
-console.log("  🔄 Redirecting to: /signup/complete-profile?userId=...&role=Student\n");
+console.log(
+  "  🔄 Redirecting to: /signup/complete-profile?userId=...&role=Student\n"
+);
 
 console.log("PROBLEM OUTCOME (❌):");
 console.log("  ❌ Missing userId or role in response");
@@ -161,7 +176,9 @@ console.log("  Error: Unable to retrieve profile information\n");
 console.log("CHECK IN DEVTOOLS:");
 console.log("1. Watch Console tab for these logs");
 console.log("2. Check Network tab - POST /users/login should be 401");
-console.log("3. Check Application tab - localStorage should have userRegistrationData");
+console.log(
+  "3. Check Application tab - localStorage should have userRegistrationData"
+);
 ```
 
 ---
@@ -217,15 +234,19 @@ if (stored && JSON.parse(stored).role && urlRole === JSON.parse(stored).role) {
 ## How to Use These Scripts
 
 ### Step 1: After Registration
+
 Run Script 1 & 2 to verify role is stored
 
 ### Step 2: After Email Verification
+
 Run Script 2 again to verify userId is added
 
 ### Step 3: During Login
+
 Run Script 3 & 4 to verify response structure
 
 ### Step 4: After Redirect
+
 Run Script 5 & 6 to verify complete flow
 
 ---
@@ -233,6 +254,7 @@ Run Script 5 & 6 to verify complete flow
 ## Expected Console Output
 
 ### Good Flow ✅
+
 ```
 === CHECKING AFTER REGISTRATION ===
 Raw data: {"email":"test@example.com","role":"Student"}
@@ -243,6 +265,7 @@ Raw data: {"email":"test@example.com","role":"Student"}
 ```
 
 ### Problem Flow ❌
+
 ```
 === CHECKING AFTER REGISTRATION ===
 ❌ userRegistrationData not found in localStorage
@@ -255,10 +278,10 @@ Raw data: {"email":"test@example.com","role":"Student"}
 
 ```javascript
 // Clear all data
-localStorage.clear()
+localStorage.clear();
 
 // Clear specific data
-localStorage.removeItem("userRegistrationData")
+localStorage.removeItem("userRegistrationData");
 
 // View all localStorage
 for (let i = 0; i < localStorage.length; i++) {
@@ -267,7 +290,7 @@ for (let i = 0; i < localStorage.length; i++) {
 }
 
 // Check if localStorage is available
-console.log("localStorage available:", typeof localStorage !== 'undefined')
+console.log("localStorage available:", typeof localStorage !== "undefined");
 ```
 
 ---
@@ -276,7 +299,7 @@ console.log("localStorage available:", typeof localStorage !== 'undefined')
 
 ```javascript
 // Monitor localStorage changes
-window.addEventListener('storage', (e) => {
+window.addEventListener("storage", (e) => {
   console.log("🔔 Storage changed:", e.key);
   console.log("   New value:", e.newValue);
 });
@@ -320,7 +343,7 @@ const results = [
   { name: "localStorage exists", pass: test1() !== null },
   { name: "email stored", pass: test2() },
   { name: "role stored", pass: test3() },
-  { name: "userId stored (after verification)", pass: test4() }
+  { name: "userId stored (after verification)", pass: test4() },
 ];
 
 results.forEach((r, i) => {
@@ -328,7 +351,7 @@ results.forEach((r, i) => {
   console.log(`${i + 1}. ${icon} ${r.name}`);
 });
 
-const passCount = results.filter(r => r.pass).length;
+const passCount = results.filter((r) => r.pass).length;
 console.log(`\n${passCount}/${results.length} tests passed`);
 
 if (passCount === results.length) {

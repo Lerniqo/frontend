@@ -44,6 +44,7 @@ export default function Character({
   const { camera } = useThree();
   const [isVisible, setIsVisible] = useState(true);
   const [isVisibleHTML, setIsVisibleHTML] = useState(true);
+  const [showTalkBubble, setShowTalkBubble] = useState(true);
   const router = useRouter();
 
   // Preload for performance (optional)
@@ -51,6 +52,25 @@ export default function Character({
     // useGLTF.preload(`/models/${modelName}`);
     useGLTF.preload(`/models/${modelName}`);
   }, [modelName]);
+
+  // Listen for step quiz modal open/close events to hide/show talk bubble
+  useEffect(() => {
+    const handleStepQuizOpen = () => {
+      setShowTalkBubble(false);
+    };
+
+    const handleStepQuizClose = () => {
+      setShowTalkBubble(true);
+    };
+
+    window.addEventListener("stepQuizModalOpen", handleStepQuizOpen);
+    window.addEventListener("stepQuizModalClose", handleStepQuizClose);
+
+    return () => {
+      window.removeEventListener("stepQuizModalOpen", handleStepQuizOpen);
+      window.removeEventListener("stepQuizModalClose", handleStepQuizClose);
+    };
+  }, []);
 
   // Load model once
   const { scene, animations } = useGLTF(`/models/${modelName}`) as GLTFResult;
@@ -150,11 +170,22 @@ export default function Character({
   };
 
   // Function to handle button clicks
-  const handleButtonClick = (action: string, conceptId?: string) => {
+  const handleButtonClick = (
+    action: string,
+    conceptId?: string,
+    stepNumber?: number,
+    stepTitle?: string
+  ) => {
     if (action === "learning-path-quiz") {
       router.push("/learning-path-quiz");
     } else if (action === "concept" && conceptId) {
       router.push(`/concept?conceptId=${conceptId}`);
+    } else if (action === "step-quiz" && stepNumber && stepTitle) {
+      // Emit event to open step quiz modal
+      const event = new CustomEvent("openStepQuiz", {
+        detail: { stepNumber, stepTitle, conceptId },
+      });
+      window.dispatchEvent(event);
     }
   };
 
@@ -168,7 +199,7 @@ export default function Character({
       />
 
       {/* Display concept information using Html */}
-      {conceptProp && isVisibleHTML && (
+      {conceptProp && isVisibleHTML && showTalkBubble && (
         <Html
           position={
             side === "left"

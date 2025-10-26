@@ -30,9 +30,13 @@ interface LearningStep {
 
 interface LearningPathProps {
   learningPathData?: LearningStep[];
+  startingStationStatus?: "done" | "progressing" | "waiting";
 }
 
-const LearningPath: React.FC<LearningPathProps> = ({ learningPathData }) => {
+const LearningPath: React.FC<LearningPathProps> = ({
+  learningPathData,
+  startingStationStatus = "waiting",
+}) => {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
   const [steps, setSteps] = useState<LearningStep[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -85,6 +89,65 @@ const LearningPath: React.FC<LearningPathProps> = ({ learningPathData }) => {
         <Card className="w-64 bg-black/40 backdrop-blur-2xl border-0 overflow-hidden relative">
           <CardContent className="p-6 relative z-10 flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          </CardContent>
+        </Card>
+      </SpotlightCard>
+    );
+  }
+
+  // Show waiting state message when starting station is in waiting
+  if (startingStationStatus === "waiting") {
+    return (
+      <SpotlightCard
+        className="rounded-xl"
+        spotlightColor="rgba(59, 130, 246, 0.15)"
+        spotlightSize={200}
+        intensity={0.6}
+      >
+        <Card className="w-64 bg-black/40 backdrop-blur-2xl border-0 overflow-hidden relative">
+          {/* Premium Background Effects */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/10 to-blue-500/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.15),transparent_40%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(147,51,234,0.15),transparent_40%)]" />
+
+          {/* Animated Border */}
+          <div className="absolute inset-0 rounded-xl border border-transparent bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 p-[1px]">
+            <div className="w-full h-full bg-black/60 rounded-xl" />
+          </div>
+
+          <CardContent className="p-6 relative z-10">
+            {/* Header */}
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="relative">
+                  <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-500/25">
+                    <Target className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">Learning Path</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                <p className="text-sm text-white text-center">
+                  No learning path yet! Take the initial quiz to create your
+                  personalized learning journey.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <p className="text-xs text-white/60 mb-2">
+                  Click on the character to start your quiz
+                </p>
+                <div className="flex items-center justify-center space-x-1">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-75"></div>
+                  <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse delay-150"></div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </SpotlightCard>

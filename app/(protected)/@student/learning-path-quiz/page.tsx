@@ -132,6 +132,10 @@ export default function LearningPathQuizPage() {
       // Generate learning path
       await generateLearningPath();
 
+      // Dispatch event to notify dashboard that initial quiz is complete
+      const event = new CustomEvent("initialQuizComplete");
+      window.dispatchEvent(event);
+
       // Redirect to dashboard
       router.push("/dashboard");
     } catch (error) {

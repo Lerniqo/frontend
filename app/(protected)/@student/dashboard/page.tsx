@@ -41,10 +41,11 @@ export default function StudentDashboard() {
     const fetchLearningPath = async () => {
       try {
         const data = await getLearningPath();
-        
+
         // Check if user has completed initial quiz by checking localStorage or API
-        const hasCompletedInitialQuiz = localStorage.getItem("initialQuizCompleted") === "true";
-        
+        const hasCompletedInitialQuiz =
+          localStorage.getItem("initialQuizCompleted") === "true";
+
         if (hasCompletedInitialQuiz && data.length > 0) {
           // User has completed initial quiz, show learning path
           setLearningPath(data);
@@ -92,7 +93,7 @@ export default function StudentDashboard() {
     const handleInitialQuizComplete = async () => {
       // Mark initial quiz as completed
       localStorage.setItem("initialQuizCompleted", "true");
-      
+
       // Fetch and set the learning path
       try {
         const data = await getLearningPath();

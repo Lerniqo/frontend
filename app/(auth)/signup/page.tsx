@@ -288,7 +288,7 @@ function BubbleCanvas({
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, blurPx, bubbleCount, colors, maxSize, maxSpeed, minSize]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden />;
 }

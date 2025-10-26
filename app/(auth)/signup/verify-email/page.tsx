@@ -197,8 +197,8 @@ function VerifyEmailPageContent() {
             Verify Your <span className="text-white">Email</span>
           </h1>
           <p className="text-lg text-white/90 mb-8 leading-relaxed">
-            We've sent a verification code to {email}. Enter the 6-digit code
-            below to confirm your email address and continue with your
+            We&apos;ve sent a verification code to {email}. Enter the 6-digit
+            code below to confirm your email address and continue with your
             registration.
           </p>
         </div>
@@ -332,7 +332,7 @@ function VerifyEmailPageContent() {
             {showResend ? (
               <>
                 <p className="text-[#4b5563] text-sm mb-3">
-                  Didn't receive the code?
+                  Didn&apos;t receive the code?
                 </p>
                 <button
                   onClick={handleResendCode}
@@ -348,7 +348,7 @@ function VerifyEmailPageContent() {
                 onClick={() => setShowResend(true)}
                 className="text-[#4b5563] hover:text-[#6d28d9] text-sm transition-colors"
               >
-                Didn't receive it?{" "}
+                Didn&apos;t receive it?{" "}
                 <span className="font-bold text-[#6d28d9]">Try again</span>
               </button>
             )}
@@ -487,7 +487,7 @@ function BubbleCanvas({
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, blurPx, bubbleCount, colors, maxSize, maxSpeed, minSize]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden />;
 }

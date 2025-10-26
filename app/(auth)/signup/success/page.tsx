@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 
@@ -21,7 +21,18 @@ const BubbleCanvas = ({
   blurPx?: number;
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const bubblesRef = useRef<any[]>([]);
+  const bubblesRef = useRef<
+    Array<{
+      x: number;
+      y: number;
+      size: number;
+      color: string;
+      speed: number;
+      directionX: number;
+      directionY: number;
+      opacity: number;
+    }>
+  >([]);
   const animationRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -196,7 +207,7 @@ export default function SignupSuccessPage() {
             Account Created! 🎉
           </h2>
           <p className="text-[#5b4b9a] text-lg leading-relaxed">
-            Your profile is all set. You're ready to start your learning
+            Your profile is all set. You&apos;re ready to start your learning
             journey!
           </p>
         </div>
@@ -289,7 +300,7 @@ export default function SignupSuccessPage() {
             {/* What's Next Section */}
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-[#1e1b4b]">
-                What's Next?
+                What&apos;s Next?
               </h2>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-[#5b4b9a]">

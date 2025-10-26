@@ -148,12 +148,12 @@ function CompleteProfilePageContent() {
     >
   ) => {
     const { name, value, type } = e.target;
-    let processedValue: any = value;
+    let processedValue: string | number | undefined = value;
 
     // Convert gradeLevel and yearsOfExperience to numbers
     if ((name === "gradeLevel" || name === "yearsOfExperience") && value) {
       processedValue = Number(value);
-      console.log(
+      console.error(
         `Converting ${name}: "${value}" -> ${processedValue} (type: ${typeof processedValue})`
       );
     } else if (type === "number" && value) {
@@ -164,7 +164,7 @@ function CompleteProfilePageContent() {
 
     setFormData((prev) => {
       const updated = { ...prev, [name]: processedValue };
-      console.log(`Form state after ${name} change:`, updated);
+      console.error(`Form state after ${name} change:`, updated);
       return updated;
     });
     if (errors[name]) {
@@ -191,9 +191,9 @@ function CompleteProfilePageContent() {
         )
       );
 
-      console.log("Original formData:", formData);
-      console.log("Cleaned formData:", cleanedFormData);
-      console.log(
+      console.error("Original formData:", formData);
+      console.error("Cleaned formData:", cleanedFormData);
+      console.error(
         "gradeLevel type in cleaned:",
         typeof cleanedFormData.gradeLevel,
         "value:",
@@ -900,7 +900,7 @@ function BubbleCanvas({
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, blurPx, bubbleCount, colors, maxSize, maxSpeed, minSize]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden />;
 }

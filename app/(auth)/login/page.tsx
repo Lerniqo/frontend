@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef, Suspense, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
-import { userService } from "@/services/userService";
 import { useAuth } from "@/contexts/AuthContext";
 
 function LoginPageContent() {
@@ -73,7 +72,14 @@ function LoginPageContent() {
     setIsLoading(true);
 
     try {
-      const response = await contextLogin(formData.email, formData.password);
+      const response = (await contextLogin(
+        formData.email,
+        formData.password
+      )) as {
+        success: boolean;
+        message: string;
+        data?: { user?: { userId: string; role: string } };
+      };
 
       if (response.success) {
         // Login successful, redirect to dashboard
@@ -100,9 +106,9 @@ function LoginPageContent() {
             setProfileIncompleteMessage(true);
             setRedirectCountdown(3);
 
-            console.log("📋 Profile not completed - Countdown starting...");
-            console.log("User ID:", response.data.user.userId);
-            console.log("Role:", response.data.user.role);
+            console.error("📋 Profile not completed - Countdown starting...");
+            console.error("User ID:", response.data.user.userId);
+            console.error("Role:", response.data.user.role);
 
             // Start countdown and redirect
             const interval = setInterval(() => {
@@ -111,9 +117,11 @@ function LoginPageContent() {
                   clearInterval(interval);
                   // Redirect to complete profile
                   const redirectUrl = `/signup/complete-profile?userId=${encodeURIComponent(
-                    response.data!.user.userId
-                  )}&role=${encodeURIComponent(response.data!.user.role)}`;
-                  console.log("🔄 Redirecting to:", redirectUrl);
+                    response.data?.user?.userId || ""
+                  )}&role=${encodeURIComponent(
+                    response.data?.user?.role || ""
+                  )}`;
+                  console.error("🔄 Redirecting to:", redirectUrl);
                   router.push(redirectUrl);
                   return 0;
                 }
@@ -361,7 +369,7 @@ function LoginPageContent() {
 
           {/* Sign Up Link */}
           <div className="text-center text-sm text-[#4b5563]">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button
               onClick={() => router.push("/signup")}
               className="group relative bg-gradient-to-r from-[#6d28d9] to-[#7c3aed] bg-clip-text text-transparent font-bold hover:opacity-80 transition-opacity duration-200 underline underline-offset-2"
@@ -488,7 +496,7 @@ function BubbleCanvas({
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
     };
-  }, [prefersReduced]);
+  }, [prefersReduced, blurPx, bubbleCount, colors, maxSize, maxSpeed, minSize]);
 
   return <canvas ref={canvasRef} className={className} aria-hidden />;
 }

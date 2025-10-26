@@ -132,6 +132,9 @@ export default function LearningPathQuizPage() {
       // Generate learning path
       await generateLearningPath();
 
+      // Mark initial quiz as completed in localStorage
+      localStorage.setItem("initialQuizCompleted", "true");
+
       // Dispatch event to notify dashboard that initial quiz is complete
       const event = new CustomEvent("initialQuizComplete");
       window.dispatchEvent(event);

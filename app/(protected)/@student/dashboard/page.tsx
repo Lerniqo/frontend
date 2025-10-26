@@ -41,11 +41,18 @@ export default function StudentDashboard() {
     const fetchLearningPath = async () => {
       try {
         const data = await getLearningPath();
-        setLearningPath(data);
-
-        // Check if there's a learning path (if any steps exist and first step is not waiting)
-        if (data.length > 0 && data[0].status !== "waiting") {
+        
+        // Check if user has completed initial quiz by checking localStorage or API
+        const hasCompletedInitialQuiz = localStorage.getItem("initialQuizCompleted") === "true";
+        
+        if (hasCompletedInitialQuiz && data.length > 0) {
+          // User has completed initial quiz, show learning path
+          setLearningPath(data);
           setStartingStationStatus("progressing");
+        } else {
+          // User hasn't completed initial quiz yet, keep in waiting state
+          setLearningPath([]);
+          setStartingStationStatus("waiting");
         }
       } catch (error) {
         console.error("Failed to fetch learning path:", error);
@@ -82,14 +89,18 @@ export default function StudentDashboard() {
 
   // Listen for initial quiz completion from learning-path-quiz page
   useEffect(() => {
-    const handleInitialQuizComplete = () => {
-      setStartingStationStatus("progressing");
-      // Update first step to progressing
-      setLearningPath((prev) =>
-        prev.map((step, index) =>
-          index === 0 ? { ...step, status: "progressing" as const } : step
-        )
-      );
+    const handleInitialQuizComplete = async () => {
+      // Mark initial quiz as completed
+      localStorage.setItem("initialQuizCompleted", "true");
+      
+      // Fetch and set the learning path
+      try {
+        const data = await getLearningPath();
+        setLearningPath(data);
+        setStartingStationStatus("progressing");
+      } catch (error) {
+        console.error("Failed to fetch learning path after quiz:", error);
+      }
     };
 
     window.addEventListener("initialQuizComplete", handleInitialQuizComplete);

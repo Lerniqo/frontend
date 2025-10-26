@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 
@@ -136,6 +136,12 @@ export default function SignupSuccessPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
 
+  // Memoize bubble colors to prevent re-initialization
+  const bubbleColors = useMemo(
+    () => ["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"],
+    []
+  );
+
   useEffect(() => {
     // Animation
     if (cardRef.current) {
@@ -171,7 +177,7 @@ export default function SignupSuccessPage() {
       <div className="w-4/7 relative hidden lg:flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#f9f5ff] via-[#ede9fe] to-[#e5e0ff]">
         <BubbleCanvas
           bubbleCount={35}
-          colors={["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"]}
+          colors={bubbleColors}
           minSize={15}
           maxSize={80}
           maxSpeed={1.2}

@@ -18,6 +18,12 @@ function VerifyEmailPageContent() {
   const [showResend, setShowResend] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
 
+  // Memoize bubble colors to prevent re-initialization on state changes
+  const bubbleColors = useMemo(
+    () => ["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"],
+    []
+  );
+
   // Redirect if no email
   useEffect(() => {
     if (!email) {
@@ -174,7 +180,7 @@ function VerifyEmailPageContent() {
       <BubbleCanvas
         className="absolute inset-0 z-0"
         bubbleCount={36}
-        colors={["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"]}
+        colors={bubbleColors}
         minSize={18}
         maxSize={56}
         maxSpeed={0.6}

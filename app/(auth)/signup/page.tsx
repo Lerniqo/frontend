@@ -21,28 +21,34 @@ export default function SignUpPage() {
     router.push("/login");
   };
 
-  const roleOptions = [
-    {
-      id: "student",
-      name: "Student",
-      description: "Learn from expert teachers",
-      icon: <GraduationIcon />,
-    },
-    {
-      id: "teacher",
-      name: "Teacher",
-      description: "Share your knowledge",
-      icon: <TeacherIcon />,
-    },
-  ];
+  const roleOptions = useMemo(
+    () => [
+      {
+        id: "student",
+        name: "Student",
+        description: "Learn from expert teachers",
+        icon: <GraduationIcon />,
+      },
+      {
+        id: "teacher",
+        name: "Teacher",
+        description: "Share your knowledge",
+        icon: <TeacherIcon />,
+      },
+    ],
+    []
+  );
 
-  // Determine bubble colors based on selected role
-  const bubbleColors =
-    selectedRole === "Student"
-      ? ["#ffffff", "#3b82f6", "#60a5fa", "#dbeafe", "#eff6ff"] // Blue theme
-      : selectedRole === "Teacher"
-      ? ["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"] // Purple theme
-      : ["#ffffff", "#6366f1", "#8b5cf6", "#e0e7ff", "#f3e8ff"]; // Default mix
+  // Determine bubble colors based on selected role - memoized to prevent re-renders
+  const bubbleColors = useMemo(
+    () =>
+      selectedRole === "Student"
+        ? ["#ffffff", "#3b82f6", "#60a5fa", "#dbeafe", "#eff6ff"] // Blue theme
+        : selectedRole === "Teacher"
+        ? ["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"] // Purple theme
+        : ["#ffffff", "#6366f1", "#8b5cf6", "#e0e7ff", "#f3e8ff"], // Default mix
+    [selectedRole]
+  );
 
   return (
     <div className="relative min-h-screen flex bg-gradient-to-br from-[#6d28d9] via-[#7c3aed] to-[#a78bfa] overflow-hidden text-gray-900">

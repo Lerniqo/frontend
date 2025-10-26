@@ -22,6 +22,12 @@ function RegisterPageContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Memoize bubble colors to prevent re-initialization on state changes
+  const bubbleColors = useMemo(
+    () => ["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"],
+    []
+  );
+
   // Redirect to signup if no valid role
   useEffect(() => {
     if (!role || !["Student", "Teacher"].includes(role)) {
@@ -146,7 +152,7 @@ function RegisterPageContent() {
       <BubbleCanvas
         className="absolute inset-0 z-0"
         bubbleCount={36}
-        colors={["#ffffff", "#8b5cf6", "#a78bfa", "#ede9fe", "#f3e8ff"]}
+        colors={bubbleColors}
         minSize={18}
         maxSize={56}
         maxSpeed={0.6}

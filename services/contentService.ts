@@ -820,7 +820,7 @@ export async function getLearningPath(): Promise<LearningPathConcept[]> {
           "Khan Academy: Introduction to Geometry (basic shapes)",
           "YouTube: Videos explaining basic shapes for kids",
         ],
-        status: "done",
+        status: "progressing",
       },
       {
         stepNumber: 2,
@@ -835,7 +835,7 @@ export async function getLearningPath(): Promise<LearningPathConcept[]> {
           "Interactive Geometry Websites: Circle definition and demonstrations",
           "Simple illustrations of circles and their components",
         ],
-        status: "done",
+        status: "waiting",
       },
       {
         stepNumber: 3,
@@ -850,7 +850,7 @@ export async function getLearningPath(): Promise<LearningPathConcept[]> {
           "Online Geometry Tutorials: Radius and diameter explanations",
           "Worksheets with circle diagrams for labeling",
         ],
-        status: "progressing",
+        status: "waiting",
       },
       {
         stepNumber: 4,

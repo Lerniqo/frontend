@@ -35,6 +35,18 @@ export interface PathCameraControllerProps {
 
 export interface DashboardUIProps {
   currentPathProgress: number;
+  startingStationStatus?: "done" | "progressing" | "waiting";
+  learningPathData?: Array<{
+    stepNumber: number;
+    title: string;
+    conceptName?: string;
+    conceptId?: string;
+    estimatedDuration: string;
+    description: string;
+    prerequisites: string[];
+    resources: string[];
+    status?: "done" | "progressing" | "waiting";
+  }>;
 }
 
 export interface CharacterModel {
@@ -62,4 +74,5 @@ export interface Scene3DProps extends PathCameraControllerProps {
     resources: string[];
     status?: "done" | "progressing" | "waiting";
   }>;
+  startingStationStatus?: "done" | "progressing" | "waiting";
 }

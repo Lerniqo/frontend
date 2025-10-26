@@ -38,7 +38,7 @@ const startingConceptProp: ConceptProp = {
     "Welcome to your learning journey! Let's start by understanding your current level and creating a personalized learning path for you.",
   prerequisites: [],
   resources: [],
-  status: "progressing" as const,
+  status: "waiting" as const,
 };
 
 export const positionsOfCharacters: CharacterModel[] = [
@@ -301,7 +301,14 @@ export default function Scene3D({
   enableOrbitControls: _enableOrbitControls = true,
   characters = [],
   learningPath = [],
+  startingStationStatus = "waiting",
 }: Scene3DProps) {
+  // Update starting concept prop with the status from dashboard
+  const updatedStartingConceptProp: ConceptProp = {
+    ...startingConceptProp,
+    status: startingStationStatus,
+  };
+
   return (
     <>
       {/* Camera Controller */}
@@ -335,12 +342,12 @@ export default function Scene3D({
           position={startingPoint.position}
           rotation={startingPoint.rotation}
           scale={startingPoint.scale}
-          conceptProp={startingConceptProp}
+          conceptProp={updatedStartingConceptProp}
           side={startingPoint.side}
         />
 
         {/* Render characters based on the characters prop - only if starting station is not waiting */}
-        {startingConceptProp.status !== "waiting" &&
+        {startingStationStatus !== "waiting" &&
           characters.map((characterId, index) => {
             const characterData = positionsOfCharacters.find(
               (char) => char.id === characterId

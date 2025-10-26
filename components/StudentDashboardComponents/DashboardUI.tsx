@@ -32,7 +32,11 @@ import { getLearningPath } from "@/services/contentService";
 import type { LearningPathConcept } from "@/services/contentService";
 import AIQuizModal from "@/components/CommonComponents/AIQuizModal";
 
-export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
+export default function DashboardUI({
+  currentPathProgress,
+  startingStationStatus = "waiting",
+  learningPathData: learningPathDataProp,
+}: DashboardUIProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -54,15 +58,20 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
   useEffect(() => {
     const fetchLearningPath = async () => {
       try {
-        const data = await getLearningPath();
-        setLearningPathData(data);
+        // Use prop data if provided, otherwise fetch
+        if (learningPathDataProp) {
+          setLearningPathData(learningPathDataProp);
+        } else {
+          const data = await getLearningPath();
+          setLearningPathData(data);
+        }
       } catch (error) {
         console.error("Failed to fetch learning path in DashboardUI:", error);
       }
     };
 
     fetchLearningPath();
-  }, []);
+  }, [learningPathDataProp]);
 
   // Close popups when clicking outside
   useEffect(() => {
@@ -202,7 +211,10 @@ export default function DashboardUI({ currentPathProgress }: DashboardUIProps) {
 
       {/* Right side Learning Path */}
       <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-40">
-        <LearningPath learningPathData={learningPathData} />
+        <LearningPath
+          learningPathData={learningPathData}
+          startingStationStatus={startingStationStatus}
+        />
       </div>
 
       {/* AI Quiz Modal - Rendered at top level for proper positioning */}

@@ -6,6 +6,7 @@ import { CAMERA_PATH } from "@/constants/cameraPath";
 import { Scene3D, DashboardUI } from "@/components/StudentDashboardComponents";
 import { positionsOfCharacters } from "@/components/StudentDashboardComponents/Scene3D";
 import AIChatbot from "@/components/StudentDashboardComponents/AIChatbot";
+import StepQuizModal from "@/components/CommonComponents/StepQuizModal";
 import {
   getLearningPath,
   LearningPathConcept,
@@ -25,6 +26,15 @@ export default function StudentDashboard() {
 
   const [learningPath, setLearningPath] = useState<LearningPathConcept[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isStepQuizOpen, setIsStepQuizOpen] = useState(false);
+  const [currentQuizStep, setCurrentQuizStep] = useState<{
+    stepNumber: number;
+    stepTitle: string;
+    conceptId?: string;
+  } | null>(null);
+  const [startingStationStatus, setStartingStationStatus] = useState<
+    "done" | "progressing" | "waiting"
+  >("waiting");
 
   // Fetch learning path data on component mount
   useEffect(() => {
@@ -32,6 +42,11 @@ export default function StudentDashboard() {
       try {
         const data = await getLearningPath();
         setLearningPath(data);
+
+        // Check if there's a learning path (if any steps exist and first step is not waiting)
+        if (data.length > 0 && data[0].status !== "waiting") {
+          setStartingStationStatus("progressing");
+        }
       } catch (error) {
         console.error("Failed to fetch learning path:", error);
       } finally {
@@ -41,6 +56,74 @@ export default function StudentDashboard() {
 
     fetchLearningPath();
   }, []);
+
+  // Listen for step quiz events from Character component
+  useEffect(() => {
+    const handleOpenStepQuiz = (event: CustomEvent) => {
+      const { stepNumber, stepTitle, conceptId } = event.detail;
+      setCurrentQuizStep({ stepNumber, stepTitle, conceptId });
+      setIsStepQuizOpen(true);
+
+      // Dispatch event to hide all talk bubbles
+      window.dispatchEvent(new CustomEvent("stepQuizModalOpen"));
+    };
+
+    window.addEventListener(
+      "openStepQuiz",
+      handleOpenStepQuiz as EventListener
+    );
+    return () => {
+      window.removeEventListener(
+        "openStepQuiz",
+        handleOpenStepQuiz as EventListener
+      );
+    };
+  }, []);
+
+  // Listen for initial quiz completion from learning-path-quiz page
+  useEffect(() => {
+    const handleInitialQuizComplete = () => {
+      setStartingStationStatus("progressing");
+      // Update first step to progressing
+      setLearningPath((prev) =>
+        prev.map((step, index) =>
+          index === 0 ? { ...step, status: "progressing" as const } : step
+        )
+      );
+    };
+
+    window.addEventListener("initialQuizComplete", handleInitialQuizComplete);
+    return () => {
+      window.removeEventListener(
+        "initialQuizComplete",
+        handleInitialQuizComplete
+      );
+    };
+  }, []);
+
+  const handleStepQuizComplete = (passed: boolean, _score: number) => {
+    if (passed && currentQuizStep) {
+      // Mark current step as done and next step as progressing
+      setLearningPath((prev) => {
+        const updatedPath = prev.map((step) => {
+          if (step.stepNumber === currentQuizStep.stepNumber) {
+            return { ...step, status: "done" as const };
+          }
+          if (step.stepNumber === currentQuizStep.stepNumber + 1) {
+            return { ...step, status: "progressing" as const };
+          }
+          return step;
+        });
+        return updatedPath;
+      });
+    }
+  };
+
+  const handleCloseStepQuiz = () => {
+    setIsStepQuizOpen(false);
+    // Dispatch event to show all talk bubbles again
+    window.dispatchEvent(new CustomEvent("stepQuizModalClose"));
+  };
 
   function generateEvenlySpacedList(
     n: number,
@@ -151,14 +234,30 @@ export default function StudentDashboard() {
           getLookDirection={getLookDirection}
           characters={characterPositions}
           learningPath={learningPath}
+          startingStationStatus={startingStationStatus}
         />
       </Canvas>
 
       {/* UI Overlay */}
-      <DashboardUI currentPathProgress={currentPathProgress} />
+      <DashboardUI
+        currentPathProgress={currentPathProgress}
+        startingStationStatus={startingStationStatus}
+        learningPathData={learningPath}
+      />
 
       {/* AI Chatbot */}
       <AIChatbot />
+
+      {/* Step Quiz Modal */}
+      {currentQuizStep && (
+        <StepQuizModal
+          isOpen={isStepQuizOpen}
+          onClose={handleCloseStepQuiz}
+          onComplete={handleStepQuizComplete}
+          stepTitle={currentQuizStep.stepTitle}
+          stepNumber={currentQuizStep.stepNumber}
+        />
+      )}
     </div>
   );
 }

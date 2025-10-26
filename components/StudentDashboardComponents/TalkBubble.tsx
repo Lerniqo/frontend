@@ -14,7 +14,12 @@ interface ConceptProp {
 
 interface TalkBubbleProps {
   conceptProp: ConceptProp;
-  onButtonClick: (action: string, conceptId?: string) => void;
+  onButtonClick: (
+    action: string,
+    conceptId?: string,
+    stepNumber?: number,
+    stepTitle?: string
+  ) => void;
   side?: "left" | "right";
 }
 
@@ -100,12 +105,17 @@ const TalkBubble: React.FC<TalkBubbleProps> = ({
               <div className="flex justify-end">
                 <button
                   onClick={() =>
-                    onButtonClick("concept", conceptProp.conceptId)
+                    onButtonClick(
+                      "step-quiz",
+                      conceptProp.conceptId,
+                      conceptProp.stepNumber,
+                      conceptProp.title
+                    )
                   }
                   className="font-comic text-xl font-bold text-black bg-white border-4 border-black rounded-2xl px-6 py-3 cursor-pointer transition-all duration-200 ease-in-out shadow-[0_4px_0_0_black] hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_black] active:translate-y-0.5 active:shadow-[0_2px_0_0_black]"
                   style={{ WebkitTextStroke: "0.5px black" }}
                 >
-                  Let&apos;s Go !
+                  Complete
                 </button>
               </div>
             </div>

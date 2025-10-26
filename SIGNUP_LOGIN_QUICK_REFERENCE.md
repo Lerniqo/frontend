@@ -1,4 +1,17 @@
-# Signup & Login Flow - Quick Reference
+# 🚀 Sign-Up & Login Flow - Quick Reference Guide
+
+## 📍 Page Routes
+
+| Page               | Route                                          | Component                                     |
+| ------------------ | ---------------------------------------------- | --------------------------------------------- |
+| Role Selection     | `/signup`                                      | `app/(auth)/signup/page.tsx`                  |
+| Registration       | `/signup/register?role=Student\|Teacher`       | `app/(auth)/signup/register/page.tsx`         |
+| Email Verification | `/signup/verify-email?email=...`               | `app/(auth)/signup/verify-email/page.tsx`     |
+| Complete Profile   | `/signup/complete-profile?userId=...&role=...` | `app/(auth)/signup/complete-profile/page.tsx` |
+| Signup Success     | `/signup/success`                              | `app/(auth)/signup/success/page.tsx`          |
+| Login              | `/login`                                       | `app/(auth)/login/page.tsx`                   |
+
+---
 
 ## 🎯 User Flows
 

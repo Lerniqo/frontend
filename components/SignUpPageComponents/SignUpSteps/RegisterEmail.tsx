@@ -190,13 +190,13 @@ export default function RegisterEmail({
         gsap.fromTo(
           errorRef,
           { opacity: 0, y: -10 },
-          { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }
+          { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }
         );
       } else {
         gsap.to(errorRef, {
           opacity: 0,
           y: -10,
-          duration: 0.2,
+          duration: 0.3,
           ease: "power2.in",
         });
       }
@@ -222,6 +222,21 @@ export default function RegisterEmail({
         formRef.current,
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+      );
+
+      // Animate individual form elements
+      const formElements = formRef.current.querySelectorAll(".form-field");
+      gsap.fromTo(
+        formElements,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.1,
+          delay: 0.2,
+        }
       );
     }
   }, []);
@@ -263,7 +278,7 @@ export default function RegisterEmail({
 
       <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         {/* Email Field */}
-        <div className="space-y-2">
+        <div className="space-y-2 form-field">
           <label
             htmlFor="email"
             className="block text-sm font-semibold text-gray-700"
@@ -296,7 +311,7 @@ export default function RegisterEmail({
         </div>
 
         {/* Password Field */}
-        <div className="space-y-2">
+        <div className="space-y-2 form-field">
           <div className="flex items-center justify-between">
             <label
               htmlFor="password"
@@ -398,7 +413,7 @@ export default function RegisterEmail({
         </div>
 
         {/* Confirm Password Field */}
-        <div className="space-y-2">
+        <div className="space-y-2 form-field">
           <label
             htmlFor="confirmPassword"
             className="block text-sm font-semibold text-gray-700"
@@ -446,7 +461,7 @@ export default function RegisterEmail({
         </div>
 
         {/* Form Status Indicator */}
-        <div className="pt-4">
+        <div className="pt-4 form-field">
           {isFormValid && (
             <div className="text-purple-600 text-sm font-medium flex items-center space-x-2">
               <span className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">

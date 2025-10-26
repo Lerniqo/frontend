@@ -88,7 +88,10 @@ export default function StudentProfileDetailsForm({
   // Animation effects
   useEffect(() => {
     if (formRef.current) {
-      gsap.fromTo(
+      const tl = gsap.timeline();
+
+      // Main container animation
+      tl.fromTo(
         formRef.current,
         {
           opacity: 0,
@@ -99,9 +102,27 @@ export default function StudentProfileDetailsForm({
           opacity: 1,
           y: 0,
           scale: 1,
-          duration: 0.8,
+          duration: 0.7,
           ease: "power2.out",
         }
+      );
+
+      // Animate form fields with stagger
+      const formFields = formRef.current.querySelectorAll(".profile-field");
+      tl.fromTo(
+        formFields,
+        {
+          opacity: 0,
+          y: 20,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          stagger: 0.08,
+        },
+        0.15
       );
     }
   }, []);
@@ -123,11 +144,14 @@ export default function StudentProfileDetailsForm({
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
-        
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
           age--;
         }
-        
+
         if (age < 5 || age > 25) {
           return "Student age must be between 5 and 25 years";
         }

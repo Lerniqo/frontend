@@ -211,7 +211,10 @@ const formatStudentProfileData = (
     fullName: data.fullName.trim(),
     school: formatOptionalString(data.school),
     birthday: formatOptionalString(data.birthday),
-    gradeLevel: data.gradeLevel,
+    gradeLevel:
+      typeof data.gradeLevel === "string"
+        ? parseInt(data.gradeLevel, 10)
+        : data.gradeLevel,
     gender: formatGender(data.gender),
     parentGuardianName: formatOptionalString(data.parentGuardianName),
     relationship: formatOptionalString(data.relationship),
@@ -240,7 +243,10 @@ const formatTeacherProfileData = (
     address: formatOptionalString(data.address),
     phoneNumber: formatOptionalString(data.phoneNumber),
     nationalIdPassport: formatOptionalString(data.nationalIdPassport),
-    yearsOfExperience: data.yearsOfExperience,
+    yearsOfExperience:
+      typeof data.yearsOfExperience === "string"
+        ? parseInt(data.yearsOfExperience, 10)
+        : data.yearsOfExperience,
     highestEducationLevel: formatOptionalString(data.highestEducationLevel),
     qualifications: formatOptionalString(data.qualifications),
     shortBio: formatOptionalString(data.shortBio),
@@ -388,6 +394,36 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
     const errorResponse = error.response?.data;
 
     // Return error with additional data for special cases
+    // If we have userId in the error response, try to get the role from storage
+    let userRole = "Student"; // Default role
+
+    if (errorResponse?.userId) {
+      // First try to get the role from localStorage (stored during registration/verification)
+      const storedRegistrationData = localStorage.getItem(
+        "userRegistrationData"
+      );
+      if (storedRegistrationData) {
+        try {
+          const registrationData = JSON.parse(storedRegistrationData);
+          if (registrationData?.role) {
+            userRole = registrationData.role;
+          }
+        } catch (e) {
+          console.warn("Could not parse stored registration data");
+        }
+      }
+
+      // If still not found, try to get from stored user data
+      if (userRole === "Student") {
+        const storedUser = getStoredUser();
+        if (storedUser?.role) {
+          userRole = storedUser.role;
+        }
+      }
+    }
+
+    console.log("📋 Login error handling - Using role:", userRole);
+
     return {
       success: false,
       message: errorMessage,
@@ -397,7 +433,7 @@ const login = async (data: LoginData): Promise<ApiResponse<AuthResponse>> => {
             user: {
               userId: errorResponse.userId,
               email: data.email.toLowerCase(),
-              role: errorResponse.role || "Student",
+              role: userRole,
               fullName: "",
               isVerified: errorResponse.profileCompleted !== false,
               isProfileCompleted: errorResponse.profileCompleted === true,

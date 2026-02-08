@@ -6,6 +6,7 @@ import Footer from "../components/LandingPageComponents/Footer";
 import NavBar from "../components/LandingPageComponents/NavBar";
 import PublicRoute from "../components/CommonComponents/PublicRoute";
 
+
 export default function LandingPage() {
   return (
     <PublicRoute>
